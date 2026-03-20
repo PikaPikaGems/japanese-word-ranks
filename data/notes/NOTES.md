@@ -116,6 +116,45 @@ See `data/frequency/dataset-catalog.md` for context
 4. <BadgeWithPopover/>
 5. <JapaneseWordCardItem />
 
+# Other features
+
+- Add a filter fs: - Katakana Only, NonKatakana Only, All
+- Add light mode / dark mode
+- Add footer
+
+# Improvements
+
+1. Is there a way for the components not to shift when collapsing and expanding (the components shift because of the scroll bar disappearing and apearing.)
+
+2. When you open the popover, it is left-aligned at the beginning and then after 20 seconds it shifts to be centered aligned. How to change?
+
+3. Clicking the book icon doesnt do anything. It should open a popup and the content should just be "TODO: ADD content here"
+
+=== RIRIKKU ===
+Total words: 92171
+First 3: [
+'うん (うん) RIRIKKU_RANK=1',
+'だ (だ) RIRIKKU_RANK=1',
+'の (の) RIRIKKU_RANK=1'
+]
+Columns per word: 18
+
+=== JLPT ===
+Total words: 7880
+食べる: 5
+だ: 5
+
+=== KAISHI ===
+Total entries: 1504
+Unique words: 1299
+First 5: [ '私/わたし (#0)', '私/あなた (#1)', '私/さん (#2)', '彼/かれ (#3)', '好き/すき (#4)' ]
+何 entries: [ '何/なに', '何/なん', '何/それ', '何/あれ', '何/どれ' ]
+
+=== CONSOLIDATED ===
+Total words: 24605
+食べる columns: 74
+食べる CC100: 173
+
 # Credits
 
 - Mock UI: https://wiretext.app/
