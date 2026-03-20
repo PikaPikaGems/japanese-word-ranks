@@ -157,6 +157,12 @@ See `data/frequency/dataset-catalog.md` for context
 
 (And when you click "View More", display everything , display everything in the current order you are currently displaying now. )
 
+# Design Decision
+
+- Don't build 90 pages (word) SSG anymore for each word (not worth it since its only frequencies information, no other information)
+- But still considering to build SSG for static pagination frequency SORT ORDERS ?
+- Question: `/order/JLPT/1` or `/?sort-order=JLPT&page=1`
+
 # Notes
 
 === RIRIKKU ===
