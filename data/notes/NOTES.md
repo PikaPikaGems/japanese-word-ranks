@@ -163,6 +163,14 @@ See `data/frequency/dataset-catalog.md` for context
 - But still considering to build SSG for static pagination frequency SORT ORDERS ?
 - Question: `/order/JLPT/1` or `/?sort-order=JLPT&page=1`
 
+# Name of Website (Ideas)
+
+- jpwordrank.com
+- jpfrequency.com
+- japanesewordrank.com
+- jpfrequencylookup.com
+- japanesefrequency.com
+
 # Notes
 
 === RIRIKKU ===
