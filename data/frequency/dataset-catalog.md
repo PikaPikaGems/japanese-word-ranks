@@ -204,9 +204,11 @@ All jiten.moe frequency lists. Regularly maintained and updated.
 
 ### Video Games
 
-| Column ID | Source    | Description                                                                                                                                                                                        |
-| --------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `NIER`    | Community | Single game series script (~10,077 entries, entire vocabulary of the NieR games). A `-1` here simply means the word doesn't appear in NieR — no general vocabulary signal. ⚠️ **Not Recommended.** |
+| Column ID          | Source    | Description   |
+| ------------------ | --------- | ------------- |
+| `JITEN_VIDEO_GAME` | jiten.moe | ~159k Entries |
+
+| `NIER` | Community | Single game series script (~10,077 entries, entire vocabulary of the NieR games). A `-1` here simply means the word doesn't appear in NieR — no general vocabulary signal. ⚠️ **Not Recommended.** |
 
 ---
 
