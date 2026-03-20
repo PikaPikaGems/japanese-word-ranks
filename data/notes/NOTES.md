@@ -124,7 +124,7 @@ See `data/frequency/dataset-catalog.md` for context
 
 # Footer
 
-- About + Credits
+- About + Creditsxw
 - Privacy Policy
 - Terms of Use
 - Kanji Heatmap
@@ -133,7 +133,9 @@ See `data/frequency/dataset-catalog.md` for context
 ## Socials
 
 - GitHub
-- Ririkku
+- Instagram
+- Discord
+- Twitter
 
 # Improvements Word Page
 
