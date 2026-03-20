@@ -122,13 +122,28 @@ See `data/frequency/dataset-catalog.md` for context
 - Add light mode / dark mode
 - Add footer
 
-# Improvements
+# Footer
+
+- About + Credits
+- Privacy Policy
+- Terms of Use
+- Kanji Heatmap
+- Ririkku
+
+## Socials
+
+- GitHub
+- Ririkku
+
+# Improvements Word Page
 
 1. Is there a way for the components not to shift when collapsing and expanding (the components shift because of the scroll bar disappearing and apearing.)
 
 2. When you open the popover, it is left-aligned at the beginning and then after 20 seconds it shifts to be centered aligned. How to change?
 
 3. Clicking the book icon doesnt do anything. It should open a popup and the content should just be "TODO: ADD content here"
+
+# Notes
 
 === RIRIKKU ===
 Total words: 92171
