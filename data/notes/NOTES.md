@@ -144,6 +144,18 @@ See `data/frequency/dataset-catalog.md` for context
 2. When you open the popover, it is left-aligned at the beginning and then after 20 seconds it shifts to be centered aligned. How to change?
 
 3. Clicking the book icon doesnt do anything. It should open a popup and the content should just be "TODO: ADD content here"
+4. For badges in the word card Only Display the following by default
+
+- JLPT
+- Kaishi
+- BCCWJ LUV
+- CEJC Small Talk
+- Jiten Drama
+- Netflix
+- Wikipedia V2
+- Slice-of-Life Anime
+
+(And when you click "View More", display everything , display everything in the current order you are currently displaying now. )
 
 # Notes
 
