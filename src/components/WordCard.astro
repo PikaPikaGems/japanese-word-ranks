@@ -1,0 +1,139 @@
+---
+/**
+ * Word card — matches the NOTES.md wireframe layout:
+ * [iconC] [iconD]  |  BIG_JAPANESE_WORD  |  [badges...]
+ *                  |  reading            |
+ */
+
+import BadgeWithPopover from "./BadgeWithPopover.astro";
+import { getTier } from "../lib/tier";
+import { SORT_ORDER_MAP } from "../lib/sort-orders";
+import type { Tier } from "../lib/tier";
+
+interface BadgeData {
+  label: string;
+  value: string | number;
+  tier: Tier;
+  description: string;
+}
+
+interface Props {
+  word: string;
+  hiragana: string;
+  katakana: string;
+  jlptLevel?: number;
+  isKaishi?: boolean;
+  ranks: Record<string, number>;
+  linked?: boolean;
+}
+
+const { word, hiragana, katakana, jlptLevel, isKaishi, ranks, linked = false } = Astro.props;
+
+// Build badge data
+const badges: BadgeData[] = [];
+
+if (jlptLevel) {
+  badges.push({
+    label: "JLPT",
+    value: `N${jlptLevel}`,
+    tier: jlptLevel >= 4 ? "BASIC" : jlptLevel === 3 ? "COMMON" : jlptLevel === 2 ? "FLUENT" : "ADVANCED",
+    description: `Japanese Language Proficiency Test Level N${jlptLevel}`,
+  });
+}
+
+if (isKaishi) {
+  badges.push({
+    label: "Kaishi",
+    value: "✓",
+    tier: "BASIC",
+    description: "This word is in the Kaishi 1500 beginner vocabulary deck.",
+  });
+}
+
+const frequencyKeys = Object.keys(ranks);
+for (const key of frequencyKeys) {
+  const rank = ranks[key];
+  const sortOrder = SORT_ORDER_MAP.get(key);
+  if (!sortOrder) continue;
+  badges.push({
+    label: sortOrder.label,
+    value: rank,
+    tier: getTier(rank),
+    description: sortOrder.description,
+  });
+}
+
+const wordUrl = `/word/${encodeURIComponent(word)}`;
+---
+
+<div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm">
+  <div class="flex items-start gap-4 p-5 sm:p-6">
+    <!-- Icon buttons column (iconC, iconD) -->
+    <div class="flex flex-col gap-2 pt-1 shrink-0">
+      <button
+        class="tts-btn inline-flex h-9 w-9 items-center justify-center rounded-md border border-input bg-background text-muted-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
+        data-word={word}
+        title="Listen to pronunciation"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg>
+      </button>
+      <button
+        class="book-btn inline-flex h-9 w-9 items-center justify-center rounded-md border border-input bg-background text-muted-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
+        data-word={word}
+        title="Dictionary links"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      </button>
+    </div>
+
+    <!-- Big word -->
+    <div class="shrink-0">
+      {linked ? (
+        <a href={wordUrl} class="block text-5xl sm:text-7xl font-bold text-foreground hover:text-primary/80 transition-colors leading-tight" style="font-family: var(--font-japanese);">
+          {word}
+        </a>
+      ) : (
+        <span class="block text-5xl sm:text-7xl font-bold text-foreground leading-tight" style="font-family: var(--font-japanese);">
+          {word}
+        </span>
+      )}
+      {hiragana !== word && (
+        <span class="block text-base text-muted-foreground mt-1" style="font-family: var(--font-japanese);">
+          {hiragana}
+        </span>
+      )}
+    </div>
+
+    <!-- Badges column -->
+    <div class="flex flex-wrap gap-1.5 content-start flex-1 min-w-0 pt-1">
+      {badges.map((badge) => (
+        <BadgeWithPopover
+          label={badge.label}
+          value={badge.value}
+          tier={badge.tier}
+          description={badge.description}
+        />
+      ))}
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("click", (e) => {
+    const ttsBtn = (e.target as HTMLElement).closest(".tts-btn");
+    if (ttsBtn) {
+      const word = (ttsBtn as HTMLElement).dataset.word;
+      if (word && "speechSynthesis" in window) {
+        const utterance = new SpeechSynthesisUtterance(word);
+        utterance.lang = "ja-JP";
+        speechSynthesis.speak(utterance);
+      }
+    }
+
+    const bookBtn = (e.target as HTMLElement).closest(".book-btn");
+    if (bookBtn) {
+      const word = (bookBtn as HTMLElement).dataset.word;
+      alert(`INSERT_LINKS_TO_EXTERNAL_DICTIONARY_LATER\n\nWord: ${word}`);
+    }
+  });
+</script>
