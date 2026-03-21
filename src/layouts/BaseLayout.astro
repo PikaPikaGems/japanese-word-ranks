@@ -35,24 +35,60 @@ const { title = "Japanese Word Rank Lookup" } = Astro.props;
       })();
     </script>
   </head>
-  <body class="min-h-screen bg-background text-foreground antialiased" style="font-family: var(--font-english);">
+  <body class="min-h-screen bg-background text-foreground antialiased px-2" style="font-family: var(--font-english);">
     <slot />
 
-    <!-- Footer with theme toggle -->
+    <!-- Footer -->
     <footer class="border-t border-border bg-card mt-8">
-      <div class="max-w-5xl mx-auto px-6 py-6 flex items-center justify-between">
-        <span class="text-sm text-muted-foreground">Japanese Word Rank Lookup</span>
-        <button
-          id="theme-toggle"
-          class="inline-flex items-center gap-2 rounded-full border border-input bg-background px-4 py-2 text-sm font-medium text-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
-          title="Toggle dark/light theme"
-        >
-          <!-- Sun icon (shown in dark mode) -->
-          <svg class="theme-icon-sun hidden h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-          <!-- Moon icon (shown in light mode) -->
-          <svg class="theme-icon-moon h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-          <span class="theme-label">Dark mode</span>
-        </button>
+      <div class="max-w-5xl mx-auto px-6 py-8">
+        <div class="flex flex-wrap gap-x-16 gap-y-6 text-sm">
+          <!-- Internal pages -->
+          <div>
+            <h3 class="font-bold text-foreground mb-2">Pages</h3>
+            <ul class="space-y-1 text-muted-foreground">
+              <li><a href="/about" class="hover:text-foreground transition-colors">About + Credits</a></li>
+              <li><a href="/privacy" class="hover:text-foreground transition-colors">Privacy Policy</a></li>
+              <li><a href="/terms" class="hover:text-foreground transition-colors">Terms of Use</a></li>
+            </ul>
+          </div>
+
+          <!-- External pages -->
+          <div>
+            <h3 class="font-bold text-foreground mb-2">Projects</h3>
+            <ul class="space-y-1 text-muted-foreground">
+              <li><a href="https://kanjiheatmap.com" target="_blank" rel="noopener noreferrer" class="hover:text-foreground transition-colors">Kanji Heatmap</a></li>
+              <li><a href="https://ririkku.com" target="_blank" rel="noopener noreferrer" class="hover:text-foreground transition-colors">Ririkku</a></li>
+            </ul>
+          </div>
+
+          <!-- Socials -->
+          <div>
+            <h3 class="font-bold text-foreground mb-2">Socials</h3>
+            <ul class="space-y-1 text-muted-foreground">
+              <li><a href="https://github.com/PikaPikaGems/" target="_blank" rel="noopener noreferrer" class="hover:text-foreground transition-colors">GitHub</a></li>
+              <li><a href="https://www.instagram.com/pikapikagems" target="_blank" rel="noopener noreferrer" class="hover:text-foreground transition-colors">Instagram</a></li>
+              <li><a href="https://discord.gg/Ash8ZrGb4s" target="_blank" rel="noopener noreferrer" class="hover:text-foreground transition-colors">Discord</a></li>
+              <li><a href="https://x.com/pikapikagemsjp" target="_blank" rel="noopener noreferrer" class="hover:text-foreground transition-colors">Twitter</a></li>
+            </ul>
+          </div>
+
+          <!-- Theme toggle -->
+          <div class="ml-auto flex items-start">
+            <button
+              id="theme-toggle"
+              class="inline-flex items-center gap-2 rounded-full border border-input bg-background px-4 py-2 text-sm font-medium text-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
+              title="Toggle dark/light theme"
+            >
+              <svg class="theme-icon-sun hidden h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+              <svg class="theme-icon-moon h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+              <span class="theme-label">Dark mode</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="border-t border-border mt-6 pt-4 text-xs text-muted-foreground">
+          Japanese Word Rank Lookup
+        </div>
       </div>
     </footer>
 

@@ -1,0 +1,56 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import TitleHeader from "../components/TitleHeader.astro";
+---
+
+<BaseLayout title="About — Japanese Word Rank Lookup">
+  <TitleHeader />
+  <main class="max-w-3xl mx-auto px-6 pt-18 pb-16">
+    <h1 class="text-2xl font-bold mb-6">About</h1>
+    <p class="text-sm text-muted-foreground mb-8">
+      Japanese Word Rank Lookup is a free tool for looking up word frequency rankings across multiple Japanese language datasets. Search by kana, kanji, or romaji to see how common a word is across different corpora.
+    </p>
+
+    <p class="text-sm text-muted-foreground mb-8">
+      For more comprehensive information, see <a href="https://github.com/PikaPikaGems/japanese-word-frequency" class="underline hover:text-foreground">PikaPikaGems/japanese-word-frequency</a> — a comprehensive collection of Japanese word frequency datasets, analysis scripts, and insights, consolidating datasets into unified formats for language learning, linguistics, and NLP research.
+    </p>
+
+    <h2 class="text-lg font-bold mb-4">Credits & Data Sources</h2>
+    <p class="text-sm text-muted-foreground mb-4">
+      This project would not be possible without the following open resources.
+    </p>
+
+    <h3 class="text-sm font-bold mb-2">Frequency Data</h3>
+    <p class="text-sm text-muted-foreground mb-2">
+      Consolidated from <a href="https://github.com/PikaPikaGems/japanese-word-frequency" class="underline hover:text-foreground">PikaPikaGems/japanese-word-frequency</a>.
+    </p>
+    <p class="text-sm text-muted-foreground mb-1">Primary sources:</p>
+    <ul class="list-disc list-inside text-sm text-muted-foreground mb-6 space-y-1">
+      <li><a href="https://learnjapanese.moe/yomichan/#recommended-frequency-dictionaries" class="underline hover:text-foreground">learnjapanese.moe — Recommended Frequency Dictionaries</a></li>
+      <li><a href="https://jiten.moe/other" class="underline hover:text-foreground">jiten.moe</a></li>
+      <li><a href="https://github.com/Kuuuube/yomitan-dictionaries" class="underline hover:text-foreground">Kuuuube/yomitan-dictionaries</a></li>
+      <li><a href="https://github.com/MarvNC/yomitan-dictionaries" class="underline hover:text-foreground">MarvNC/yomitan-dictionaries</a></li>
+      <li><a href="https://github.com/IlyaSemenov/wikipedia-word-frequency" class="underline hover:text-foreground">IlyaSemenov/wikipedia-word-frequency</a></li>
+      <li><a href="https://github.com/adno/wikipedia-word-frequency-clean" class="underline hover:text-foreground">adno/wikipedia-word-frequency-clean</a></li>
+      <li><a href="https://github.com/hermitdave/FrequencyWords" class="underline hover:text-foreground">hermitdave/FrequencyWords</a></li>
+      <li><a href="https://github.com/chriskempson/japanese-subtitles-word-kanji-frequency-lists" class="underline hover:text-foreground">chriskempson/japanese-subtitles-word-kanji-frequency-lists</a></li>
+      <li><a href="https://github.com/rspeer/wordfreq" class="underline hover:text-foreground">rspeer/wordfreq</a></li>
+      <li><a href="https://github.com/Maltesaa/CSJ_and_NWJC_yomitan_freq_dict" class="underline hover:text-foreground">Maltesaa/CSJ_and_NWJC_yomitan_freq_dict</a></li>
+      <li><a href="https://github.com/hingston/japanese" class="underline hover:text-foreground">hingston/japanese</a></li>
+    </ul>
+
+    <h3 class="text-sm font-bold mb-2">JLPT Level Data</h3>
+    <ul class="list-disc list-inside text-sm text-muted-foreground mb-6 space-y-1">
+      <li><a href="https://www.tanos.co.uk/jlpt/" class="underline hover:text-foreground">tanos.co.uk/jlpt</a></li>
+    </ul>
+
+    <h3 class="text-sm font-bold mb-2">Kaishi Deck Data</h3>
+    <ul class="list-disc list-inside text-sm text-muted-foreground mb-6 space-y-1">
+      <li><a href="https://github.com/donkuri/kaishi" class="underline hover:text-foreground">donkuri/kaishi</a></li>
+    </ul>
+
+    <p class="text-sm text-muted-foreground">
+      Built by <a href="https://github.com/PikaPikaGems" class="underline hover:text-foreground">PikaPikaGems</a>.
+    </p>
+  </main>
+</BaseLayout>

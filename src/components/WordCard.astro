@@ -8,6 +8,7 @@
 import BadgeWithPopover from "./BadgeWithPopover.astro";
 import { getTier } from "../lib/tier";
 import { SORT_ORDER_MAP } from "../lib/sort-orders";
+import { DICTIONARY_LINKS } from "../lib/external-links";
 import type { Tier } from "../lib/tier";
 
 interface BadgeData {
@@ -63,7 +64,7 @@ for (const key of frequencyKeys) {
   });
 }
 
-const wordUrl = `/word/${encodeURIComponent(word)}`;
+const wordUrl = `/word/?w=${encodeURIComponent(word)}`;
 ---
 
 <div class="rounded-2xl border border-border bg-card text-card-foreground shadow-sm">
@@ -88,13 +89,27 @@ const wordUrl = `/word/${encodeURIComponent(word)}`;
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
         </button>
         <div
-          class="book-popover hidden absolute z-50 top-full left-0 mt-2 w-56 rounded-xl border border-border bg-popover p-5 text-popover-foreground shadow-md"
+          class="book-popover hidden absolute z-50 top-full left-0 mt-2 w-56 rounded-xl border border-border bg-popover p-4 text-popover-foreground shadow-md"
           data-book-popover
         >
           <div class="absolute -top-1.5 left-3 h-3 w-3 rotate-45 border-l border-t border-border bg-popover"></div>
-          <p class="text-sm text-muted-foreground">TODO: ADD content here</p>
+          <p class="text-xs font-bold text-muted-foreground mb-2">Look up in:</p>
+          <div class="flex flex-col gap-1">
+            {DICTIONARY_LINKS.map((d) => (
+              <a href={d.url(word)} target="_blank" rel="noopener noreferrer" class="text-sm text-foreground hover:text-primary transition-colors no-underline hover:underline">
+                {d.name}
+              </a>
+            ))}
+          </div>
         </div>
       </span>
+      <button
+        class="copy-url-btn inline-flex h-10 w-10 items-center justify-center rounded-xl border border-input bg-background text-muted-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
+        data-copy-url={wordUrl}
+        title="Copy link to word"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+      </button>
     </div>
 
     <!-- Big word -->
@@ -131,6 +146,21 @@ const wordUrl = `/word/${encodeURIComponent(word)}`;
 
 <script>
   document.addEventListener("click", (e) => {
+    // Copy URL
+    const copyBtn = (e.target as HTMLElement).closest(".copy-url-btn") as HTMLElement | null;
+    if (copyBtn) {
+      const path = copyBtn.dataset.copyUrl;
+      if (path) {
+        const fullUrl = window.location.origin + path;
+        navigator.clipboard.writeText(fullUrl).then(() => {
+          const original = copyBtn.innerHTML;
+          copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`;
+          setTimeout(() => { copyBtn.innerHTML = original; }, 1500);
+        });
+      }
+      return;
+    }
+
     const ttsBtn = (e.target as HTMLElement).closest(".tts-btn");
     if (ttsBtn) {
       const word = (ttsBtn as HTMLElement).dataset.word;

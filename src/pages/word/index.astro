@@ -45,17 +45,10 @@ import SearchInput from "../../components/SearchInput.astro";
 </BaseLayout>
 
 <script>
-  import { SORT_ORDER_MAP } from "../../lib/sort-orders";
-  import { getTier, type Tier } from "../../lib/tier";
+  import { getTier } from "../../lib/tier";
   import { DATASET_CATALOG } from "../../lib/dataset-catalog";
-
-  const TIER_STYLES: Record<string, { badge: string; emoji: string }> = {
-    BASIC:    { badge: "badge-basic bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100", emoji: "🌱" },
-    COMMON:   { badge: "badge-common bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100", emoji: "☘️" },
-    FLUENT:   { badge: "badge-fluent bg-violet-50 text-violet-700 border-violet-200 hover:bg-violet-100", emoji: "🌷" },
-    ADVANCED: { badge: "badge-advanced bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100", emoji: "📚" },
-    UNRANKED: { badge: "badge-unranked bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100", emoji: "🦉" },
-  };
+  import { initSearch } from "../../lib/search";
+  import { renderWordCard, initWordCardHandlers, esc } from "../../lib/render-word-card";
 
   const TIER_BADGE: Record<string, string> = {
     BASIC:    "tier-badge-basic bg-emerald-50 text-emerald-700 border-emerald-200",
@@ -118,11 +111,11 @@ import SearchInput from "../../components/SearchInput.astro";
   // ─── Rendering ─────────────────────────────────────────────────────────────
 
   function render(word: string, entries: WordEntry[]) {
-    // Use first entry for the word card (most common reading)
     const primary = entries[0];
-    cardEl.innerHTML = renderWordCard(word, primary);
+    cardEl.innerHTML = renderWordCard(
+      { word, reading: primary.reading, jlpt: primary.jlpt, kaishi: primary.kaishi, ranks: primary.ranks },
+    );
 
-    // Merge all ranks for the frequency table
     const allRanks: Record<string, number> = {};
     const ririkkuRanks: Record<string, number> = {};
     for (const entry of entries) {
@@ -133,77 +126,6 @@ import SearchInput from "../../components/SearchInput.astro";
 
     loadingEl.classList.add("hidden");
     detailEl.classList.remove("hidden");
-  }
-
-  function renderWordCard(word: string, entry: WordEntry): string {
-    const { reading, jlpt, kaishi, ranks = {} } = entry;
-    const showReading = reading !== word;
-
-    const badges: { label: string; value: string | number; tier: Tier; description: string }[] = [];
-    if (jlpt) {
-      const tier: Tier = jlpt >= 4 ? "BASIC" : jlpt === 3 ? "COMMON" : jlpt === 2 ? "FLUENT" : "ADVANCED";
-      badges.push({ label: "JLPT", value: `N${jlpt}`, tier, description: `Japanese Language Proficiency Test Level N${jlpt}` });
-    }
-    if (kaishi) {
-      badges.push({ label: "Kaishi", value: "✓", tier: "BASIC", description: "Kaishi 1500 beginner vocabulary deck." });
-    }
-    for (const [key, rank] of Object.entries(ranks)) {
-      if (rank === -1) continue;
-      const so = SORT_ORDER_MAP.get(key);
-      if (so) {
-        badges.push({ label: so.label, value: rank, tier: getTier(rank), description: so.description });
-      }
-    }
-
-    const badgesHtml = badges.map((b) => renderBadge(b.label, b.value, b.tier, b.description)).join("");
-
-    return `
-      <div class="rounded-2xl border border-border bg-card text-card-foreground shadow-sm">
-        <div class="flex items-start gap-5 p-6 sm:p-7">
-          <div class="flex flex-col gap-2.5 pt-1 shrink-0">
-            <button class="tts-btn inline-flex h-10 w-10 items-center justify-center rounded-xl border border-input bg-background text-muted-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer" data-word="${esc(word)}" title="Listen to pronunciation">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg>
-            </button>
-            <span class="relative inline-block">
-              <button class="book-btn inline-flex h-10 w-10 items-center justify-center rounded-xl border border-input bg-background text-muted-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer" data-word="${esc(word)}" title="Dictionary links" aria-expanded="false" data-book-trigger>
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-              </button>
-              <div class="book-popover hidden absolute z-50 top-full left-0 mt-2 w-56 rounded-xl border border-border bg-popover p-5 text-popover-foreground shadow-md" data-book-popover>
-                <div class="absolute -top-1.5 left-3 h-3 w-3 rotate-45 border-l border-t border-border bg-popover"></div>
-                <p class="text-sm text-muted-foreground">TODO: ADD content here</p>
-              </div>
-            </span>
-          </div>
-          <div class="shrink-0">
-            <span class="block text-5xl sm:text-7xl font-bold text-foreground leading-tight" style="font-family: var(--font-japanese);">${esc(word)}</span>
-            ${showReading ? `<span class="block text-lg text-muted-foreground mt-1.5" style="font-family: var(--font-japanese);">${esc(reading)}</span>` : ""}
-          </div>
-          <div class="flex flex-wrap gap-2 content-start flex-1 min-w-0 pt-1">
-            ${badgesHtml}
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  function renderBadge(label: string, value: string | number, tier: Tier, description: string): string {
-    const style = TIER_STYLES[tier] || TIER_STYLES.UNRANKED;
-    const displayValue = value === -1 || value === "-1" ? "—" : value;
-    const id = `pop-${label.replace(/\s+/g, "-")}-${Math.random().toString(36).slice(2, 6)}`;
-    return `
-      <span class="relative inline-block">
-        <button class="inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-bold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${style.badge}" aria-expanded="false" aria-controls="${id}" data-badge-trigger>
-          <span class="text-sm">${style.emoji}</span>
-          <span>${esc(label)}</span>
-          <span class="font-extrabold">${esc(String(displayValue))}</span>
-        </button>
-        <div id="${id}" class="badge-popover hidden absolute z-50 top-full mt-2 w-72 rounded-xl border border-border bg-popover p-5 text-popover-foreground shadow-md" data-badge-popover>
-          <div class="popover-arrow absolute -top-1.5 h-3 w-3 rotate-45 border-l border-t border-border bg-popover"></div>
-          <p class="text-sm font-bold mb-1">${esc(label)}</p>
-          <p class="text-xs text-muted-foreground leading-relaxed">${esc(description)}</p>
-        </div>
-      </span>
-    `;
   }
 
   // ─── Frequency Table ───────────────────────────────────────────────────────
@@ -282,78 +204,9 @@ import SearchInput from "../../components/SearchInput.astro";
     }).join("");
   }
 
-  // ─── Event Handlers ─────────────────────────────────────────────────────────
-
-  document.addEventListener("click", (e) => {
-    const target = e.target as HTMLElement;
-
-    // TTS
-    const ttsBtn = target.closest(".tts-btn") as HTMLElement | null;
-    if (ttsBtn) {
-      const word = ttsBtn.dataset.word;
-      if (word && "speechSynthesis" in window) {
-        const utterance = new SpeechSynthesisUtterance(word);
-        utterance.lang = "ja-JP";
-        speechSynthesis.speak(utterance);
-      }
-      return;
-    }
-
-    // Book popover
-    const bookTrigger = target.closest("[data-book-trigger]") as HTMLElement | null;
-    document.querySelectorAll("[data-book-popover]").forEach((el) => {
-      if (bookTrigger && el === bookTrigger.parentElement?.querySelector("[data-book-popover]")) return;
-      el.classList.add("hidden");
-      el.parentElement?.querySelector("[data-book-trigger]")?.setAttribute("aria-expanded", "false");
-    });
-    if (bookTrigger) {
-      const popover = bookTrigger.parentElement?.querySelector("[data-book-popover]") as HTMLElement | null;
-      if (popover) {
-        const isHidden = popover.classList.toggle("hidden");
-        bookTrigger.setAttribute("aria-expanded", String(!isHidden));
-      }
-      return;
-    }
-
-    // Badge popover
-    const badgeTrigger = target.closest("[data-badge-trigger]") as HTMLElement | null;
-    document.querySelectorAll("[data-badge-popover]").forEach((el) => {
-      if (badgeTrigger && el.id === badgeTrigger.getAttribute("aria-controls")) return;
-      el.classList.add("hidden");
-      const btn = document.querySelector(`[aria-controls="${el.id}"]`);
-      btn?.setAttribute("aria-expanded", "false");
-    });
-    if (badgeTrigger) {
-      const id = badgeTrigger.getAttribute("aria-controls");
-      const popover = id ? document.getElementById(id) : null;
-      if (popover) {
-        const isHidden = popover.classList.toggle("hidden");
-        badgeTrigger.setAttribute("aria-expanded", String(!isHidden));
-        if (!isHidden) {
-          const arrow = popover.querySelector<HTMLElement>(".popover-arrow");
-          popover.style.left = "0";
-          popover.style.right = "auto";
-          if (arrow) { arrow.style.left = "1rem"; arrow.style.right = "auto"; }
-          const rect = popover.getBoundingClientRect();
-          if (rect.right > window.innerWidth - 8) {
-            popover.style.left = "auto";
-            popover.style.right = "0";
-            if (arrow) { arrow.style.left = "auto"; arrow.style.right = "1rem"; }
-          }
-        }
-      }
-    }
-  });
-
-  // ─── Helpers ──────────────────────────────────────────────────────────────
-
-  function esc(str: string): string {
-    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-  }
-
   // ─── Boot ─────────────────────────────────────────────────────────────────
 
-  import { initSearch } from "../../lib/search";
+  initWordCardHandlers();
   initSearch();
   init();
 </script>
