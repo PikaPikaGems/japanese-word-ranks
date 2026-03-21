@@ -42,10 +42,10 @@ const uniqueId = `popover-${label.replace(/\s+/g, "-")}-${Math.random().toString
   {description && (
     <div
       id={uniqueId}
-      class="badge-popover hidden absolute z-50 top-full left-0 mt-2 w-72 rounded-lg border border-border bg-popover p-4 text-popover-foreground shadow-md"
+      class="badge-popover hidden absolute z-50 top-full mt-2 w-72 rounded-lg border border-border bg-popover p-4 text-popover-foreground shadow-md"
       data-badge-popover
     >
-      <div class="popover-arrow absolute -top-1.5 left-4 h-3 w-3 rotate-45 border-l border-t border-border bg-popover"></div>
+      <div class="popover-arrow absolute -top-1.5 h-3 w-3 rotate-45 border-l border-t border-border bg-popover"></div>
       <p class="text-sm font-semibold mb-1">{label}</p>
       <p class="text-xs text-muted-foreground leading-relaxed">{description}</p>
     </div>
@@ -83,18 +83,19 @@ const uniqueId = `popover-${label.replace(/\s+/g, "-")}-${Math.random().toString
           const isHidden = popover.classList.toggle("hidden");
           trigger.setAttribute("aria-expanded", String(!isHidden));
 
-          // Flip to right-aligned if popover would overflow the viewport
+          // Position popover: default left-aligned, flip to right if it overflows
           if (!isHidden) {
             const arrow = popover.querySelector<HTMLElement>(".popover-arrow");
+            // Reset to left-aligned first to measure
+            popover.style.left = "0";
+            popover.style.right = "auto";
+            if (arrow) { arrow.style.left = "1rem"; arrow.style.right = "auto"; }
+
             const rect = popover.getBoundingClientRect();
             if (rect.right > window.innerWidth - 8) {
               popover.style.left = "auto";
               popover.style.right = "0";
               if (arrow) { arrow.style.left = "auto"; arrow.style.right = "1rem"; }
-            } else {
-              popover.style.left = "0";
-              popover.style.right = "auto";
-              if (arrow) { arrow.style.left = "1rem"; arrow.style.right = "auto"; }
             }
           }
         }
