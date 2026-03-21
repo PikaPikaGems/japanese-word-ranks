@@ -10,10 +10,9 @@ import {
   loadConsolidatedData,
   loadJlptData,
   loadKaishiData,
-  type RirikkuWord,
   type ConsolidatedWord,
 } from "../src/lib/data-loader";
-import { SORT_ORDERS, FREQUENCY_COLUMN_KEYS } from "../src/lib/sort-orders";
+import { SORT_ORDERS } from "../src/lib/sort-orders";
 
 const OUTPUT_DIR = path.resolve("public/api");
 const PAGE_SIZE = 100;
@@ -113,6 +112,13 @@ function generateSortedPages(words: EnrichedWord[]) {
     const totalPages = Math.ceil(sorted.length / PAGE_SIZE);
     const dir = path.join(OUTPUT_DIR, "sorted", sortOrder.key);
 
+    // Write metadata file (once per sort order)
+    writeJson(path.join(dir, "meta.json"), {
+      totalPages,
+      totalItems: sorted.length,
+      itemsPerPage: PAGE_SIZE,
+    });
+
     for (let page = 1; page <= totalPages; page++) {
       const start = (page - 1) * PAGE_SIZE;
       const pageItems = sorted.slice(start, start + PAGE_SIZE);
@@ -137,8 +143,7 @@ function generateSortedPages(words: EnrichedWord[]) {
       });
 
       writeJson(path.join(dir, `${page}.json`), {
-        totalPages,
-        totalItems: sorted.length,
+        page,
         items,
       });
     }

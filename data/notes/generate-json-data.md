@@ -32,9 +32,23 @@ The full build (`npm run build`) runs this automatically before the Astro build.
 
 All files are written to `public/api/` which Astro serves as static files.
 
-### 1. Sorted Word Lists — `api/sorted/{sortKey}/{page}.json`
+### 1. Sorted Word Lists
 
-Pre-sorted and pre-paginated word card data. 100 items per page.
+#### Metadata — `api/sorted/{sortKey}/meta.json`
+
+One file per sort order (20 files total). Fetched once on first load for pagination controls.
+
+```json
+{
+  "totalPages": 922,
+  "totalItems": 92171,
+  "itemsPerPage": 100
+}
+```
+
+#### Pages — `api/sorted/{sortKey}/{page}.json`
+
+Pre-sorted and pre-paginated word card data.
 
 **Sort keys** (20 total): `JLPT`, `KAISHI`, `RSPEER`, `cejc_combined_rank`, `cejc_small_talk_rank`, `BCCWJ_LUW`, `BCCWJ_SUW`, `CC100`, `MALTESAA_NWJC`, `JITEN_GLOBAL`, `JITEN_DRAMA`, `ANIME_JDRAMA`, `YOUTUBE_FREQ_V3`, `NETFLIX`, `DD2_MORPHMAN_NETFLIX`, `WIKIPEDIA_V2`, `ADNO`, `DD2_MORPHMAN_SOL`, `JITEN_ANIME_V2`, `MALTESAA_CSJ`
 
@@ -43,11 +57,10 @@ Pre-sorted and pre-paginated word card data. 100 items per page.
 - JLPT: N5 → N4 → N3 → N2 → N1 → untagged, sub-sorted by RIRIKKU_RANK
 - Kaishi: Kaishi words first (original file order), then rest by RIRIKKU_RANK
 
-**File format:**
+**Page file format:**
 ```json
 {
-  "totalPages": 922,
-  "totalItems": 92171,
+  "page": 3,
   "items": [
     {
       "word": "食べる",
@@ -64,7 +77,7 @@ Pre-sorted and pre-paginated word card data. 100 items per page.
 - `kaishi` omitted if false
 - `ranks` only includes the 6 default badge keys with non-(-1) values: `BCCWJ_LUW`, `cejc_small_talk_rank`, `JITEN_DRAMA`, `NETFLIX`, `WIKIPEDIA_V2`, `DD2_MORPHMAN_SOL`
 
-**Count:** ~20 sort orders x ~922 pages = ~18,440 files
+**Count:** 20 metadata files + ~20 sort orders x ~922 pages = ~18,460 files
 
 ### 2. Word Detail — `api/words/{firstChar}/{word}.json`
 
