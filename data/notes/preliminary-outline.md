@@ -1,0 +1,156 @@
+# Description
+
+- A website where given a japanese word, you can lookup the various frequency rankings from different datasets.
+- You can search for a japanese word by typing KANA, KANJI, ROMAJI (no english translation)
+- You can also sort japanese words based on the frequency rank given a dataset.
+
+## Name of Website (Ideas)
+
+- jpwordrank.com
+- jpfrequency.com
+- japanesewordrank.com
+- jpfrequencylookup.com
+- japanesefrequency.com
+
+# Tech
+
+- SHADCN
+- TailwindCSS
+- Lucide Icons
+- Astro
+- SSG
+- (Use Vanilla Javascript as much as possible, React if absolutely neccessary)
+- English Font: "Avenir Next", fallback "Nunito"
+- Japanese Font: Noto Sans JP, Zen Maru Gothic, Klee One
+
+# Home Page Design `/?sort-order=JLPT&page=1` or
+
+```
+
+ ┌──────────────────────────────────────────────────────────────────────────────────┐
+ │                                                                                  │
+ │                                   TITLE_HEADER                                   │
+ └──────────────────────────────────────────────────────────────────────────────────┘
+ ┌──────┌──────────────────────────────────────────────────────────────────┌─────────┐
+ │ iconA│                        Search_input_field                        │  iconB  │
+ └──────└──────────────────────────────────────────────────────────────────└─────────┘
+ ┌───────────────────────────────┐
+ │  Sort_Order_Select_component  │                                      <<  <--  1 of 25 --> >>
+ └───────────────────────────────┘
+ ─────────────────────────────────────────────────────────────────────────────────────────────
+ ┌─────┐┌─────────────────────────────────────────────────────────────────────────────────────┐
+ │ 1.  ││┌─────────┐ ┌────────────────────────┐  ┌─────────────────┐ ┌─────────────────┐      │
+ └─────┘││  iconC  │ │                        │  │  SMALLBADGE_A   │ │  SMALLBADGE_B   │      │
+        │└─────────┘ │                        │  └─────────────────┘ └─────────────────┘      │
+        │┌─────────┐ │ BIG_FONT_JAPANESE_WORD │  ┌─────────────────┐                          │
+        ││  iconD  │ │                        │  │  SMALLBADGE_C   │                          │
+        │└─────────┘ └────────────────────────┘  └─────────────────┘                          │
+        │                                                                                     │
+        │                                                                                     │
+        │                                                                                     │
+        │                                                                                     │
+        └─────────────────────────────────────────────────────────────────────────────────────┘
+
+```
+
+1. TITLE_HEADER: "Japanese Word Frequency Rank Lookup" (small font, like a banner, css position: fixed)
+2. search_input_field: standard Autocomplete component like google_search_input_component: https://ui.shadcn.com/docs/components/radix/command (css position: sticky) with Magnifying class icon.
+3. iconB: Dice Button (Random Word - I'm feeling lucky)
+4. Sort_Order_Select_component (combobox) - https://ui.shadcn.com/docs/components/radix/combobox
+5. SmallBadge: badge with icon, clicking opens popover, https://ui.shadcn.com/docs/components/radix/badge, https://ui.shadcn.com/docs/components/radix/popover
+6. Note: "1." is bulletpoint of orderedlist item `<ol><<li>JPWORD1</li>JPWORD2><li></li>/ol>`
+7. Standard Pagination: << <-- 1 of 25 --> >>
+
+- "<<" and ">>" jumps 10 pages
+- 100 items per page
+
+8.  BIG_FONT_JAPANESE_WORD - "text-7xl"
+
+# Icons
+
+1. iconA: Magnifying class (static, standard icon for inputfield.)
+2. iconB: Dice (button, function: Random Word - I'm feeling lucky)
+3. iconC: Headphones Icon (button, function: speaks word)
+4. iconD: Book Icon (button, function: clicking opens popover, https://ui.shadcn.com/docs/components/radix/badge, https://ui.shadcn.com/docs/components/radix/popover )
+
+# Word Page Design `/word/食べる`
+
+```
+
+ ┌──────────────────────────────────────────────────────────────────────────────────┐
+ │                                                                                  │
+ │                                   TITLE_HEADER                                   │
+ └──────────────────────────────────────────────────────────────────────────────────┘
+ ┌──────┌──────────────────────────────────────────────────────────────────┌─────────┐
+ │ iconA│                              食べる                              │  iconB  │
+ └──────└──────────────────────────────────────────────────────────────────└─────────┘
+ ─────────────────────────────────────────────────────────────────────────────────────────────
+        ┌───────────────────────────────────────────────────────────────────────────────────────────┐
+        │┌─────────┐ ┌────────────────────────┐  ┌─────────────────┐ ┌─────────────────┐            │
+        ││  iconC  │ │                        │  │  SMALLBADGE_A   │ │  SMALLBADGE_B   │            │
+        │└─────────┘ │                        │  └─────────────────┘ └─────────────────┘            │
+        │┌─────────┐ │ BIG FONT JAPANESE WORD │  ┌─────────────────┐                                │
+        ││  iconD  │ │                        │  │  SMALLBADGE_C   │                                │
+        │└─────────┘ └────────────────────────┘  └─────────────────┘                                │
+        └───────────────────────────────────────────────────────────────────────────────────────────┘
+
+   #SECTION
+   ##SUBSECTION
+   ┌───────────────────────┬───────────────────────┬───────────────────────┬─────────────────────────┐
+   │ Col_A                 │ Col_B                 │ Col_C                 │ Col_D                   │
+   │───────────────────────┼───────────────────────┼───────────────────────┼─────────────────────────│
+   │                       │                       │                       │                         │
+   │                       │                       │                       │                         │
+   │                       │                       │                       │                         │
+   │                       │                       │                       │                         │
+   └───────────────────────┴───────────────────────┴───────────────────────┴─────────────────────────┘
+
+```
+
+- #Section - Table Header
+- ##Subsection - Table Subheader 
+- Col_A: Frequency Category Tier (See `data/frequency/SINGLE_RANK.md` for context )
+- Col_B: Dataset CSV column name
+- Col_C: Frequency Rank
+- Col_D: Dataset Description
+
+See `data/frequency/dataset-catalog.md` for context
+
+# Recommended Presentation Components (Use your best judgement)
+
+1. <Pagination />
+2. <SearchCommandInputField>
+3. <FrequencyRankSortOrderSelectComponent>
+4. <BadgeWithPopover/>
+5. <JapaneseWordCardItem />
+
+# Notes
+
+=== RIRIKKU ===
+Total words: 92171
+First 3: [
+'うん (うん) RIRIKKU_RANK=1',
+'だ (だ) RIRIKKU_RANK=1',
+'の (の) RIRIKKU_RANK=1'
+]
+Columns per word: 18
+
+=== JLPT ===
+Total words: 7880
+食べる: 5
+だ: 5
+
+=== KAISHI ===
+Total entries: 1504
+Unique words: 1299
+First 5: [ '私/わたし (#0)', '私/あなた (#1)', '私/さん (#2)', '彼/かれ (#3)', '好き/すき (#4)' ]
+何 entries: [ '何/なに', '何/なん', '何/それ', '何/あれ', '何/どれ' ]
+
+=== CONSOLIDATED ===
+Total words: 24605
+食べる columns: 74
+食べる CC100: 173
+
+# Credits
+
+- Mock UI: https://wiretext.app/
