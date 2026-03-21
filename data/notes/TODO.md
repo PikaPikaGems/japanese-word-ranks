@@ -10,7 +10,7 @@
 6. Change << and >> pagination functionality: The pagination icons "<<" and ">>" behavior is INCORRECT. The correct behavior is jumping 10 pages (next and previous) aka big jump.
 7. Create a favicon for this project
 8. Add a "copy icon" that copies the url for a specific word to clipboard "MYWEBSITE.com/?w=たち". Put the icon after the book icon/
-9. Replace "TODO: Add content here" to Add External links to dictionaries
+9. Replace "TODO: Add content here" to Add External links to dictionaries. Please see the file external-word-links.ts for context
 
 # Quick Wins
 
