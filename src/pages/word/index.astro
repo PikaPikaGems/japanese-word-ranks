@@ -1,45 +1,24 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import TitleHeader from "../components/TitleHeader.astro";
-import { SORT_ORDERS } from "../lib/sort-orders";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import TitleHeader from "../../components/TitleHeader.astro";
 ---
 
-<BaseLayout>
+<BaseLayout title="Word Detail — Japanese Word Frequency">
   <TitleHeader />
   <main class="max-w-5xl mx-auto px-4 pt-16 pb-16">
-    <!-- Controls bar -->
-    <div class="flex flex-wrap items-center justify-between gap-4 mt-6 mb-6">
-      <!-- Sort selector -->
-      <div class="flex items-center gap-2">
-        <label for="sort-select" class="text-sm font-medium text-muted-foreground whitespace-nowrap">Sort by</label>
-        <select
-          id="sort-select"
-          class="h-9 rounded-md border border-input bg-background px-3 pr-8 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
-        >
-          {SORT_ORDERS.map((s) => (
-            <option value={s.key}>{s.label}</option>
-          ))}
-        </select>
-      </div>
-
-      <!-- Pagination -->
-      <div id="pagination" class="flex items-center gap-1"></div>
-    </div>
-
-    <!-- Loading state -->
     <div id="loading" class="text-center py-12 text-muted-foreground text-sm">Loading...</div>
-
-    <!-- Word list -->
-    <div id="word-list" class="space-y-3 hidden"></div>
-
-    <!-- Bottom pagination -->
-    <div id="pagination-bottom" class="flex items-center justify-end gap-1 mt-6"></div>
+    <div id="word-detail" class="hidden">
+      <div id="word-card" class="mt-6 mb-8"></div>
+      <div id="frequency-table" class="space-y-4"></div>
+    </div>
+    <div id="error" class="hidden text-center py-12 text-muted-foreground text-sm"></div>
   </main>
 </BaseLayout>
 
 <script>
-  import { SORT_ORDERS, SORT_ORDER_MAP } from "../lib/sort-orders";
-  import { getTier, type Tier } from "../lib/tier";
+  import { SORT_ORDER_MAP } from "../../lib/sort-orders";
+  import { getTier, type Tier } from "../../lib/tier";
+  import { DATASET_CATALOG } from "../../lib/dataset-catalog";
 
   const TIER_STYLES: Record<string, { badge: string; dot: string }> = {
     BASIC:    { badge: "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100", dot: "bg-emerald-500" },
@@ -49,121 +28,89 @@ import { SORT_ORDERS } from "../lib/sort-orders";
     UNRANKED: { badge: "bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100", dot: "bg-gray-400" },
   };
 
-  interface PageItem {
-    word: string;
+  const TIER_BADGE: Record<string, string> = {
+    BASIC:    "bg-emerald-50 text-emerald-700 border-emerald-200",
+    COMMON:   "bg-blue-50 text-blue-700 border-blue-200",
+    FLUENT:   "bg-violet-50 text-violet-700 border-violet-200",
+    ADVANCED: "bg-amber-50 text-amber-700 border-amber-200",
+    UNRANKED: "bg-gray-50 text-gray-400 border-gray-200",
+  };
+
+  interface WordEntry {
     reading: string;
+    ririkkuRank: number;
     jlpt?: number;
     kaishi?: boolean;
-    ranks?: Record<string, number>;
+    ranks: Record<string, number>;
+    detailRanks?: Record<string, number>;
   }
-
-  interface Meta {
-    totalPages: number;
-    totalItems: number;
-    itemsPerPage: number;
-  }
-
-  // ─── State ──────────────────────────────────────────────────────────────────
-
-  let currentSort = "JLPT";
-  let currentPage = 1;
-  let meta: Meta | null = null;
-  const metaCache = new Map<string, Meta>();
-  const pageCache = new Map<string, PageItem[]>();
 
   // ─── DOM refs ───────────────────────────────────────────────────────────────
 
-  const sortSelect = document.getElementById("sort-select") as HTMLSelectElement;
-  const wordList = document.getElementById("word-list")!;
-  const loading = document.getElementById("loading")!;
-  const paginationTop = document.getElementById("pagination")!;
-  const paginationBottom = document.getElementById("pagination-bottom")!;
+  const loadingEl = document.getElementById("loading")!;
+  const detailEl = document.getElementById("word-detail")!;
+  const cardEl = document.getElementById("word-card")!;
+  const tableEl = document.getElementById("frequency-table")!;
+  const errorEl = document.getElementById("error")!;
 
   // ─── Init ───────────────────────────────────────────────────────────────────
 
-  function readUrlParams() {
+  async function init() {
     const params = new URLSearchParams(window.location.search);
-    currentSort = params.get("sort") || "JLPT";
-    currentPage = Math.max(1, parseInt(params.get("page") || "1", 10));
-    sortSelect.value = currentSort;
-  }
+    const word = params.get("w");
+    if (!word) {
+      showError("No word specified. Use ?w=食べる");
+      return;
+    }
 
-  function updateUrl() {
-    const url = new URL(window.location.href);
-    url.searchParams.set("sort", currentSort);
-    url.searchParams.set("page", String(currentPage));
-    history.pushState(null, "", url.toString());
-  }
-
-  // ─── Data fetching ─────────────────────────────────────────────────────────
-
-  async function fetchMeta(sortKey: string): Promise<Meta> {
-    const cached = metaCache.get(sortKey);
-    if (cached) return cached;
-    const res = await fetch(`/api/sorted/${sortKey}/meta.json`);
-    const data: Meta = await res.json();
-    metaCache.set(sortKey, data);
-    return data;
-  }
-
-  async function fetchPage(sortKey: string, page: number): Promise<PageItem[]> {
-    const cacheKey = `${sortKey}:${page}`;
-    const cached = pageCache.get(cacheKey);
-    if (cached) return cached;
-    const res = await fetch(`/api/sorted/${sortKey}/${page}.json`);
-    const data = await res.json();
-    pageCache.set(cacheKey, data.items);
-    return data.items;
-  }
-
-  // ─── Rendering ─────────────────────────────────────────────────────────────
-
-  async function loadAndRender() {
-    loading.classList.remove("hidden");
-    wordList.classList.add("hidden");
+    document.title = `${word} — Japanese Word Frequency`;
 
     try {
-      meta = await fetchMeta(currentSort);
-      if (currentPage > meta.totalPages) currentPage = meta.totalPages;
-      if (currentPage < 1) currentPage = 1;
-
-      const items = await fetchPage(currentSort, currentPage);
-
-      renderWordList(items);
-      renderPagination(paginationTop);
-      renderPagination(paginationBottom);
-
-      loading.classList.add("hidden");
-      wordList.classList.remove("hidden");
+      const firstChar = word.charAt(0);
+      const res = await fetch(`/api/words/${encodeURIComponent(firstChar)}/${encodeURIComponent(word)}.json`);
+      if (!res.ok) {
+        showError(`Word "${word}" not found.`);
+        return;
+      }
+      const entries: WordEntry[] = await res.json();
+      render(word, entries);
     } catch (err) {
-      loading.textContent = "Failed to load data.";
+      showError("Failed to load word data.");
       console.error(err);
     }
   }
 
-  function renderWordList(items: PageItem[]) {
-    if (!meta) return;
-    const startIndex = (currentPage - 1) * meta.itemsPerPage;
-
-    wordList.innerHTML = items.map((item, i) => {
-      const rank = startIndex + i + 1;
-      return `
-        <div class="flex items-start gap-3">
-          <span class="text-xs text-muted-foreground font-mono w-12 pt-6 text-right shrink-0 tabular-nums">${rank}</span>
-          <div class="flex-1">${renderWordCard(item)}</div>
-        </div>
-      `;
-    }).join("");
+  function showError(msg: string) {
+    loadingEl.classList.add("hidden");
+    errorEl.textContent = msg;
+    errorEl.classList.remove("hidden");
   }
 
-  function renderWordCard(item: PageItem): string {
-    const { word, reading, jlpt, kaishi, ranks = {} } = item;
-    const wordUrl = `/word/?w=${encodeURIComponent(word)}`;
+  // ─── Rendering ─────────────────────────────────────────────────────────────
+
+  function render(word: string, entries: WordEntry[]) {
+    // Use first entry for the word card (most common reading)
+    const primary = entries[0];
+    cardEl.innerHTML = renderWordCard(word, primary);
+
+    // Merge all ranks for the frequency table
+    const allRanks: Record<string, number> = {};
+    const ririkkuRanks: Record<string, number> = {};
+    for (const entry of entries) {
+      Object.assign(ririkkuRanks, entry.ranks);
+      if (entry.detailRanks) Object.assign(allRanks, entry.detailRanks);
+    }
+    tableEl.innerHTML = renderFrequencyTable(allRanks, ririkkuRanks);
+
+    loadingEl.classList.add("hidden");
+    detailEl.classList.remove("hidden");
+  }
+
+  function renderWordCard(word: string, entry: WordEntry): string {
+    const { reading, jlpt, kaishi, ranks = {} } = entry;
     const showReading = reading !== word;
 
-    // Build badges
     const badges: { label: string; value: string | number; tier: Tier; description: string }[] = [];
-
     if (jlpt) {
       const tier: Tier = jlpt >= 4 ? "BASIC" : jlpt === 3 ? "COMMON" : jlpt === 2 ? "FLUENT" : "ADVANCED";
       badges.push({ label: "JLPT", value: `N${jlpt}`, tier, description: `Japanese Language Proficiency Test Level N${jlpt}` });
@@ -184,11 +131,11 @@ import { SORT_ORDERS } from "../lib/sort-orders";
       <div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm">
         <div class="flex items-start gap-4 p-5 sm:p-6">
           <div class="flex flex-col gap-2 pt-1 shrink-0">
-            <button class="tts-btn inline-flex h-9 w-9 items-center justify-center rounded-md border border-input bg-background text-muted-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer" data-word="${escHtml(word)}" title="Listen to pronunciation">
+            <button class="tts-btn inline-flex h-9 w-9 items-center justify-center rounded-md border border-input bg-background text-muted-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer" data-word="${esc(word)}" title="Listen to pronunciation">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg>
             </button>
             <span class="relative inline-block">
-              <button class="book-btn inline-flex h-9 w-9 items-center justify-center rounded-md border border-input bg-background text-muted-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer" data-word="${escHtml(word)}" title="Dictionary links" aria-expanded="false" data-book-trigger>
+              <button class="book-btn inline-flex h-9 w-9 items-center justify-center rounded-md border border-input bg-background text-muted-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer" data-word="${esc(word)}" title="Dictionary links" aria-expanded="false" data-book-trigger>
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
               </button>
               <div class="book-popover hidden absolute z-50 top-full left-0 mt-2 w-56 rounded-lg border border-border bg-popover p-4 text-popover-foreground shadow-md" data-book-popover>
@@ -198,8 +145,8 @@ import { SORT_ORDERS } from "../lib/sort-orders";
             </span>
           </div>
           <div class="shrink-0">
-            <a href="${wordUrl}" class="block text-5xl sm:text-7xl font-bold text-foreground hover:text-primary/80 transition-colors leading-tight" style="font-family: var(--font-japanese);">${escHtml(word)}</a>
-            ${showReading ? `<span class="block text-base text-muted-foreground mt-1" style="font-family: var(--font-japanese);">${escHtml(reading)}</span>` : ""}
+            <span class="block text-5xl sm:text-7xl font-bold text-foreground leading-tight" style="font-family: var(--font-japanese);">${esc(word)}</span>
+            ${showReading ? `<span class="block text-base text-muted-foreground mt-1" style="font-family: var(--font-japanese);">${esc(reading)}</span>` : ""}
           </div>
           <div class="flex flex-wrap gap-1.5 content-start flex-1 min-w-0 pt-1">
             ${badgesHtml}
@@ -213,67 +160,102 @@ import { SORT_ORDERS } from "../lib/sort-orders";
     const style = TIER_STYLES[tier] || TIER_STYLES.UNRANKED;
     const displayValue = value === -1 || value === "-1" ? "—" : value;
     const id = `pop-${label.replace(/\s+/g, "-")}-${Math.random().toString(36).slice(2, 6)}`;
-
     return `
       <span class="relative inline-block">
         <button class="inline-flex items-center gap-1.5 rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${style.badge}" aria-expanded="false" aria-controls="${id}" data-badge-trigger>
           <span class="h-1.5 w-1.5 rounded-full ${style.dot}"></span>
-          <span>${escHtml(label)}</span>
-          <span class="font-bold">${escHtml(String(displayValue))}</span>
+          <span>${esc(label)}</span>
+          <span class="font-bold">${esc(String(displayValue))}</span>
         </button>
         <div id="${id}" class="badge-popover hidden absolute z-50 top-full mt-2 w-72 rounded-lg border border-border bg-popover p-4 text-popover-foreground shadow-md" data-badge-popover>
           <div class="popover-arrow absolute -top-1.5 h-3 w-3 rotate-45 border-l border-t border-border bg-popover"></div>
-          <p class="text-sm font-semibold mb-1">${escHtml(label)}</p>
-          <p class="text-xs text-muted-foreground leading-relaxed">${escHtml(description)}</p>
+          <p class="text-sm font-semibold mb-1">${esc(label)}</p>
+          <p class="text-xs text-muted-foreground leading-relaxed">${esc(description)}</p>
         </div>
       </span>
     `;
   }
 
-  // ─── Pagination ─────────────────────────────────────────────────────────────
+  // ─── Frequency Table ───────────────────────────────────────────────────────
 
-  function renderPagination(container: HTMLElement) {
-    if (!meta || meta.totalPages <= 1) {
-      container.innerHTML = "";
-      return;
-    }
+  function getRank(columnId: string, ranks: Record<string, number>, ririkkuRanks: Record<string, number>): number {
+    if (columnId in ranks) return ranks[columnId];
+    const ririkkuKey = columnId === "CC100_rank" ? "CC100" : columnId;
+    if (ririkkuKey in ririkkuRanks) return ririkkuRanks[ririkkuKey];
+    return -1;
+  }
 
-    const btnBase = "inline-flex h-8 items-center justify-center rounded-md border border-input bg-background px-2.5 text-xs font-medium shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
+  function renderFrequencyTable(ranks: Record<string, number>, ririkkuRanks: Record<string, number>): string {
+    return DATASET_CATALOG.map((section, sIdx) => {
+      const subsectionsHtml = section.subsections.map((sub) => {
+        const subTitleHtml = sub.title
+          ? `<h3 class="text-xs font-medium uppercase tracking-widest text-muted-foreground mb-2">${esc(sub.title)}</h3>`
+          : "";
 
-    container.innerHTML = `
-      <button class="${btnBase}" data-page-action="first" ${currentPage === 1 ? "disabled" : ""} title="First page">&laquo;</button>
-      <button class="${btnBase}" data-page-action="prev" ${currentPage === 1 ? "disabled" : ""} title="Previous page">&lsaquo;</button>
-      <span class="px-3 text-sm text-muted-foreground tabular-nums whitespace-nowrap">${currentPage} / ${meta.totalPages}</span>
-      <button class="${btnBase}" data-page-action="next" ${currentPage === meta.totalPages ? "disabled" : ""} title="Next page">&rsaquo;</button>
-      <button class="${btnBase}" data-page-action="last" ${currentPage === meta.totalPages ? "disabled" : ""} title="Last page">&raquo;</button>
-    `;
+        const rowsHtml = sub.datasets.map((ds, i) => {
+          const rank = getRank(ds.columnId, ranks, ririkkuRanks);
+          const tier = getTier(rank);
+          const isAbsent = rank === -1;
+          const dimmed = ds.notRecommended ? "opacity-50" : "";
+          const stripe = i % 2 === 1 ? "bg-muted/30" : "";
+          const notRecText = ds.notRecommended ? `<span class="ml-1 text-amber-600 font-medium">⚠ Not recommended</span>` : "";
+
+          return `
+            <tr class="border-b border-border last:border-0 transition-colors hover:bg-muted/50 ${dimmed} ${stripe}">
+              <td class="h-9 px-3 align-middle">
+                <span class="inline-flex items-center rounded-md border px-2 py-0.5 text-[10px] font-semibold ${TIER_BADGE[tier] || TIER_BADGE.UNRANKED}">${tier}</span>
+              </td>
+              <td class="h-9 px-3 align-middle">
+                <code class="text-xs bg-muted px-1.5 py-0.5 rounded font-mono">${esc(ds.columnId)}</code>
+              </td>
+              <td class="h-9 px-3 align-middle text-right font-mono tabular-nums ${isAbsent ? "text-muted-foreground/40" : "font-semibold text-foreground"}">
+                ${isAbsent ? "—" : rank.toLocaleString()}
+              </td>
+              <td class="h-9 px-3 align-middle text-muted-foreground text-xs">
+                ${esc(ds.description)}${notRecText}
+              </td>
+            </tr>
+          `;
+        }).join("");
+
+        return `
+          <div>
+            ${subTitleHtml}
+            <div class="rounded-md border border-border overflow-hidden">
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-border bg-muted/50">
+                      <th class="h-9 px-3 text-left text-xs font-medium text-muted-foreground w-24">Tier</th>
+                      <th class="h-9 px-3 text-left text-xs font-medium text-muted-foreground w-48">Dataset</th>
+                      <th class="h-9 px-3 text-right text-xs font-medium text-muted-foreground w-20">Rank</th>
+                      <th class="h-9 px-3 text-left text-xs font-medium text-muted-foreground">Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>${rowsHtml}</tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      return `
+        <details class="group rounded-lg border border-border" ${sIdx === 0 ? "open" : ""}>
+          <summary class="flex cursor-pointer items-center justify-between px-4 py-3 text-sm font-semibold text-foreground hover:bg-muted/50 transition-colors select-none list-none [&::-webkit-details-marker]:hidden">
+            <span>${esc(section.title)}</span>
+            <svg class="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </summary>
+          <div class="border-t border-border px-4 pb-4 pt-3 space-y-5">${subsectionsHtml}</div>
+        </details>
+      `;
+    }).join("");
   }
 
   // ─── Event Handlers ─────────────────────────────────────────────────────────
 
-  sortSelect.addEventListener("change", () => {
-    currentSort = sortSelect.value;
-    currentPage = 1;
-    updateUrl();
-    loadAndRender();
-  });
-
   document.addEventListener("click", (e) => {
     const target = e.target as HTMLElement;
-
-    // Pagination
-    const pageBtn = target.closest("[data-page-action]") as HTMLElement | null;
-    if (pageBtn && meta) {
-      const action = pageBtn.dataset.pageAction;
-      if (action === "first") currentPage = 1;
-      else if (action === "prev") currentPage = Math.max(1, currentPage - 1);
-      else if (action === "next") currentPage = Math.min(meta.totalPages, currentPage + 1);
-      else if (action === "last") currentPage = meta.totalPages;
-      updateUrl();
-      loadAndRender();
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      return;
-    }
 
     // TTS
     const ttsBtn = target.closest(".tts-btn") as HTMLElement | null;
@@ -333,20 +315,13 @@ import { SORT_ORDERS } from "../lib/sort-orders";
     }
   });
 
-  // Browser back/forward
-  window.addEventListener("popstate", () => {
-    readUrlParams();
-    loadAndRender();
-  });
-
   // ─── Helpers ──────────────────────────────────────────────────────────────
 
-  function escHtml(str: string): string {
+  function esc(str: string): string {
     return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
 
   // ─── Boot ─────────────────────────────────────────────────────────────────
 
-  readUrlParams();
-  loadAndRender();
+  init();
 </script>
