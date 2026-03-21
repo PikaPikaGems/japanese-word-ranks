@@ -1,11 +1,13 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import TitleHeader from "../../components/TitleHeader.astro";
+import SearchInput from "../../components/SearchInput.astro";
 ---
 
 <BaseLayout title="Word Detail — Japanese Word Frequency">
   <TitleHeader />
   <main class="max-w-5xl mx-auto px-4 pt-16 pb-16">
+    <SearchInput />
     <div id="loading" class="text-center py-12 text-muted-foreground text-sm">Loading...</div>
     <div id="word-detail" class="hidden">
       <div id="word-card" class="mt-6 mb-8"></div>
@@ -323,5 +325,7 @@ import TitleHeader from "../../components/TitleHeader.astro";
 
   // ─── Boot ─────────────────────────────────────────────────────────────────
 
+  import { initSearch } from "../../lib/search";
+  initSearch();
   init();
 </script>

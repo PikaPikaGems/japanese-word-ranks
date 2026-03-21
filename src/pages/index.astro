@@ -1,14 +1,17 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import TitleHeader from "../components/TitleHeader.astro";
+import SearchInput from "../components/SearchInput.astro";
 import { SORT_ORDERS } from "../lib/sort-orders";
 ---
 
 <BaseLayout>
   <TitleHeader />
   <main class="max-w-5xl mx-auto px-4 pt-16 pb-16">
+    <SearchInput />
+
     <!-- Controls bar -->
-    <div class="flex flex-wrap items-center justify-between gap-4 mt-6 mb-6">
+    <div class="flex flex-wrap items-center justify-between gap-4 mt-4 mb-6">
       <!-- Sort selector -->
       <div class="flex items-center gap-2">
         <label for="sort-select" class="text-sm font-medium text-muted-foreground whitespace-nowrap">Sort by</label>
@@ -40,6 +43,7 @@ import { SORT_ORDERS } from "../lib/sort-orders";
 <script>
   import { SORT_ORDERS, SORT_ORDER_MAP } from "../lib/sort-orders";
   import { getTier, type Tier } from "../lib/tier";
+  import { initSearch } from "../lib/search";
 
   const TIER_STYLES: Record<string, { badge: string; dot: string }> = {
     BASIC:    { badge: "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100", dot: "bg-emerald-500" },
@@ -346,6 +350,8 @@ import { SORT_ORDERS } from "../lib/sort-orders";
   }
 
   // ─── Boot ─────────────────────────────────────────────────────────────────
+
+  initSearch();
 
   readUrlParams();
   loadAndRender();

@@ -268,7 +268,13 @@ function generateSearchIndices(words: EnrichedWord[]) {
   console.log("\nGenerating search indices...");
 
   // Sort by RIRIKKU_RANK so most frequent words appear first in typeahead
-  const sorted = [...words].sort((a, b) => a.ririkkuRank - b.ririkkuRank);
+  // -1 means unranked → push to end
+  const sorted = [...words].sort((a, b) => {
+    if (a.ririkkuRank === -1 && b.ririkkuRank === -1) return 0;
+    if (a.ririkkuRank === -1) return 1;
+    if (b.ririkkuRank === -1) return -1;
+    return a.ririkkuRank - b.ririkkuRank;
+  });
 
   // By reading (first hiragana character)
   const byReading = new Map<string, [string, string][]>();
