@@ -3,6 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import TitleHeader from "../components/TitleHeader.astro";
 import SearchInput from "../components/SearchInput.astro";
 import WordCardSkeleton from "../components/WordCardSkeleton.astro";
+import WordCard from "../components/WordCard.astro";
 import { SORT_ORDERS } from "../lib/sort-orders";
 ---
 
@@ -53,6 +54,7 @@ import { SORT_ORDERS } from "../lib/sort-orders";
 
     <!-- Word list -->
     <div id="word-list" class="space-y-4 hidden"></div>
+    <template id="word-card-tpl"><WordCard /></template>
 
     <!-- Bottom pagination -->
     <div id="pagination-bottom" class="flex items-center justify-center gap-1.5 mt-8"></div>
@@ -61,7 +63,7 @@ import { SORT_ORDERS } from "../lib/sort-orders";
 
 <script>
   import { initSearch } from "../lib/search";
-  import { renderWordCard, initWordCardHandlers } from "../lib/render-word-card";
+  import { fillWordCard, initWordCardHandlers } from "../lib/word-card";
 
   interface PageItem {
     word: string;
@@ -170,13 +172,18 @@ import { SORT_ORDERS } from "../lib/sort-orders";
     }
   }
 
+  const cardTpl = document.getElementById("word-card-tpl") as HTMLTemplateElement;
+
   function renderWordList(items: PageItem[]) {
     if (!meta) return;
     const startIndex = (currentPage - 1) * meta.itemsPerPage;
-
-    wordList.innerHTML = items.map((item, i) =>
-      renderWordCard(item, { linked: true, listRank: startIndex + i + 1 })
-    ).join("");
+    wordList.innerHTML = "";
+    items.forEach((item, i) => {
+      const fragment = cardTpl.content.cloneNode(true) as DocumentFragment;
+      const card = fragment.querySelector<HTMLElement>(".word-card")!;
+      fillWordCard(card, item, { linked: true, listRank: startIndex + i + 1 });
+      wordList.appendChild(fragment);
+    });
   }
 
   // ─── Pagination ─────────────────────────────────────────────────────────────

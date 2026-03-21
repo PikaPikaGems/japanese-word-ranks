@@ -1,8 +1,7 @@
-import { SORT_ORDER_MAP } from "./sort-orders";
 import { getTier, type Tier } from "./tier";
-import { DICTIONARY_LINKS } from "./external-links";
-
 import { TIER_STYLE } from "./badges";
+import { SORT_ORDER_MAP } from "./sort-orders";
+import { DICTIONARY_LINKS } from "./external-links";
 
 export interface WordCardData {
   word: string;
@@ -13,14 +12,31 @@ export interface WordCardData {
 }
 
 export interface WordCardOptions {
-  /** If true, the card is clickable and navigates to the word detail page */
   linked?: boolean;
-  /** List rank number to display at top-right (e.g. #1, #1,234) */
   listRank?: number;
 }
 
 export function esc(str: string): string {
   return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+export function buildBadges(data: WordCardData): { label: string; value: string | number; tier: Tier; description: string }[] {
+  const badges: { label: string; value: string | number; tier: Tier; description: string }[] = [];
+  const { jlpt, kaishi, ranks = {} } = data;
+
+  if (jlpt) {
+    const tier: Tier = jlpt >= 4 ? "BASIC" : jlpt === 3 ? "COMMON" : jlpt === 2 ? "FLUENT" : "ADVANCED";
+    badges.push({ label: "JLPT", value: `N${jlpt}`, tier, description: `Japanese Language Proficiency Test Level N${jlpt}` });
+  }
+  if (kaishi) {
+    badges.push({ label: "Kaishi", value: "✓", tier: "BASIC", description: "Kaishi 1500 beginner vocabulary deck." });
+  }
+  for (const [key, rank] of Object.entries(ranks)) {
+    if (rank === -1) continue;
+    const so = SORT_ORDER_MAP.get(key);
+    if (so) badges.push({ label: so.label, value: rank, tier: getTier(rank), description: so.description });
+  }
+  return badges;
 }
 
 export function renderBadge(label: string, value: string | number, tier: Tier, description: string): string {
@@ -43,83 +59,34 @@ export function renderBadge(label: string, value: string | number, tier: Tier, d
   `;
 }
 
-function buildBadges(data: WordCardData): { label: string; value: string | number; tier: Tier; description: string }[] {
-  const badges: { label: string; value: string | number; tier: Tier; description: string }[] = [];
-  const { jlpt, kaishi, ranks = {} } = data;
-
-  if (jlpt) {
-    const tier: Tier = jlpt >= 4 ? "BASIC" : jlpt === 3 ? "COMMON" : jlpt === 2 ? "FLUENT" : "ADVANCED";
-    badges.push({ label: "JLPT", value: `N${jlpt}`, tier, description: `Japanese Language Proficiency Test Level N${jlpt}` });
-  }
-  if (kaishi) {
-    badges.push({ label: "Kaishi", value: "✓", tier: "BASIC", description: "Kaishi 1500 beginner vocabulary deck." });
-  }
-  for (const [key, rank] of Object.entries(ranks)) {
-    if (rank === -1) continue;
-    const so = SORT_ORDER_MAP.get(key);
-    if (so) {
-      badges.push({ label: so.label, value: rank, tier: getTier(rank), description: so.description });
-    }
-  }
-  return badges;
-}
-
-function renderDictionaryLinks(word: string): string {
-  return DICTIONARY_LINKS.map(d =>
-    `<a href="${d.url(word)}" target="_blank" rel="noopener noreferrer" class="text-sm text-foreground hover:text-primary transition-colors no-underline hover:underline">${d.name}</a>`
-  ).join("");
-}
-
-export function renderWordCard(data: WordCardData, options: WordCardOptions = {}): string {
-  const { word, reading } = data;
+export function fillWordCard(card: HTMLElement, data: WordCardData, options: WordCardOptions = {}) {
   const { linked = false, listRank } = options;
-  const wordUrl = `/word/?w=${encodeURIComponent(word)}`;
-  const showReading = reading !== word;
+  const wordUrl = `/word/?w=${encodeURIComponent(data.word)}`;
 
-  const badgesHtml = buildBadges(data).map(b => renderBadge(b.label, b.value, b.tier, b.description)).join("");
-  const rankLabel = listRank != null ? `#${listRank.toLocaleString()}` : "";
+  const rankLabel = card.querySelector<HTMLElement>("[data-rank-label]");
+  if (rankLabel) rankLabel.textContent = listRank != null ? `#${listRank.toLocaleString()}` : "";
 
-  const linkedAttrs = linked
-    ? `data-word-card data-word-url="${esc(wordUrl)}" style="cursor:pointer"`
-    : "";
-  const hoverClasses = linked
-    ? "hover:border-primary/40 hover:shadow-md transition-all"
-    : "";
+  if (linked) {
+    card.dataset.wordCard = "";
+    card.dataset.wordUrl = wordUrl;
+    card.style.cursor = "pointer";
+    card.classList.add("hover:border-primary/40", "hover:shadow-md", "transition-all");
+  }
 
-  return `
-    <div class="rounded-2xl border border-border bg-card text-card-foreground shadow-sm relative ${hoverClasses}" ${linkedAttrs}>
-      ${rankLabel ? `<span class="absolute top-3 right-4 text-xs font-bold text-muted-foreground tabular-nums">${rankLabel}</span>` : ""}
-      <div class="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-5 p-4 sm:p-6">
-        <div class="flex flex-row sm:flex-col gap-2.5 shrink-0 order-3 sm:order-1">
-          <button class="tts-btn inline-flex h-10 w-10 items-center justify-center rounded-xl border border-input bg-background text-muted-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer" data-word="${esc(word)}" title="Listen to pronunciation">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg>
-          </button>
-          <div class="relative inline-block">
-            <button class="book-btn inline-flex h-10 w-10 items-center justify-center rounded-xl border border-input bg-background text-muted-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer" data-word="${esc(word)}" title="Dictionary links" aria-expanded="false" data-book-trigger>
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-            </button>
-            <div class="book-popover hidden absolute z-50 top-full left-0 mt-2 w-56 rounded-xl border border-border bg-popover p-4 text-popover-foreground shadow-md" data-book-popover>
-              <div class="absolute -top-1.5 left-3 h-3 w-3 rotate-45 border-l border-t border-border bg-popover"></div>
-              <p class="text-xs font-bold text-muted-foreground mb-2">Look up in:</p>
-              <div class="flex flex-col gap-1">
-                ${renderDictionaryLinks(word)}
-              </div>
-            </div>
-          </div>
-          <button class="copy-url-btn inline-flex h-10 w-10 items-center justify-center rounded-xl border border-input bg-background text-muted-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer" data-copy-url="${esc(wordUrl)}" title="Copy link to word">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-          </button>
-        </div>
-        <div class="shrink-0 sm:py-4 order-1 sm:order-2">
-          <span class="block text-5xl sm:text-7xl font-bold text-foreground sm:px-6 leading-tight" style="font-family: var(--font-japanese);">${esc(word)}</span>
-          ${showReading ? `<span class="block text-lg text-muted-foreground mt-1.5 sm:px-6" style="font-family: var(--font-japanese);">${esc(reading)}</span>` : ""}
-        </div>
-        <div class="flex flex-wrap gap-2 content-start sm:flex-1 min-w-0 sm:py-8 order-2 sm:order-3">
-          ${badgesHtml}
-        </div>
-      </div>
-    </div>
-  `;
+  card.querySelector<HTMLElement>("[data-word-display]")!.textContent = data.word;
+  card.querySelector<HTMLElement>("[data-word-reading]")!.textContent =
+    data.reading !== data.word ? data.reading : "";
+
+  card.querySelector<HTMLElement>(".tts-btn")!.dataset.word = data.word;
+  card.querySelector<HTMLElement>(".copy-url-btn")!.dataset.copyUrl = wordUrl;
+
+  for (const link of card.querySelectorAll<HTMLAnchorElement>("[data-dict-name]")) {
+    const entry = DICTIONARY_LINKS.find(d => d.name === link.dataset.dictName);
+    if (entry) link.href = entry.url(data.word);
+  }
+
+  card.querySelector<HTMLElement>("[data-badges]")!.innerHTML =
+    buildBadges(data).map(b => renderBadge(b.label, b.value, b.tier, b.description)).join("");
 }
 
 /**

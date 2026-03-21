@@ -3,6 +3,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import TitleHeader from "../../components/TitleHeader.astro";
 import SearchInput from "../../components/SearchInput.astro";
 import WordCardSkeleton from "../../components/WordCardSkeleton.astro";
+import WordCard from "../../components/WordCard.astro";
+import FrequencyTable from "../../components/FrequencyTable.astro";
 ---
 
 <BaseLayout title="Word Detail — Japanese Word Frequency">
@@ -21,9 +23,9 @@ import WordCardSkeleton from "../../components/WordCardSkeleton.astro";
         </div>
       </div>
     </div>
-    <div id="word-detail" class="hidden">
-      <div id="word-card" class="mt-8 mb-10"></div>
-      <div id="frequency-table" class="space-y-5"></div>
+    <div id="word-detail" class="hidden mt-8 space-y-10">
+      <WordCard />
+      <FrequencyTable />
     </div>
     <div id="error" class="hidden text-center py-16 text-muted-foreground text-base"></div>
   </main>
@@ -31,9 +33,8 @@ import WordCardSkeleton from "../../components/WordCardSkeleton.astro";
 
 <script>
   import { getTier } from "../../lib/tier";
-  import { DATASET_CATALOG } from "../../lib/dataset-catalog";
   import { initSearch } from "../../lib/search";
-  import { renderWordCard, initWordCardHandlers, esc } from "../../lib/render-word-card";
+  import { fillWordCard, initWordCardHandlers } from "../../lib/word-card";
   import { TIER_STYLE } from "../../lib/badges";
 
   interface WordEntry {
@@ -49,8 +50,6 @@ import WordCardSkeleton from "../../components/WordCardSkeleton.astro";
 
   const loadingEl = document.getElementById("loading")!;
   const detailEl = document.getElementById("word-detail")!;
-  const cardEl = document.getElementById("word-card")!;
-  const tableEl = document.getElementById("frequency-table")!;
   const errorEl = document.getElementById("error")!;
 
   // ─── Init ───────────────────────────────────────────────────────────────────
@@ -90,9 +89,7 @@ import WordCardSkeleton from "../../components/WordCardSkeleton.astro";
 
   function render(word: string, entries: WordEntry[]) {
     const primary = entries[0];
-    cardEl.innerHTML = renderWordCard(
-      { word, reading: primary.reading, jlpt: primary.jlpt, kaishi: primary.kaishi, ranks: primary.ranks },
-    );
+    updateWordCard({ word, reading: primary.reading, jlpt: primary.jlpt, kaishi: primary.kaishi, ranks: primary.ranks });
 
     const allRanks: Record<string, number> = {};
     const ririkkuRanks: Record<string, number> = {};
@@ -100,10 +97,16 @@ import WordCardSkeleton from "../../components/WordCardSkeleton.astro";
       Object.assign(ririkkuRanks, entry.ranks);
       if (entry.detailRanks) Object.assign(allRanks, entry.detailRanks);
     }
-    tableEl.innerHTML = renderFrequencyTable(allRanks, ririkkuRanks);
+    updateFrequencyTable(allRanks, ririkkuRanks);
 
     loadingEl.classList.add("hidden");
     detailEl.classList.remove("hidden");
+  }
+
+  // ─── Word Card ─────────────────────────────────────────────────────────────
+
+  function updateWordCard(data: { word: string; reading: string; jlpt?: number; kaishi?: boolean; ranks?: Record<string, number> }) {
+    fillWordCard(detailEl.querySelector<HTMLElement>(".word-card")!, data);
   }
 
   // ─── Frequency Table ───────────────────────────────────────────────────────
@@ -115,71 +118,23 @@ import WordCardSkeleton from "../../components/WordCardSkeleton.astro";
     return -1;
   }
 
-  function renderFrequencyTable(ranks: Record<string, number>, ririkkuRanks: Record<string, number>): string {
-    return DATASET_CATALOG.map((section, sIdx) => {
-      const subsectionsHtml = section.subsections.map((sub) => {
-        const subTitleHtml = sub.title
-          ? `<h3 class="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">${esc(sub.title)}</h3>`
-          : "";
+  function updateFrequencyTable(ranks: Record<string, number>, ririkkuRanks: Record<string, number>) {
+    const rows = detailEl.querySelectorAll<HTMLElement>("[data-column-id]");
+    for (const row of rows) {
+      const columnId = row.dataset.columnId!;
+      const rank = getRank(columnId, ranks, ririkkuRanks);
+      const tier = getTier(rank);
+      const isAbsent = rank === -1;
+      const style = TIER_STYLE[tier] || TIER_STYLE.UNRANKED;
 
-        const rowsHtml = sub.datasets.map((ds, i) => {
-          const rank = getRank(ds.columnId, ranks, ririkkuRanks);
-          const tier = getTier(rank);
-          const isAbsent = rank === -1;
-          const dimmed = ds.notRecommended ? "opacity-50" : "";
-          const stripe = i % 2 === 1 ? "bg-muted/30" : "";
-          const notRecText = ds.notRecommended ? `<span class="ml-1 text-amber-600 font-medium">⚠ Not recommended</span>` : "";
+      const badge = row.querySelector<HTMLElement>("[data-tier-badge]")!;
+      badge.className = `inline-flex items-center rounded-full border px-2 sm:px-3 py-1 text-xs font-bold ${style.badge}`;
+      badge.textContent = tier;
 
-          return `
-            <tr class="border-b border-border last:border-0 transition-colors hover:bg-muted/50 ${dimmed} ${stripe}">
-              <td class="h-12 px-5 align-middle">
-                <span class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-bold ${(TIER_STYLE[tier] || TIER_STYLE.UNRANKED).badge}">${tier}</span>
-              </td>
-              <td class="h-12 px-5 align-middle">
-                <code class="text-sm bg-muted px-2.5 py-1 rounded-lg">${esc(ds.columnId)}</code>
-              </td>
-              <td class="h-12 px-5 align-middle text-right tabular-nums text-sm ${isAbsent ? "text-muted-foreground/40" : "font-bold text-foreground"}">
-                ${isAbsent ? "—" : rank.toLocaleString()}
-              </td>
-              <td class="h-12 px-5 align-middle text-muted-foreground text-sm">
-                ${esc(ds.description)}${notRecText}
-              </td>
-            </tr>
-          `;
-        }).join("");
-
-        return `
-          <div>
-            ${subTitleHtml}
-            <div class="rounded-xl border border-border overflow-hidden">
-              <div class="overflow-x-auto">
-                <table class="w-full text-sm">
-                  <thead>
-                    <tr class="border-b border-border bg-muted/50">
-                      <th class="h-12 px-5 text-left text-sm font-semibold text-muted-foreground w-28">Tier</th>
-                      <th class="h-12 px-5 text-left text-sm font-semibold text-muted-foreground w-52">Dataset</th>
-                      <th class="h-12 px-5 text-right text-sm font-semibold text-muted-foreground w-24">Rank</th>
-                      <th class="h-12 px-5 text-left text-sm font-semibold text-muted-foreground">Description</th>
-                    </tr>
-                  </thead>
-                  <tbody>${rowsHtml}</tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        `;
-      }).join("");
-
-      return `
-        <details class="group rounded-2xl border border-border" ${sIdx === 0 ? "open" : ""}>
-          <summary class="flex cursor-pointer items-center justify-between px-5 py-4 text-sm font-bold text-foreground hover:bg-muted/50 transition-colors select-none list-none [&::-webkit-details-marker]:hidden">
-            <span>${esc(section.title)}</span>
-            <svg class="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-          </summary>
-          <div class="border-t border-border px-5 pb-5 pt-4 space-y-6">${subsectionsHtml}</div>
-        </details>
-      `;
-    }).join("");
+      const rankCell = row.querySelector<HTMLElement>("[data-rank-cell]")!;
+      rankCell.textContent = isAbsent ? "—" : rank.toLocaleString();
+      rankCell.className = `py-2.5 px-3 sm:px-5 align-middle text-right tabular-nums text-sm ${isAbsent ? "text-muted-foreground/40" : "font-bold text-foreground"}`;
+    }
   }
 
   // ─── Boot ─────────────────────────────────────────────────────────────────
