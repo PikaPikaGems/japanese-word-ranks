@@ -6,12 +6,12 @@ The website loads pre-computed JSON files at runtime instead of using SSG. A bui
 
 ## Source Input Files
 
-| File | Format | Description |
-|---|---|---|
-| `data/frequency/selected-freq/RIRIKKU_CONSOLIDATED.csv` | CSV | Master word list (~92k words). Columns: `word`, `hiragana`, `katakana`, `RIRIKKU_RANK`, + 19 frequency rank columns |
-| `data/frequency/top25k-all-freq/consolidated.csv` | CSV | Full frequency detail (~24.6k words, 75+ columns). Used for word detail pages |
-| `data/jlpt/word_jlpt.json` | JSON | JLPT levels. Format: `{ "食べる": "5", "走る": "4", ... }` |
-| `data/kaishi/kaishi_1500.txt` | TXT | Kaishi 1500 vocabulary. Kanji lines followed by hiragana reading; pure-kana lines are standalone |
+| File                                                    | Format | Description                                                                                                         |
+| ------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------- |
+| `data/frequency/selected-freq/RIRIKKU_CONSOLIDATED.csv` | CSV    | Master word list (~92k words). Columns: `word`, `hiragana`, `katakana`, `RIRIKKU_RANK`, + 19 frequency rank columns |
+| `data/frequency/top25k-all-freq/consolidated.csv`       | CSV    | Full frequency detail (~24.6k words, 75+ columns). Used for word detail pages                                       |
+| `data/jlpt/word_jlpt.json`                              | JSON   | JLPT levels. Format: `{ "食べる": "5", "走る": "4", ... }`                                                          |
+| `data/kaishi/kaishi_1500.txt`                           | TXT    | Kaishi 1500 vocabulary. Kanji lines followed by hiragana reading; pure-kana lines are standalone                    |
 
 ## How to Generate
 
@@ -44,6 +44,8 @@ One file per sort order (20 files total). Fetched once on first load for paginat
   "totalItems": 92171,
   "itemsPerPage": 100
 }
+
+// NOTE: After removing non-japanese characters and punctuation marks. It's down to 88,411 words, 885 pages per sort order, 158 reading index files, 3,713 word index files.
 ```
 
 #### Pages — `api/sorted/{sortKey}/{page}.json`
@@ -53,11 +55,13 @@ Pre-sorted and pre-paginated word card data.
 **Sort keys** (20 total): `JLPT`, `KAISHI`, `RSPEER`, `cejc_combined_rank`, `cejc_small_talk_rank`, `BCCWJ_LUW`, `BCCWJ_SUW`, `CC100`, `MALTESAA_NWJC`, `JITEN_GLOBAL`, `JITEN_DRAMA`, `ANIME_JDRAMA`, `YOUTUBE_FREQ_V3`, `NETFLIX`, `DD2_MORPHMAN_NETFLIX`, `WIKIPEDIA_V2`, `ADNO`, `DD2_MORPHMAN_SOL`, `JITEN_ANIME_V2`, `MALTESAA_CSJ`
 
 **Sort logic:**
+
 - Frequency columns: ascending rank (1 first), `-1` (absent) sorted to end, ties broken by RIRIKKU_RANK
 - JLPT: N5 → N4 → N3 → N2 → N1 → untagged, sub-sorted by RIRIKKU_RANK
 - Kaishi: Kaishi words first (original file order), then rest by RIRIKKU_RANK
 
 **Page file format:**
+
 ```json
 {
   "page": 3,
@@ -84,6 +88,7 @@ Pre-sorted and pre-paginated word card data.
 Full data for a single word, used by the word detail page. Bucketed by first character.
 
 **File format:** Array (one entry per reading of the word)
+
 ```json
 [
   {
@@ -108,6 +113,7 @@ Full data for a single word, used by the word detail page. Bucketed by first cha
 Typeahead index keyed by first hiragana character. Sorted by RIRIKKU_RANK (most frequent first).
 
 **File format:**
+
 ```json
 [
   ["食べる", "たべる"],
@@ -128,13 +134,13 @@ Same format as reading index. Used when user types kanji directly.
 
 ## Total Output
 
-| Type | Files | Size |
-|---|---|---|
-| Sorted pages | ~18,440 | ~193 MB |
-| Word detail | ~92,000 | ~357 MB |
-| Search (reading) | ~168 | ~10 MB |
-| Search (word) | ~4,000 | ~9 MB |
-| **Total** | ~114,600 | **~570 MB** |
+| Type             | Files    | Size        |
+| ---------------- | -------- | ----------- |
+| Sorted pages     | ~18,440  | ~193 MB     |
+| Word detail      | ~92,000  | ~357 MB     |
+| Search (reading) | ~168     | ~10 MB      |
+| Search (word)    | ~4,000   | ~9 MB       |
+| **Total**        | ~114,600 | **~570 MB** |
 
 ## Script Location
 
