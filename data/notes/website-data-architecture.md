@@ -17,7 +17,7 @@ No SSG for individual pages. Instead, build pre-computed JSON data files at Astr
 api/sorted/{sortKey}/{page}.json
 ```
 
-- ~20 sort orders x ~885 pages = ~17,700 files
+- ~20 sort orders x ~843 pages = ~16,860 files
 - ~5 KB each
 - Contains an array of word card data: `[word, hiragana, jlpt, isKaishi, { rank1, rank2, ... }]`
 - One file fetched per page view
@@ -40,7 +40,7 @@ api/filtered/{filterKey}/sorted/{sortKey}/{page}.json
 api/words/{firstChar}/{word}.json
 ```
 
-- ~92k files, bucketed by first character to avoid filesystem slowdown
+- ~84k files, bucketed by first character to avoid filesystem slowdown
 - ~1-2 KB each
 - Contains all data for one word: JLPT, Kaishi, all frequency ranks (75+ columns from consolidated.csv if available, otherwise from RIRIKKU_CONSOLIDATED.csv)
 - Used by the word detail page
@@ -90,9 +90,9 @@ GitHub Pages (static files only). Build once, deploy, never rebuild unless data 
 
 | Type | Count | Size each | Total |
 |---|---|---|---|
-| Sorted pages | ~17,700 | ~5 KB | ~90 MB |
-| Filtered sorted pages | ~35,400 | ~5 KB | ~180 MB |
-| Word detail | ~92,000 | ~1-2 KB | ~100-180 MB |
-| Search (reading) | ~70 | ~10-50 KB | ~1-3 MB |
-| Search (word) | ~3-4k | ~5-30 KB | ~15-60 MB |
-| **Total** | | | **~385-510 MB** |
+| Sorted pages | ~16,860 | ~5 KB | ~84 MB |
+| Filtered sorted pages | ~33,720 | ~5 KB | ~168 MB |
+| Word detail | ~84,000 | ~1-2 KB | ~84-168 MB |
+| Search (reading) | ~158 | ~10-50 KB | ~2-8 MB |
+| Search (word) | ~3,700 | ~5-30 KB | ~18-110 MB |
+| **Total** | | | **~356-538 MB** |

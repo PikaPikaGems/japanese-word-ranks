@@ -13,6 +13,7 @@ import {
   type ConsolidatedWord,
 } from "../src/lib/data-loader";
 import { SORT_ORDERS } from "../src/lib/sort-orders";
+import { getBucketTier } from "../src/lib/tier";
 
 const OUTPUT_DIR = path.resolve("public/api");
 const PAGE_SIZE = 100;
@@ -63,9 +64,12 @@ function isKatakanaWord(word: string): boolean {
  * Must start with a hiragana letter, katakana letter, or kanji.
  * Excludes: dakuten/handakuten marks (゙゚゛゜), repeat marks (ゝゞヽヾ),
  * middle dot (・), prolonged sound mark alone (ー), etc.
+ * Also excludes words containing any romaji (ASCII letters), e.g. "オーロラ-aurora".
  */
 function isJapaneseWord(word: string): boolean {
   if (!word) return false;
+  // Reject words containing any ASCII letters (romaji), e.g. "オーロラ-aurora"
+  if (/[a-zA-Z]/.test(word)) return false;
   const ch = word.codePointAt(0)!;
 
   // Hiragana letters: U+3041 (ぁ) – U+3096 (ゖ), skip marks U+3099–U+309F
@@ -167,6 +171,7 @@ function generateSortedPages(words: EnrichedWord[]) {
         const item: Record<string, unknown> = {
           word: w.word,
           reading: w.hiragana,
+          tier: getBucketTier(w.ranks),
         };
         if (w.jlpt !== null) item.jlpt = w.jlpt;
         if (w.kaishi) item.kaishi = true;
@@ -223,6 +228,7 @@ function generateFilteredSortedPages(words: EnrichedWord[]) {
           const item: Record<string, unknown> = {
             word: w.word,
             reading: w.hiragana,
+            tier: getBucketTier(w.ranks),
           };
           if (w.jlpt !== null) item.jlpt = w.jlpt;
           if (w.kaishi) item.kaishi = true;
@@ -308,6 +314,7 @@ function generateWordDetail(
       const item: Record<string, unknown> = {
         reading: e.hiragana,
         ririkkuRank: e.ririkkuRank,
+        tier: getBucketTier(e.ranks),
         ranks: e.ranks,
       };
       if (e.jlpt !== null) item.jlpt = e.jlpt;

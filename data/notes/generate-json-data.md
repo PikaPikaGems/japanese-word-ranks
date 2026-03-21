@@ -40,12 +40,12 @@ One file per sort order (20 files total). Fetched once on first load for paginat
 
 ```json
 {
-  "totalPages": 922,
-  "totalItems": 92171,
+  "totalPages": 843,
+  "totalItems": 84236,
   "itemsPerPage": 100
 }
 
-// NOTE: After removing non-japanese characters and punctuation marks. It's down to 88,411 words, 885 pages per sort order, 158 reading index files, 3,713 word index files.
+// NOTE: After removing non-Japanese characters, punctuation marks, and words containing romaji (e.g. "オーロラ-aurora"). Down to 84,236 words, 843 pages per sort order.
 ```
 
 #### Pages — `api/sorted/{sortKey}/{page}.json`
@@ -81,7 +81,7 @@ Pre-sorted and pre-paginated word card data.
 - `kaishi` omitted if false
 - `ranks` only includes the 6 default badge keys with non-(-1) values: `BCCWJ_LUW`, `cejc_small_talk_rank`, `JITEN_DRAMA`, `NETFLIX`, `WIKIPEDIA_V2`, `DD2_MORPHMAN_SOL`
 
-**Count:** 20 metadata files + ~20 sort orders x ~885 pages = ~17,720 files
+**Count:** 20 metadata files + ~20 sort orders x ~843 pages = ~16,880 files
 
 ### 1b. Filtered Sorted Word Lists
 
@@ -121,7 +121,7 @@ Full data for a single word, used by the word detail page. Bucketed by first cha
 - `detailRanks`: All 75+ columns from consolidated.csv (null if word not in consolidated.csv)
 - `jlpt` and `kaishi` omitted if not applicable
 
-**Count:** ~92k files (one per unique word form)
+**Count:** ~84k files (one per unique word form)
 
 ### 3. Search Index by Reading — `api/search/reading/{kana}.json`
 
@@ -151,12 +151,12 @@ Same format as reading index. Used when user types kanji directly.
 
 | Type                    | Files    | Size        |
 | ----------------------- | -------- | ----------- |
-| Sorted pages            | ~17,720  | ~193 MB     |
-| Filtered sorted pages   | ~35,440  | ~386 MB     |
-| Word detail             | ~92,000  | ~357 MB     |
-| Search (reading)        | ~168     | ~10 MB      |
-| Search (word)           | ~4,000   | ~9 MB       |
-| **Total**               | ~149,300 | **~955 MB** |
+| Sorted pages            | ~16,880  | ~184 MB     |
+| Filtered sorted pages   | ~33,760  | ~368 MB     |
+| Word detail             | ~84,000  | ~325 MB     |
+| Search (reading)        | ~158     | ~10 MB      |
+| Search (word)           | ~3,700   | ~8 MB       |
+| **Total**               | ~138,500 | **~895 MB** |
 
 ## Script Location
 
