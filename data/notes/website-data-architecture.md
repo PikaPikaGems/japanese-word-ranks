@@ -6,7 +6,7 @@ No SSG for individual pages. Instead, build pre-computed JSON data files at Astr
 
 | Page | URL | Behavior |
 |---|---|---|
-| Word list | `/?sort=JLPT&page=1` | Fetches one sorted page JSON, renders word cards client-side |
+| Word list | `/?sort=JLPT&page=1&filter=katakana` | Fetches one sorted page JSON (optionally filtered), renders word cards client-side |
 | Word detail | `/word?w=食べる` | Fetches one word JSON, renders detail view client-side |
 
 ## Pre-built JSON Files
@@ -17,11 +17,22 @@ No SSG for individual pages. Instead, build pre-computed JSON data files at Astr
 api/sorted/{sortKey}/{page}.json
 ```
 
-- ~20 sort orders x ~920 pages = ~18,400 files
+- ~20 sort orders x ~885 pages = ~17,700 files
 - ~5 KB each
 - Contains an array of word card data: `[word, hiragana, jlpt, isKaishi, { rank1, rank2, ... }]`
 - One file fetched per page view
 - Switching sort order or page = one small fetch
+
+### 1b. Filtered sorted word lists (paginated, 100 items per page)
+
+```
+api/filtered/{filterKey}/sorted/{sortKey}/{page}.json
+```
+
+- Filter keys: `katakana` (words written entirely in katakana), `non-katakana` (everything else)
+- Same format and sort logic as unfiltered lists
+- 2 filters x ~20 sort orders x variable pages
+- When filter is "all", the client fetches from the unfiltered endpoint
 
 ### 2. Word detail files (one per word)
 
@@ -79,8 +90,9 @@ GitHub Pages (static files only). Build once, deploy, never rebuild unless data 
 
 | Type | Count | Size each | Total |
 |---|---|---|---|
-| Sorted pages | ~18,400 | ~5 KB | ~90 MB |
+| Sorted pages | ~17,700 | ~5 KB | ~90 MB |
+| Filtered sorted pages | ~35,400 | ~5 KB | ~180 MB |
 | Word detail | ~92,000 | ~1-2 KB | ~100-180 MB |
 | Search (reading) | ~70 | ~10-50 KB | ~1-3 MB |
 | Search (word) | ~3-4k | ~5-30 KB | ~15-60 MB |
-| **Total** | | | **~200-330 MB** |
+| **Total** | | | **~385-510 MB** |

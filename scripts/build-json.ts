@@ -51,6 +51,14 @@ function writeJson(filePath: string, data: unknown) {
 }
 
 /**
+ * Returns true if the word is written entirely in katakana
+ * (including prolonged sound mark ー and middle dot ・).
+ */
+function isKatakanaWord(word: string): boolean {
+  return /^[\u30A0-\u30FF\uFF65-\uFF9F]+$/.test(word);
+}
+
+/**
  * Returns true if the word is an actual Japanese word (not punctuation/symbols).
  * Must start with a hiragana letter, katakana letter, or kanji.
  * Excludes: dakuten/handakuten marks (゙゚゛゜), repeat marks (ゝゞヽヾ),
@@ -126,6 +134,7 @@ function main() {
   }
 
   generateSortedPages(enriched);
+  generateFilteredSortedPages(enriched);
   generateWordDetail(enriched, consolidatedData);
   generateSearchIndices(enriched);
 
@@ -180,6 +189,59 @@ function generateSortedPages(words: EnrichedWord[]) {
     }
 
     console.log(`  ${sortOrder.key}: ${totalPages} pages`);
+  }
+}
+
+// ─── Filtered Sorted Pages ──────────────────────────────────────────────────
+
+function generateFilteredSortedPages(words: EnrichedWord[]) {
+  const filters: { key: string; fn: (w: EnrichedWord) => boolean }[] = [
+    { key: "katakana", fn: (w) => isKatakanaWord(w.word) },
+    { key: "non-katakana", fn: (w) => !isKatakanaWord(w.word) },
+  ];
+
+  for (const filter of filters) {
+    const filtered = words.filter(filter.fn);
+    console.log(`\nGenerating filtered sorted pages (${filter.key}: ${filtered.length} words)...`);
+
+    for (const sortOrder of SORT_ORDERS) {
+      const sorted = sortWords(filtered, sortOrder.key);
+      const totalPages = Math.ceil(sorted.length / PAGE_SIZE);
+      const dir = path.join(OUTPUT_DIR, "filtered", filter.key, "sorted", sortOrder.key);
+
+      writeJson(path.join(dir, "meta.json"), {
+        totalPages,
+        totalItems: sorted.length,
+        itemsPerPage: PAGE_SIZE,
+      });
+
+      for (let page = 1; page <= totalPages; page++) {
+        const start = (page - 1) * PAGE_SIZE;
+        const pageItems = sorted.slice(start, start + PAGE_SIZE);
+
+        const items = pageItems.map((w) => {
+          const item: Record<string, unknown> = {
+            word: w.word,
+            reading: w.hiragana,
+          };
+          if (w.jlpt !== null) item.jlpt = w.jlpt;
+          if (w.kaishi) item.kaishi = true;
+
+          const rk: Record<string, number> = {};
+          for (const key of DEFAULT_BADGE_KEYS) {
+            const val = w.ranks[key];
+            if (val != null && val !== -1) rk[key] = val;
+          }
+          if (Object.keys(rk).length > 0) item.ranks = rk;
+
+          return item;
+        });
+
+        writeJson(path.join(dir, `${page}.json`), { page, items });
+      }
+
+      console.log(`  ${filter.key}/${sortOrder.key}: ${totalPages} pages`);
+    }
   }
 }
 

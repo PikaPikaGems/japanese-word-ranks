@@ -81,7 +81,22 @@ Pre-sorted and pre-paginated word card data.
 - `kaishi` omitted if false
 - `ranks` only includes the 6 default badge keys with non-(-1) values: `BCCWJ_LUW`, `cejc_small_talk_rank`, `JITEN_DRAMA`, `NETFLIX`, `WIKIPEDIA_V2`, `DD2_MORPHMAN_SOL`
 
-**Count:** 20 metadata files + ~20 sort orders x ~922 pages = ~18,460 files
+**Count:** 20 metadata files + ~20 sort orders x ~885 pages = ~17,720 files
+
+### 1b. Filtered Sorted Word Lists
+
+#### Metadata — `api/filtered/{filterKey}/sorted/{sortKey}/meta.json`
+
+Same structure as unfiltered metadata. Two filter keys: `katakana`, `non-katakana`.
+
+- `katakana`: only words written entirely in katakana (U+30A0–U+30FF range)
+- `non-katakana`: everything else
+
+#### Pages — `api/filtered/{filterKey}/sorted/{sortKey}/{page}.json`
+
+Same format and sort logic as unfiltered pages. The word set is pre-filtered before sorting and paginating.
+
+**Count:** 2 filters x 20 sort orders x (variable pages) — roughly ~2x the unfiltered sorted pages
 
 ### 2. Word Detail — `api/words/{firstChar}/{word}.json`
 
@@ -134,13 +149,14 @@ Same format as reading index. Used when user types kanji directly.
 
 ## Total Output
 
-| Type             | Files    | Size        |
-| ---------------- | -------- | ----------- |
-| Sorted pages     | ~18,440  | ~193 MB     |
-| Word detail      | ~92,000  | ~357 MB     |
-| Search (reading) | ~168     | ~10 MB      |
-| Search (word)    | ~4,000   | ~9 MB       |
-| **Total**        | ~114,600 | **~570 MB** |
+| Type                    | Files    | Size        |
+| ----------------------- | -------- | ----------- |
+| Sorted pages            | ~17,720  | ~193 MB     |
+| Filtered sorted pages   | ~35,440  | ~386 MB     |
+| Word detail             | ~92,000  | ~357 MB     |
+| Search (reading)        | ~168     | ~10 MB      |
+| Search (word)           | ~4,000   | ~9 MB       |
+| **Total**               | ~149,300 | **~955 MB** |
 
 ## Script Location
 

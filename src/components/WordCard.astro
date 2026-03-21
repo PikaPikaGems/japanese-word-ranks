@@ -28,7 +28,7 @@ interface Props {
   linked?: boolean;
 }
 
-const { word, hiragana, katakana, jlptLevel, isKaishi, ranks, linked = false } = Astro.props;
+const { word, hiragana, jlptLevel, isKaishi, ranks, linked = false } = Astro.props;
 
 // Build badge data
 const badges: BadgeData[] = [];

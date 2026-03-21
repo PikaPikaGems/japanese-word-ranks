@@ -11,7 +11,7 @@ import { SORT_ORDERS } from "../lib/sort-orders";
     <SearchInput />
 
     <!-- Controls bar -->
-    <div class="flex flex-wrap items-center justify-between gap-0 pt-12 mb-8">
+    <div class="flex flex-wrap items-center gap-6 pt-12 mb-4">
       <!-- Sort selector -->
       <div class="flex items-center gap-3">
         <label for="sort-select" class="text-sm font-semibold text-muted-foreground whitespace-nowrap">Sort by</label>
@@ -25,10 +25,23 @@ import { SORT_ORDERS } from "../lib/sort-orders";
           ))}
         </select>
       </div>
-
-      <!-- Pagination -->
-      <div id="pagination" class="flex items-center gap-1.5"></div>
+      <!-- Filter selector -->
+      <div class="flex items-center gap-3">
+        <label for="filter-select" class="text-sm font-semibold text-muted-foreground whitespace-nowrap">Filter</label>
+        <select
+          id="filter-select"
+          class="h-10 rounded-xl border border-input bg-card pl-4 pr-10 py-2 text-sm font-medium shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer appearance-none bg-no-repeat bg-size-[16px_16px] bg-position-[right_0.75rem_center]"
+          style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E&quot;);"
+        >
+          <option value="all">All</option>
+          <option value="katakana">Katakana Only</option>
+          <option value="non-katakana">Non-Katakana Only</option>
+        </select>
+      </div>
     </div>
+
+    <!-- Pagination -->
+    <div id="pagination" class="flex items-center justify-center gap-1.5 mb-8"></div>
 
     <!-- Loading state: skeleton cards -->
     <div id="loading" class="space-y-4">
@@ -57,7 +70,7 @@ import { SORT_ORDERS } from "../lib/sort-orders";
     <div id="word-list" class="space-y-4 hidden"></div>
 
     <!-- Bottom pagination -->
-    <div id="pagination-bottom" class="flex items-center justify-end gap-1.5 mt-8"></div>
+    <div id="pagination-bottom" class="flex items-center justify-center gap-1.5 mt-8"></div>
   </main>
 </BaseLayout>
 
@@ -83,6 +96,7 @@ import { SORT_ORDERS } from "../lib/sort-orders";
 
   let currentSort = "JLPT";
   let currentPage = 1;
+  let currentFilter = "all";
   let meta: Meta | null = null;
   const metaCache = new Map<string, Meta>();
   const pageCache = new Map<string, PageItem[]>();
@@ -90,6 +104,7 @@ import { SORT_ORDERS } from "../lib/sort-orders";
   // ─── DOM refs ───────────────────────────────────────────────────────────────
 
   const sortSelect = document.getElementById("sort-select") as HTMLSelectElement;
+  const filterSelect = document.getElementById("filter-select") as HTMLSelectElement;
   const wordList = document.getElementById("word-list")!;
   const loading = document.getElementById("loading")!;
   const paginationTop = document.getElementById("pagination")!;
@@ -101,32 +116,45 @@ import { SORT_ORDERS } from "../lib/sort-orders";
     const params = new URLSearchParams(window.location.search);
     currentSort = params.get("sort") || "JLPT";
     currentPage = Math.max(1, parseInt(params.get("page") || "1", 10));
+    currentFilter = params.get("filter") || "all";
     sortSelect.value = currentSort;
+    filterSelect.value = currentFilter;
   }
 
   function updateUrl() {
     const url = new URL(window.location.href);
     url.searchParams.set("sort", currentSort);
     url.searchParams.set("page", String(currentPage));
+    if (currentFilter !== "all") {
+      url.searchParams.set("filter", currentFilter);
+    } else {
+      url.searchParams.delete("filter");
+    }
     history.pushState(null, "", url.toString());
   }
 
   // ─── Data fetching ─────────────────────────────────────────────────────────
 
+  function apiBase(): string {
+    if (currentFilter !== "all") return `/api/filtered/${currentFilter}/sorted`;
+    return `/api/sorted`;
+  }
+
   async function fetchMeta(sortKey: string): Promise<Meta> {
-    const cached = metaCache.get(sortKey);
+    const cacheKey = `${currentFilter}:${sortKey}`;
+    const cached = metaCache.get(cacheKey);
     if (cached) return cached;
-    const res = await fetch(`/api/sorted/${sortKey}/meta.json`);
+    const res = await fetch(`${apiBase()}/${sortKey}/meta.json`);
     const data: Meta = await res.json();
-    metaCache.set(sortKey, data);
+    metaCache.set(cacheKey, data);
     return data;
   }
 
   async function fetchPage(sortKey: string, page: number): Promise<PageItem[]> {
-    const cacheKey = `${sortKey}:${page}`;
+    const cacheKey = `${currentFilter}:${sortKey}:${page}`;
     const cached = pageCache.get(cacheKey);
     if (cached) return cached;
-    const res = await fetch(`/api/sorted/${sortKey}/${page}.json`);
+    const res = await fetch(`${apiBase()}/${sortKey}/${page}.json`);
     const data = await res.json();
     pageCache.set(cacheKey, data.items);
     return data.items;
@@ -177,11 +205,11 @@ import { SORT_ORDERS } from "../lib/sort-orders";
     const btnBase = "inline-flex h-9 items-center justify-center rounded-xl border border-input bg-card px-3 text-sm font-semibold shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
 
     container.innerHTML = `
-      <button class="${btnBase}" data-page-action="first" ${currentPage === 1 ? "disabled" : ""} title="First page">&laquo;</button>
+      <button class="${btnBase}" data-page-action="back10" ${currentPage <= 1 ? "disabled" : ""} title="Back 10 pages">&laquo;</button>
       <button class="${btnBase}" data-page-action="prev" ${currentPage === 1 ? "disabled" : ""} title="Previous page">&lsaquo;</button>
       <span class="px-3 text-sm text-muted-foreground tabular-nums whitespace-nowrap font-semibold">${currentPage} / ${meta.totalPages}</span>
       <button class="${btnBase}" data-page-action="next" ${currentPage === meta.totalPages ? "disabled" : ""} title="Next page">&rsaquo;</button>
-      <button class="${btnBase}" data-page-action="last" ${currentPage === meta.totalPages ? "disabled" : ""} title="Last page">&raquo;</button>
+      <button class="${btnBase}" data-page-action="fwd10" ${currentPage >= meta.totalPages ? "disabled" : ""} title="Forward 10 pages">&raquo;</button>
     `;
   }
 
@@ -194,16 +222,23 @@ import { SORT_ORDERS } from "../lib/sort-orders";
     loadAndRender();
   });
 
+  filterSelect.addEventListener("change", () => {
+    currentFilter = filterSelect.value;
+    currentPage = 1;
+    updateUrl();
+    loadAndRender();
+  });
+
   // Pagination
   document.addEventListener("click", (e) => {
     const target = e.target as HTMLElement;
     const pageBtn = target.closest("[data-page-action]") as HTMLElement | null;
     if (pageBtn && meta) {
       const action = pageBtn.dataset.pageAction;
-      if (action === "first") currentPage = 1;
+      if (action === "back10") currentPage = Math.max(1, currentPage - 10);
       else if (action === "prev") currentPage = Math.max(1, currentPage - 1);
       else if (action === "next") currentPage = Math.min(meta.totalPages, currentPage + 1);
-      else if (action === "last") currentPage = meta.totalPages;
+      else if (action === "fwd10") currentPage = Math.min(meta.totalPages, currentPage + 10);
       updateUrl();
       loadAndRender();
       window.scrollTo({ top: 0, behavior: "smooth" });
