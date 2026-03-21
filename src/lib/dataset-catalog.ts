@@ -34,19 +34,19 @@ export const DATASET_CATALOG: DatasetSection[] = [
             columnId: "RSPEER",
             label: "RSPEER",
             description:
-              "Multi-source aggregate (Wikipedia, subtitles, news, books, web, Twitter/Reddit). Frozen ~2021.",
+              "rspeer/wordfreq multi-source aggregate (Wikipedia, subtitles, news, books, web, Twitter/Reddit). Frozen ~2021.",
           },
           {
             columnId: "cejc_combined_rank",
             label: "CEJC Combined",
             description:
-              "Everyday spoken Japanese — all conversations combined.",
+              "NINJAL's Corpus of Everyday Japanese Conversation — all conversations combined.",
           },
           {
             columnId: "cejc_small_talk_rank",
             label: "CEJC Small Talk",
             description:
-              "Everyday spoken Japanese — casual small talk only (雑談).",
+              "NINJAL CEJC — everyday spoken Japanese, casual small talk only (雑談).",
           },
           {
             columnId: "BCCWJ_LUW",
@@ -57,77 +57,80 @@ export const DATASET_CATALOG: DatasetSection[] = [
           {
             columnId: "BCCWJ_SUW",
             label: "BCCWJ (Short Unit)",
-            description: "Same BCCWJ corpus, short unit word tokenization.",
+            description:
+              "NINJAL BCCWJ — same corpus, short unit word tokenization.",
           },
           {
             columnId: "CC100_rank",
             label: "CC100",
             description:
-              "Filtered Japanese web text (~2020, ~70 GB). Broad contemporary vocabulary.",
+              "CommonCrawl-filtered Japanese web text (~2020, ~70 GB). Broad contemporary vocabulary.",
           },
           {
             columnId: "MALTESAA_NWJC",
             label: "NWJC",
             description:
-              "Web Japanese Corpus (~25.8B tokens, crawled 2014–2017).",
+              "NINJAL's Web Japanese Corpus (~25.8B tokens, crawled 2014–2017).",
           },
           {
             columnId: "MALTESAA_CSJ",
             label: "CSJ",
             description:
-              "Corpus of Spontaneous Japanese — all sub-corpora combined (~7M words).",
+              "NINJAL's Corpus of Spontaneous Japanese — all sub-corpora combined (~7M words).",
           },
           {
             columnId: "JITEN_GLOBAL",
             label: "Jiten Global",
             description:
-              "All jiten.moe media categories combined (~430k source entries).",
+              "jiten.moe — all media categories combined (~430k source entries).",
           },
           {
             columnId: "JITEN_DRAMA",
             label: "Jiten Drama",
-            description: "Japanese drama frequency (~217k source entries).",
+            description:
+              "jiten.moe — Japanese drama frequency (~217k source entries).",
           },
           {
             columnId: "ANIME_JDRAMA",
             label: "Anime + J-Drama",
             description:
-              "Anime and J-drama subtitles (~100k entries). Widely cited.",
+              "Anime and J-drama subtitles by Shoui (~100k entries). Widely cited.",
           },
           {
             columnId: "YOUTUBE_FREQ_V3",
             label: "YouTube V3",
             description:
-              "Manually transcribed YouTube across 16 spoken domains (~187k entries).",
+              "Manually transcribed YouTube across 16 spoken domains by MarvNC (~187k entries).",
           },
           {
             columnId: "NETFLIX",
             label: "Netflix",
             description:
-              "Netflix Japan subtitles — anime + drama + live-action (~129k entries).",
+              "Netflix Japan subtitles by Shoui — anime + drama + live-action (~129k entries).",
           },
           {
             columnId: "DD2_MORPHMAN_NETFLIX",
             label: "Netflix (Clean)",
             description:
-              "Netflix subtitles, proper names excluded (~105k entries).",
+              "Netflix subtitles by Dave Doebrick, proper names excluded (~105k entries).",
           },
           {
             columnId: "WIKIPEDIA_V2",
             label: "Wikipedia V2",
             description:
-              "Community-built Wikipedia frequency dictionary (~850k source entries).",
+              "Community-built Wikipedia frequency dictionary by MarvNC/Shoui (~850k source entries).",
           },
           {
             columnId: "ADNO",
             label: "ADNO",
-            description: "Wikipedia (Oct 2022 dump), carefully filtered.",
+            description:
+              "Wikipedia (Oct 2022 dump), carefully filtered. ADNO project.",
           },
           {
             columnId: "DD2_MORPHMAN_SOL",
             label: "Slice-of-Life",
             description:
-              "Slice-of-Life anime, Morphman/UniDic format (~45k entries).",
+              "Slice-of-Life anime by Dave Doebrick, Morphman/UniDic format (~45k entries).",
           },
         ],
       },
@@ -139,7 +142,7 @@ export const DATASET_CATALOG: DatasetSection[] = [
     title: "Academic / Research Corpora",
     subsections: [
       {
-        title: "CEJC — Corpus of Everyday Japanese Conversation",
+        title: "CEJC — NINJAL's Corpus of Everyday Japanese Conversation",
         datasets: [
           {
             columnId: "cejc_combined_rank",
@@ -214,7 +217,7 @@ export const DATASET_CATALOG: DatasetSection[] = [
         ],
       },
       {
-        title: "CSJ — Corpus of Spontaneous Japanese",
+        title: "CSJ — NINJAL's Corpus of Spontaneous Japanese",
         datasets: [
           {
             columnId: "MALTESAA_CSJ",
@@ -270,39 +273,42 @@ export const DATASET_CATALOG: DatasetSection[] = [
             columnId: "RSPEER",
             label: "RSPEER",
             description:
-              "Multi-source aggregate. Robust to single-corpus bias.",
+              "rspeer/wordfreq multi-source aggregate. Robust to single-corpus bias.",
           },
           {
             columnId: "BCCWJ_LUW",
             label: "BCCWJ (Long Unit)",
             description:
-              "Balanced written corpus, long unit word tokenization.",
+              "NINJAL BCCWJ balanced written corpus, long unit word tokenization.",
           },
           {
             columnId: "BCCWJ_SUW",
             label: "BCCWJ (Short Unit)",
-            description: "Same corpus, short unit word tokenization.",
+            description:
+              "NINJAL BCCWJ balanced written corpus, short unit word tokenization.",
           },
           {
             columnId: "CC100_rank",
             label: "CC100",
-            description: "Filtered Japanese web text (~2020).",
+            description: "CommonCrawl-filtered Japanese web text (~2020).",
           },
           {
             columnId: "MALTESAA_NWJC",
             label: "NWJC",
-            description: "Web Japanese Corpus (~25.8B tokens, 2014–2017).",
+            description:
+              "NINJAL's Web Japanese Corpus (~25.8B tokens, 2014–2017).",
           },
           {
             columnId: "HINGSTON",
             label: "Hingston",
-            description: "Leeds internet corpus (mid-2000s). Outdated.",
+            description: "Leeds Internet Corpus (mid-2000s). Outdated.",
             notRecommended: true,
           },
           {
             columnId: "KUUUUBE_JMDICT_FREQ",
             label: "JMdict Freq",
-            description: "Derived from JMdict newspaper frequency annotations.",
+            description:
+              "Derived from JMdict newspaper frequency annotations, not a raw corpus count.",
             notRecommended: true,
           },
         ],
@@ -397,24 +403,25 @@ export const DATASET_CATALOG: DatasetSection[] = [
             columnId: "WIKIPEDIA_V2",
             label: "Wikipedia V2",
             description:
-              "Community-built Wikipedia frequency dictionary (~850k source entries).",
+              "Community-built Wikipedia frequency dictionary by MarvNC/Shoui (~850k source entries).",
           },
           {
             columnId: "ADNO",
             label: "ADNO",
-            description: "Wikipedia (Oct 2022 dump), carefully filtered.",
+            description:
+              "Wikipedia (Oct 2022 dump), carefully filtered. ADNO project.",
           },
           {
             columnId: "HLORENZI_WIKIPEDIA",
             label: "Hlorenzi Wikipedia",
             description:
-              "Wikipedia word rankings from jisho-open (~20k entries).",
+              "Wikipedia word rankings from jisho-open by hlorenzi (~20k entries).",
           },
           {
             columnId: "ILYASEMENOV",
             label: "IlyaSemenov",
             description:
-              "Wikipedia (Aug 2022) — document frequency, not term frequency. Contains HTML noise.",
+              "Wikipedia (Aug 2022) by IlyaSemenov — document frequency, not term frequency. Contains HTML noise.",
             notRecommended: true,
           },
         ],
@@ -439,7 +446,7 @@ export const DATASET_CATALOG: DatasetSection[] = [
             columnId: "YOUTUBE_FREQ",
             label: "YouTube (Old)",
             description:
-              "Older YouTube transcription dataset (~56k entries). Superseded by V3.",
+              "Older YouTube transcription dataset by MarvNC (~56k entries). Superseded by V3.",
           },
         ],
       },
@@ -450,23 +457,25 @@ export const DATASET_CATALOG: DatasetSection[] = [
             columnId: "NETFLIX",
             label: "Netflix",
             description:
-              "Netflix Japan subtitles (~129k entries). Includes proper names.",
+              "Netflix Japan subtitles by Shoui (~129k entries). Includes proper names.",
           },
           {
             columnId: "DD2_MORPHMAN_NETFLIX",
             label: "Netflix (Clean)",
-            description: "Netflix, proper names excluded (~105k entries).",
+            description:
+              "Netflix by Dave Doebrick, proper names excluded (~105k entries).",
           },
           {
             columnId: "DAVE_DOEBRICK",
             label: "Dave Doebrick",
             description:
-              "Netflix collection (2019, ~53M kanji occurrences). Older.",
+              "Netflix collection by Dave Doebrick (2019, ~53M kanji occurrences). Older.",
           },
           {
             columnId: "DD2_MIGAKU_NETFLIX",
             label: "Netflix (Migaku)",
-            description: "Netflix, Migaku format (~102k entries).",
+            description:
+              "Netflix by Dave Doebrick, Migaku format (~102k entries).",
           },
           {
             columnId: "HERMITDAVE_2016",
@@ -489,12 +498,13 @@ export const DATASET_CATALOG: DatasetSection[] = [
             columnId: "DD2_MORPHMAN_SOL",
             label: "SOL (Morphman)",
             description:
-              "Slice-of-Life anime (~45k entries). Consistent lemmatization.",
+              "Slice-of-Life anime by Dave Doebrick (~45k entries). Consistent lemmatization.",
           },
           {
             columnId: "DD2_YOMICHAN_SOL",
             label: "SOL (Yomichan)",
-            description: "Slice-of-Life top 100 (~43k entries).",
+            description:
+              "Slice-of-Life anime by Dave Doebrick, Yomichan format (~43k entries).",
           },
         ],
       },
@@ -510,17 +520,18 @@ export const DATASET_CATALOG: DatasetSection[] = [
             columnId: "ANIME_JDRAMA",
             label: "Anime + J-Drama",
             description:
-              "Anime and J-drama subtitles (~100k entries). Widely cited.",
+              "Anime and J-drama subtitles by Shoui (~100k entries). Widely cited.",
           },
           {
             columnId: "HLORENZI_ANIMEDRAMA",
             label: "Hlorenzi Anime+Drama",
-            description: "Anime & drama subtitle rankings from jisho-open.",
+            description:
+              "Anime & drama subtitle rankings from jisho-open by hlorenzi.",
           },
           {
             columnId: "JITEN_ANIME_V2",
             label: "Jiten Anime V2",
-            description: "Anime — direct CSV export from jiten.moe.",
+            description: "jiten.moe — anime, direct CSV export.",
           },
           {
             columnId: "JPDB",
@@ -551,17 +562,20 @@ export const DATASET_CATALOG: DatasetSection[] = [
           {
             columnId: "DD2_MORPHMAN_SHONEN",
             label: "Shonen (Morphman)",
-            description: "Shonen manga/anime (~60k entries).",
+            description:
+              "Shonen manga/anime by Dave Doebrick (~60k entries).",
           },
           {
             columnId: "DD2_YOMICHAN_SHONEN",
             label: "Shonen (Yomichan)",
-            description: "Shonen top 100 titles (~56k entries).",
+            description:
+              "Shonen top 100 titles by Dave Doebrick (~56k entries).",
           },
           {
             columnId: "DD2_YOMICHAN_SHONEN_STARS",
             label: "Shonen (Stars)",
-            description: "Shonen manga/anime (~56k entries, stars format).",
+            description:
+              "Shonen manga/anime by Dave Doebrick (~56k entries, stars format).",
           },
         ],
       },
@@ -604,28 +618,31 @@ export const DATASET_CATALOG: DatasetSection[] = [
             columnId: "NOVELS",
             label: "Novels",
             description:
-              "10,000+ contemporary Japanese novels. Punctuation not filtered (rank 1 = 、).",
+              "10,000+ contemporary Japanese novels by Kuuube. Punctuation not filtered (rank 1 = 、).",
           },
           {
             columnId: "JITEN_NOVEL",
             label: "Jiten Novel",
             description:
-              "Novel frequency from jiten.moe (~285k source entries).",
+              "jiten.moe — novel frequency (~285k source entries).",
           },
           {
             columnId: "DD2_MORPHMAN_NOVELS",
             label: "Novels (Morphman)",
-            description: "Novels from Kindle (~126k entries).",
+            description:
+              "Novels from Kindle by Dave Doebrick (~126k entries).",
           },
           {
             columnId: "DD2_YOMICHAN_NOVELS",
             label: "Novels (Yomichan)",
-            description: "Novels (~89k entries).",
+            description:
+              "Novels by Dave Doebrick, Yomichan format (~89k entries).",
           },
           {
             columnId: "INNOCENT_RANKED",
             label: "Innocent Corpus",
-            description: "5,000+ novels reordered by rank. Older (~2010s).",
+            description:
+              "5,000+ novels (Innocent Corpus) reordered by rank. Older (~2010s).",
           },
         ],
       },
@@ -636,28 +653,30 @@ export const DATASET_CATALOG: DatasetSection[] = [
             columnId: "VN_FREQ",
             label: "VN Freq",
             description:
-              "100+ visual novel scripts (~30M words). UniDic lemma forms.",
+              "Community-compiled 100+ visual novel scripts (~30M words). UniDic lemma forms.",
           },
           {
             columnId: "JITEN_VISUAL_NOVEL",
             label: "Jiten Visual Novel",
-            description: "Visual novels from jiten.moe (~224k source entries).",
+            description:
+              "jiten.moe — visual novels (~224k source entries).",
           },
           {
             columnId: "DD2_YOMICHAN_VN",
             label: "VN (Yomichan)",
-            description: "Visual novels (~85k entries).",
+            description:
+              "Visual novels by Dave Doebrick, Yomichan format (~85k entries).",
           },
           {
             columnId: "JITEN_WEB_NOVEL",
             label: "Jiten Web Novel",
-            description: "Web novels from jiten.moe (~60k source entries).",
+            description: "jiten.moe — web novels (~60k source entries).",
           },
           {
             columnId: "NAROU",
             label: "Narou",
             description:
-              "Top 300 stories on 小説家になろう. Isekai/fantasy-heavy.",
+              "Top 300 stories on 小説家になろう (hobbyist, Kuromoji). Isekai/fantasy-heavy.",
           },
         ],
       },
@@ -667,19 +686,19 @@ export const DATASET_CATALOG: DatasetSection[] = [
           {
             columnId: "JITEN_MANGA",
             label: "Jiten Manga",
-            description: "Manga from jiten.moe (~264k source entries).",
+            description: "jiten.moe — manga (~264k source entries).",
           },
           {
             columnId: "JITEN_NON_FICTION",
             label: "Jiten Non-Fiction",
             description:
-              "Non-fiction, documentary, educational (~89k source entries).",
+              "jiten.moe — non-fiction, documentary, educational (~89k source entries).",
           },
           {
             columnId: "AOZORA_BUNKO",
             label: "Aozora Bunko",
             description:
-              "Pre-1953 public-domain literature. Zero hiragana entries by design.",
+              "Aozora Bunko — pre-1953 public-domain literature (Soseki, Akutagawa). Zero hiragana entries by design.",
             notRecommended: true,
           },
         ],
