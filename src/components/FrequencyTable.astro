@@ -7,6 +7,7 @@
 import { DATASET_CATALOG } from "../lib/dataset-catalog";
 import { getTier } from "../lib/tier";
 import type { Tier } from "../lib/tier";
+import { TIER_STYLE } from "../lib/badges";
 
 interface Props {
   ranks: Record<string, number>;
@@ -21,14 +22,6 @@ function getRank(columnId: string): number {
   if (ririkkuKey in ririkkuRanks) return ririkkuRanks[ririkkuKey];
   return -1;
 }
-
-const tierBadge: Record<Tier, string> = {
-  BASIC:    "tier-badge-basic bg-emerald-50 text-emerald-700 border-emerald-200",
-  COMMON:   "tier-badge-common bg-blue-50 text-blue-700 border-blue-200",
-  FLUENT:   "tier-badge-fluent bg-violet-50 text-violet-700 border-violet-200",
-  ADVANCED: "tier-badge-advanced bg-amber-50 text-amber-700 border-amber-200",
-  UNRANKED: "tier-badge-unranked bg-gray-50 text-gray-400 border-gray-200",
-};
 ---
 
 <div class="space-y-4">
@@ -70,7 +63,7 @@ const tierBadge: Record<Tier, string> = {
                       return (
                         <tr class={`border-b border-border last:border-0 transition-colors hover:bg-muted/50 ${dimmed} ${stripe}`}>
                           <td class="h-12 px-5 align-middle">
-                            <span class={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-bold ${tierBadge[tier]}`}>
+                            <span class={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-bold ${TIER_STYLE[tier].badge}`}>
                               {tier}
                             </span>
                           </td>

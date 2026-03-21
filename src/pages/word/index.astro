@@ -34,14 +34,7 @@ import WordCardSkeleton from "../../components/WordCardSkeleton.astro";
   import { DATASET_CATALOG } from "../../lib/dataset-catalog";
   import { initSearch } from "../../lib/search";
   import { renderWordCard, initWordCardHandlers, esc } from "../../lib/render-word-card";
-
-  const TIER_BADGE: Record<string, string> = {
-    BASIC:    "tier-badge-basic bg-emerald-50 text-emerald-700 border-emerald-200",
-    COMMON:   "tier-badge-common bg-blue-50 text-blue-700 border-blue-200",
-    FLUENT:   "tier-badge-fluent bg-violet-50 text-violet-700 border-violet-200",
-    ADVANCED: "tier-badge-advanced bg-amber-50 text-amber-700 border-amber-200",
-    UNRANKED: "tier-badge-unranked bg-gray-50 text-gray-400 border-gray-200",
-  };
+  import { TIER_STYLE } from "../../lib/badges";
 
   interface WordEntry {
     reading: string;
@@ -140,7 +133,7 @@ import WordCardSkeleton from "../../components/WordCardSkeleton.astro";
           return `
             <tr class="border-b border-border last:border-0 transition-colors hover:bg-muted/50 ${dimmed} ${stripe}">
               <td class="h-12 px-5 align-middle">
-                <span class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-bold ${TIER_BADGE[tier] || TIER_BADGE.UNRANKED}">${tier}</span>
+                <span class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-bold ${(TIER_STYLE[tier] || TIER_STYLE.UNRANKED).badge}">${tier}</span>
               </td>
               <td class="h-12 px-5 align-middle">
                 <code class="text-sm bg-muted px-2.5 py-1 rounded-lg">${esc(ds.columnId)}</code>
