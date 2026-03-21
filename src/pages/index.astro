@@ -7,11 +7,11 @@ import { SORT_ORDERS } from "../lib/sort-orders";
 
 <BaseLayout>
   <TitleHeader />
-  <main class="max-w-5xl mx-auto px-6 pt-18 pb-16">
+  <main class="max-w-5xl mx-auto ">
     <SearchInput />
 
     <!-- Controls bar -->
-    <div class="flex flex-wrap items-center justify-between gap-4 mt-5 mb-8">
+    <div class="flex flex-wrap items-center justify-between gap-0 pt-12 mb-8">
       <!-- Sort selector -->
       <div class="flex items-center gap-3">
         <label for="sort-select" class="text-sm font-semibold text-muted-foreground whitespace-nowrap">Sort by</label>
@@ -30,8 +30,28 @@ import { SORT_ORDERS } from "../lib/sort-orders";
       <div id="pagination" class="flex items-center gap-1.5"></div>
     </div>
 
-    <!-- Loading state -->
-    <div id="loading" class="text-center py-16 text-muted-foreground text-base font-medium">Loading...</div>
+    <!-- Loading state: skeleton cards -->
+    <div id="loading" class="space-y-4">
+      {Array.from({ length: 5 }).map(() => (
+        <div class="rounded-2xl border border-border bg-card shadow-sm animate-pulse">
+          <div class="flex items-start gap-5 p-6 sm:p-7">
+            <div class="flex flex-col gap-2.5 pt-1 shrink-0">
+              <div class="h-10 w-10 rounded-xl bg-muted"></div>
+              <div class="h-10 w-10 rounded-xl bg-muted"></div>
+            </div>
+            <div class="shrink-0">
+              <div class="h-12 w-28 rounded-lg bg-muted"></div>
+              <div class="h-4 w-20 rounded bg-muted mt-2"></div>
+            </div>
+            <div class="flex flex-wrap gap-2 flex-1 min-w-0 pt-1">
+              <div class="h-7 w-20 rounded-full bg-muted"></div>
+              <div class="h-7 w-24 rounded-full bg-muted"></div>
+              <div class="h-7 w-16 rounded-full bg-muted"></div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
 
     <!-- Word list -->
     <div id="word-list" class="space-y-4 hidden"></div>
@@ -150,18 +170,10 @@ import { SORT_ORDERS } from "../lib/sort-orders";
     if (!meta) return;
     const startIndex = (currentPage - 1) * meta.itemsPerPage;
 
-    wordList.innerHTML = items.map((item, i) => {
-      const rank = startIndex + i + 1;
-      return `
-        <div class="flex items-start gap-4">
-          <span class="text-sm text-muted-foreground w-14 pt-7 text-right shrink-0 tabular-nums font-semibold">${rank}</span>
-          <div class="flex-1">${renderWordCard(item)}</div>
-        </div>
-      `;
-    }).join("");
+    wordList.innerHTML = items.map((item, i) => renderWordCard(item, startIndex + i + 1)).join("");
   }
 
-  function renderWordCard(item: PageItem): string {
+  function renderWordCard(item: PageItem, listRank?: number): string {
     const { word, reading, jlpt, kaishi, ranks = {} } = item;
     const wordUrl = `/word/?w=${encodeURIComponent(word)}`;
     const showReading = reading !== word;
@@ -185,15 +197,17 @@ import { SORT_ORDERS } from "../lib/sort-orders";
     }
 
     const badgesHtml = badges.map((b) => renderBadge(b.label, b.value, b.tier, b.description)).join("");
+    const rankLabel = listRank != null ? `#${listRank.toLocaleString()}` : "";
 
     return `
-      <a href="${wordUrl}" class="block rounded-2xl border border-border bg-card text-card-foreground shadow-sm hover:border-primary/40 hover:shadow-md transition-all no-underline" data-word-card>
-        <div class="flex items-start gap-5 p-6 sm:p-7">
-          <div class="flex flex-col gap-2.5 pt-1 shrink-0">
+      <a href="${wordUrl}" class="block rounded-2xl  border border-border bg-card text-card-foreground shadow-sm hover:border-primary/40 hover:shadow-md transition-all no-underline relative" data-word-card>
+        ${rankLabel ? `<span class="absolute top-3 right-4 text-xs font-bold text-muted-foreground tabular-nums">${rankLabel}</span>` : ""}
+        <div class="flex items-start gap-5 p-4">
+          <div class="flex flex-col gap-2.5  shrink-0">
             <button class="tts-btn inline-flex h-10 w-10 items-center justify-center rounded-xl border border-input bg-background text-muted-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer" data-word="${escHtml(word)}" title="Listen to pronunciation">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg>
             </button>
-            <span class="relative inline-block">
+            <div class="relative inline-block">
               <button class="book-btn inline-flex h-10 w-10 items-center justify-center rounded-xl border border-input bg-background text-muted-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer" data-word="${escHtml(word)}" title="Dictionary links" aria-expanded="false" data-book-trigger>
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
               </button>
@@ -201,13 +215,13 @@ import { SORT_ORDERS } from "../lib/sort-orders";
                 <div class="absolute -top-1.5 left-3 h-3 w-3 rotate-45 border-l border-t border-border bg-popover"></div>
                 <p class="text-sm text-muted-foreground">TODO: ADD content here</p>
               </div>
-            </span>
+            </div>
           </div>
-          <div class="shrink-0">
-            <span class="block text-5xl sm:text-7xl font-bold text-foreground leading-tight" style="font-family: var(--font-japanese);">${escHtml(word)}</span>
-            ${showReading ? `<span class="block text-lg text-muted-foreground mt-1.5" style="font-family: var(--font-japanese);">${escHtml(reading)}</span>` : ""}
+          <div class="shrink-0 py-4">
+            <span class="block text-5xl sm:text-7xl font-bold text-foreground px-6 leading-tight" style="font-family: var(--font-japanese);">${escHtml(word)}</span>
+            ${showReading ? `<span class="block text-lg text-muted-foreground mt-1.5 px-6"  style="font-family: var(--font-japanese);">${escHtml(reading)}</span>` : ""}
           </div>
-          <div class="flex flex-wrap gap-2 content-start flex-1 min-w-0 pt-1">
+          <div class="flex flex-wrap gap-2 content-start flex-1 min-w-0 py-8">
             ${badgesHtml}
           </div>
         </div>
@@ -222,7 +236,7 @@ import { SORT_ORDERS } from "../lib/sort-orders";
 
     return `
       <span class="relative inline-block">
-        <button class="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-bold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${style.badge}" aria-expanded="false" aria-controls="${id}" data-badge-trigger>
+        <button class="inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-bold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${style.badge}" aria-expanded="false" aria-controls="${id}" data-badge-trigger>
           <span class="text-sm">${style.emoji}</span>
           <span>${escHtml(label)}</span>
           <span class="font-extrabold">${escHtml(String(displayValue))}</span>
