@@ -142,6 +142,11 @@ export function initWordCardHandlers() {
       if (popover) {
         const isHidden = popover.classList.toggle("hidden");
         bookTrigger.setAttribute("aria-expanded", String(!isHidden));
+        document.querySelectorAll<HTMLElement>(".word-card").forEach(c => c.style.zIndex = "");
+        if (!isHidden) {
+          const parentCard = popover.closest<HTMLElement>(".word-card");
+          if (parentCard) parentCard.style.zIndex = "10";
+        }
       }
       return;
     }
@@ -168,7 +173,10 @@ export function initWordCardHandlers() {
       if (popover) {
         const isHidden = popover.classList.toggle("hidden");
         badgeTrigger.setAttribute("aria-expanded", String(!isHidden));
+        document.querySelectorAll<HTMLElement>(".word-card").forEach(c => c.style.zIndex = "");
         if (!isHidden) {
+          const parentCard = popover.closest<HTMLElement>(".word-card");
+          if (parentCard) parentCard.style.zIndex = "10";
           const arrow = popover.querySelector<HTMLElement>(".popover-arrow");
           popover.style.left = "0";
           popover.style.right = "auto";

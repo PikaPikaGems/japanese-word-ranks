@@ -10,8 +10,16 @@ const unrankedBadge = TIER_STYLE.UNRANKED.badge;
     from { opacity: 0; transform: translateY(-20px) scaleY(0.8); }
     to { opacity: 1; transform: translateY(0) scaleY(1); }
   }
+  @keyframes accordion-collapse {
+    from { opacity: 1; transform: translateY(0) scaleY(1); }
+    to { opacity: 0; transform: translateY(-20px) scaleY(0.8); }
+  }
   details[open] > div {
     animation: accordion-expand 0.4s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+    transform-origin: top;
+  }
+  details > div.collapsing {
+    animation: accordion-collapse 0.3s ease-in both;
     transform-origin: top;
   }
 </style>
@@ -83,3 +91,21 @@ const unrankedBadge = TIER_STYLE.UNRANKED.badge;
     </details>
   ))}
 </div>
+
+<script>
+  document.querySelectorAll<HTMLDetailsElement>("details").forEach((details) => {
+    const summary = details.querySelector("summary");
+    const content = details.querySelector<HTMLElement>(":scope > div");
+    if (!summary || !content) return;
+
+    summary.addEventListener("click", (e) => {
+      if (!details.open) return; // opening — let browser handle normally
+      e.preventDefault();
+      content.classList.add("collapsing");
+      content.addEventListener("animationend", () => {
+        content.classList.remove("collapsing");
+        details.open = false;
+      }, { once: true });
+    });
+  });
+</script>
