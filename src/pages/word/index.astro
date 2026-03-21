@@ -2,6 +2,7 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import TitleHeader from "../../components/TitleHeader.astro";
 import SearchInput from "../../components/SearchInput.astro";
+import WordCardSkeleton from "../../components/WordCardSkeleton.astro";
 ---
 
 <BaseLayout title="Word Detail — Japanese Word Frequency">
@@ -10,23 +11,7 @@ import SearchInput from "../../components/SearchInput.astro";
     <SearchInput />
     <!-- Loading skeleton -->
     <div id="loading" class="mt-8 space-y-5">
-      <div class="rounded-2xl border border-border bg-card shadow-sm animate-pulse">
-        <div class="flex items-start gap-5 p-6 sm:p-7">
-          <div class="flex flex-col gap-2.5 pt-1 shrink-0">
-            <div class="h-10 w-10 rounded-xl bg-muted"></div>
-            <div class="h-10 w-10 rounded-xl bg-muted"></div>
-          </div>
-          <div class="shrink-0">
-            <div class="h-14 w-32 rounded-lg bg-muted"></div>
-            <div class="h-4 w-20 rounded bg-muted mt-2"></div>
-          </div>
-          <div class="flex flex-wrap gap-2 flex-1 min-w-0 pt-1">
-            <div class="h-7 w-20 rounded-full bg-muted"></div>
-            <div class="h-7 w-24 rounded-full bg-muted"></div>
-            <div class="h-7 w-16 rounded-full bg-muted"></div>
-          </div>
-        </div>
-      </div>
+      <WordCardSkeleton />
       <div class="rounded-2xl border border-border bg-card shadow-sm animate-pulse p-5">
         <div class="h-5 w-48 rounded bg-muted mb-4"></div>
         <div class="space-y-3">

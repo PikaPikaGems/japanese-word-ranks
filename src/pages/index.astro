@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import TitleHeader from "../components/TitleHeader.astro";
 import SearchInput from "../components/SearchInput.astro";
+import WordCardSkeleton from "../components/WordCardSkeleton.astro";
 import { SORT_ORDERS } from "../lib/sort-orders";
 ---
 
@@ -11,13 +12,13 @@ import { SORT_ORDERS } from "../lib/sort-orders";
     <SearchInput />
 
     <!-- Controls bar -->
-    <div class="flex flex-wrap items-center gap-6 pt-12 mb-4">
+    <div class="flex flex-wrap items-center gap-3 pt-12 px-2 ">
       <!-- Sort selector -->
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 w-full sm:w-fit ">
         <label for="sort-select" class="text-sm font-semibold text-muted-foreground whitespace-nowrap">Sort by</label>
         <select
           id="sort-select"
-          class="h-10 rounded-xl border border-input bg-card pl-4 pr-10 py-2 text-sm font-medium shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer appearance-none bg-no-repeat bg-size-[16px_16px] bg-position-[right_0.75rem_center]"
+          class="h-10 rounded-xl grow border border-input bg-card pl-4 pr-10 py-2 text-sm font-medium shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer appearance-none bg-no-repeat bg-size-[16px_16px] bg-position-[right_0.75rem_center]"
           style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E&quot;);"
         >
           {SORT_ORDERS.map((s) => (
@@ -26,11 +27,11 @@ import { SORT_ORDERS } from "../lib/sort-orders";
         </select>
       </div>
       <!-- Filter selector -->
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 w-full sm:w-fit">
         <label for="filter-select" class="text-sm font-semibold text-muted-foreground whitespace-nowrap">Filter</label>
         <select
           id="filter-select"
-          class="h-10 rounded-xl border border-input bg-card pl-4 pr-10 py-2 text-sm font-medium shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer appearance-none bg-no-repeat bg-size-[16px_16px] bg-position-[right_0.75rem_center]"
+          class="h-10 rounded-xl border grow border-input bg-card pl-4 pr-10 py-2 text-sm font-medium shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer appearance-none bg-no-repeat bg-size-[16px_16px] bg-position-[right_0.75rem_center]"
           style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E&quot;);"
         >
           <option value="all">All</option>
@@ -41,28 +42,12 @@ import { SORT_ORDERS } from "../lib/sort-orders";
     </div>
 
     <!-- Pagination -->
-    <div id="pagination" class="flex items-center justify-center gap-1.5 mb-8"></div>
+    <div id="pagination" class="flex items-center justify-center gap-1.5 my-8 w-full"></div>
 
     <!-- Loading state: skeleton cards -->
     <div id="loading" class="space-y-4">
       {Array.from({ length: 5 }).map(() => (
-        <div class="rounded-2xl border border-border bg-card shadow-sm animate-pulse">
-          <div class="flex items-start gap-5 p-6 sm:p-7">
-            <div class="flex flex-col gap-2.5 pt-1 shrink-0">
-              <div class="h-10 w-10 rounded-xl bg-muted"></div>
-              <div class="h-10 w-10 rounded-xl bg-muted"></div>
-            </div>
-            <div class="shrink-0">
-              <div class="h-12 w-28 rounded-lg bg-muted"></div>
-              <div class="h-4 w-20 rounded bg-muted mt-2"></div>
-            </div>
-            <div class="flex flex-wrap gap-2 flex-1 min-w-0 pt-1">
-              <div class="h-7 w-20 rounded-full bg-muted"></div>
-              <div class="h-7 w-24 rounded-full bg-muted"></div>
-              <div class="h-7 w-16 rounded-full bg-muted"></div>
-            </div>
-          </div>
-        </div>
+        <WordCardSkeleton />
       ))}
     </div>
 
