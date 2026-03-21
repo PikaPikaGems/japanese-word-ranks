@@ -14,11 +14,19 @@ Each task is standalone and dont require knowledge of other tasks. So you dont n
 
 # Task: bucket tier emoji
 
-Add a bucket tier emoji at the top right of the word card. just beside (the right side of) item number (#1, #2, ... etc) if it exists, if not just put it by itself. see `Alternative: Bucket Count Algorithm` section of SINGLE_RANK.md for context. use `Category Rank Ranges (Type A), Word count ≥3`
+Add a bucket tier emoji at the top right of the word card. just beside (the right side of) item number (#1, #2, ... etc) if it exists, if not just put it by itself. see `Alternative: Bucket Count Algorithm` section of SINGLE_RANK.md for context. use `Category Rank Ranges (Type A), Word count ≥3` BASIC, COMMON, FLUENT, ADVANCED, map to => 🌱, ☘️, 🌷, 📚, 🦉
 
 # Task: update dataset-catalog.ts so that the dataset description increases the credibility of the dataset
 
 - There no mention of the source of the dataset which decreases is credibility. Please add it like for example: "Japan's official balanced written corpus", update dataset-catalog.ts . See dataset-catalog.md and the markdowns in https://github.com/PikaPikaGems/japanese-word-frequency if you need more info. You can also search the net
+
+# Task: FrequencyTable.astro update:
+
+```
+                          <td data-rank-cell class="py-2.5 px-3 sm:px-5 align-middle text-right tabular-nums text-sm text-muted-foreground/40">
+                          <!-- TODO: Instead of tier BASIC, COMMON, FLUENT, ADVANCED,  can we put emojis instead? 🌱, ☘️, 🌷, 📚, 🦉  see also badges.ts file-->
+                            —
+```
 
 # To Think about
 
