@@ -159,10 +159,35 @@ See `data/frequency/dataset-catalog.md` for context
 
 # Style
 
-- Can we have a more "cute" or "kid-friendly" theme / style ? rounder borders ("rounded-full" for badges), and cuter shades / tones of selected colors (cuter shade of green, blue etc ). Similar to the feel of Duolingo.
+- Can we have a more "cute" or "kid-friendly" theme / style ? rounder borders ("rounded-full" for badges), bigger paddings around texts, and cuter shades / tones of selected colors (cuter shade of green, blue etc ). Similar to the feel of Duolingo.
 - I also want a dark and light mode
-- Can you also put a css transition when you collapse and expand the accordion
-- There's a problem with the badge popovers near the right side of the page. Because it's align-left, the popover gets cut off.
+- Change fonts, English font: Nunito font instead, Japanese font: Zen Maru Gothic, Do not use monospace fonts anywhere. Use nunito font everywhere.
+
+# Add css transition animations
+
+- initially loading Word Card
+- when opening badge popover
+- expanding and collapsing accordions in word page
+
+# Small change on badges
+
+Instead of a colored dot on the badge add emoji
+
+- BASIC 🌱
+- COMMON ☘️
+- FLUENT 🌷
+- ADVANCED 📚
+- RARE 🦉
+
+# root page
+
+- The pagination icons "<<" and ">>" behavior is INCORRECT. The correct behavior is jumping 10 pages (next and previous) aka big jump.
+- Sort by Select doesnt look good (caret icon looks misaligned, add padding)
+
+# Word Page
+
+- Do not show badges with a frequency rank of -1
+- Clicking on a word card (not just the word) should also redirect to the specific word word/?w=の
 
 # Name of Website (Ideas)
 
