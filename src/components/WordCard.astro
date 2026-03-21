@@ -66,12 +66,12 @@ for (const key of frequencyKeys) {
 const wordUrl = `/word/${encodeURIComponent(word)}`;
 ---
 
-<div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm">
-  <div class="flex items-start gap-4 p-5 sm:p-6">
+<div class="rounded-2xl border border-border bg-card text-card-foreground shadow-sm">
+  <div class="flex items-start gap-5 p-6 sm:p-7">
     <!-- Icon buttons column (iconC, iconD) -->
-    <div class="flex flex-col gap-2 pt-1 shrink-0">
+    <div class="flex flex-col gap-2.5 pt-1 shrink-0">
       <button
-        class="tts-btn inline-flex h-9 w-9 items-center justify-center rounded-md border border-input bg-background text-muted-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
+        class="tts-btn inline-flex h-10 w-10 items-center justify-center rounded-xl border border-input bg-background text-muted-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
         data-word={word}
         title="Listen to pronunciation"
       >
@@ -79,7 +79,7 @@ const wordUrl = `/word/${encodeURIComponent(word)}`;
       </button>
       <span class="relative inline-block">
         <button
-          class="book-btn inline-flex h-9 w-9 items-center justify-center rounded-md border border-input bg-background text-muted-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
+          class="book-btn inline-flex h-10 w-10 items-center justify-center rounded-xl border border-input bg-background text-muted-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
           data-word={word}
           title="Dictionary links"
           aria-expanded="false"
@@ -88,7 +88,7 @@ const wordUrl = `/word/${encodeURIComponent(word)}`;
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
         </button>
         <div
-          class="book-popover hidden absolute z-50 top-full left-0 mt-2 w-56 rounded-lg border border-border bg-popover p-4 text-popover-foreground shadow-md"
+          class="book-popover hidden absolute z-50 top-full left-0 mt-2 w-56 rounded-xl border border-border bg-popover p-5 text-popover-foreground shadow-md"
           data-book-popover
         >
           <div class="absolute -top-1.5 left-3 h-3 w-3 rotate-45 border-l border-t border-border bg-popover"></div>
@@ -109,14 +109,14 @@ const wordUrl = `/word/${encodeURIComponent(word)}`;
         </span>
       )}
       {hiragana !== word && (
-        <span class="block text-base text-muted-foreground mt-1" style="font-family: var(--font-japanese);">
+        <span class="block text-lg text-muted-foreground mt-1.5" style="font-family: var(--font-japanese);">
           {hiragana}
         </span>
       )}
     </div>
 
     <!-- Badges column -->
-    <div class="flex flex-wrap gap-1.5 content-start flex-1 min-w-0 pt-1">
+    <div class="flex flex-wrap gap-2 content-start flex-1 min-w-0 pt-1">
       {badges.map((badge) => (
         <BadgeWithPopover
           label={badge.label}

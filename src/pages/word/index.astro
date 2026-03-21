@@ -6,14 +6,14 @@ import SearchInput from "../../components/SearchInput.astro";
 
 <BaseLayout title="Word Detail — Japanese Word Frequency">
   <TitleHeader />
-  <main class="max-w-5xl mx-auto px-4 pt-16 pb-16">
+  <main class="max-w-5xl mx-auto px-6 pt-18 pb-16">
     <SearchInput />
-    <div id="loading" class="text-center py-12 text-muted-foreground text-sm">Loading...</div>
+    <div id="loading" class="text-center py-16 text-muted-foreground text-base font-medium">Loading...</div>
     <div id="word-detail" class="hidden">
-      <div id="word-card" class="mt-6 mb-8"></div>
-      <div id="frequency-table" class="space-y-4"></div>
+      <div id="word-card" class="mt-8 mb-10"></div>
+      <div id="frequency-table" class="space-y-5"></div>
     </div>
-    <div id="error" class="hidden text-center py-12 text-muted-foreground text-sm"></div>
+    <div id="error" class="hidden text-center py-16 text-muted-foreground text-base"></div>
   </main>
 </BaseLayout>
 
@@ -23,19 +23,19 @@ import SearchInput from "../../components/SearchInput.astro";
   import { DATASET_CATALOG } from "../../lib/dataset-catalog";
 
   const TIER_STYLES: Record<string, { badge: string; emoji: string }> = {
-    BASIC:    { badge: "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100", emoji: "🌱" },
-    COMMON:   { badge: "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100", emoji: "☘️" },
-    FLUENT:   { badge: "bg-violet-50 text-violet-700 border-violet-200 hover:bg-violet-100", emoji: "🌷" },
-    ADVANCED: { badge: "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100", emoji: "📚" },
-    UNRANKED: { badge: "bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100", emoji: "🦉" },
+    BASIC:    { badge: "badge-basic bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100", emoji: "🌱" },
+    COMMON:   { badge: "badge-common bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100", emoji: "☘️" },
+    FLUENT:   { badge: "badge-fluent bg-violet-50 text-violet-700 border-violet-200 hover:bg-violet-100", emoji: "🌷" },
+    ADVANCED: { badge: "badge-advanced bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100", emoji: "📚" },
+    UNRANKED: { badge: "badge-unranked bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100", emoji: "🦉" },
   };
 
   const TIER_BADGE: Record<string, string> = {
-    BASIC:    "bg-emerald-50 text-emerald-700 border-emerald-200",
-    COMMON:   "bg-blue-50 text-blue-700 border-blue-200",
-    FLUENT:   "bg-violet-50 text-violet-700 border-violet-200",
-    ADVANCED: "bg-amber-50 text-amber-700 border-amber-200",
-    UNRANKED: "bg-gray-50 text-gray-400 border-gray-200",
+    BASIC:    "tier-badge-basic bg-emerald-50 text-emerald-700 border-emerald-200",
+    COMMON:   "tier-badge-common bg-blue-50 text-blue-700 border-blue-200",
+    FLUENT:   "tier-badge-fluent bg-violet-50 text-violet-700 border-violet-200",
+    ADVANCED: "tier-badge-advanced bg-amber-50 text-amber-700 border-amber-200",
+    UNRANKED: "tier-badge-unranked bg-gray-50 text-gray-400 border-gray-200",
   };
 
   interface WordEntry {
@@ -131,17 +131,17 @@ import SearchInput from "../../components/SearchInput.astro";
     const badgesHtml = badges.map((b) => renderBadge(b.label, b.value, b.tier, b.description)).join("");
 
     return `
-      <div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm">
-        <div class="flex items-start gap-4 p-5 sm:p-6">
-          <div class="flex flex-col gap-2 pt-1 shrink-0">
-            <button class="tts-btn inline-flex h-9 w-9 items-center justify-center rounded-md border border-input bg-background text-muted-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer" data-word="${esc(word)}" title="Listen to pronunciation">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg>
+      <div class="rounded-2xl border border-border bg-card text-card-foreground shadow-sm">
+        <div class="flex items-start gap-5 p-6 sm:p-7">
+          <div class="flex flex-col gap-2.5 pt-1 shrink-0">
+            <button class="tts-btn inline-flex h-10 w-10 items-center justify-center rounded-xl border border-input bg-background text-muted-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer" data-word="${esc(word)}" title="Listen to pronunciation">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg>
             </button>
             <span class="relative inline-block">
-              <button class="book-btn inline-flex h-9 w-9 items-center justify-center rounded-md border border-input bg-background text-muted-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer" data-word="${esc(word)}" title="Dictionary links" aria-expanded="false" data-book-trigger>
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+              <button class="book-btn inline-flex h-10 w-10 items-center justify-center rounded-xl border border-input bg-background text-muted-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer" data-word="${esc(word)}" title="Dictionary links" aria-expanded="false" data-book-trigger>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
               </button>
-              <div class="book-popover hidden absolute z-50 top-full left-0 mt-2 w-56 rounded-lg border border-border bg-popover p-4 text-popover-foreground shadow-md" data-book-popover>
+              <div class="book-popover hidden absolute z-50 top-full left-0 mt-2 w-56 rounded-xl border border-border bg-popover p-5 text-popover-foreground shadow-md" data-book-popover>
                 <div class="absolute -top-1.5 left-3 h-3 w-3 rotate-45 border-l border-t border-border bg-popover"></div>
                 <p class="text-sm text-muted-foreground">TODO: ADD content here</p>
               </div>
@@ -149,9 +149,9 @@ import SearchInput from "../../components/SearchInput.astro";
           </div>
           <div class="shrink-0">
             <span class="block text-5xl sm:text-7xl font-bold text-foreground leading-tight" style="font-family: var(--font-japanese);">${esc(word)}</span>
-            ${showReading ? `<span class="block text-base text-muted-foreground mt-1" style="font-family: var(--font-japanese);">${esc(reading)}</span>` : ""}
+            ${showReading ? `<span class="block text-lg text-muted-foreground mt-1.5" style="font-family: var(--font-japanese);">${esc(reading)}</span>` : ""}
           </div>
-          <div class="flex flex-wrap gap-1.5 content-start flex-1 min-w-0 pt-1">
+          <div class="flex flex-wrap gap-2 content-start flex-1 min-w-0 pt-1">
             ${badgesHtml}
           </div>
         </div>
@@ -165,14 +165,14 @@ import SearchInput from "../../components/SearchInput.astro";
     const id = `pop-${label.replace(/\s+/g, "-")}-${Math.random().toString(36).slice(2, 6)}`;
     return `
       <span class="relative inline-block">
-        <button class="inline-flex items-center gap-1.5 rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${style.badge}" aria-expanded="false" aria-controls="${id}" data-badge-trigger>
-          <span class="text-xs">${style.emoji}</span>
+        <button class="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-bold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${style.badge}" aria-expanded="false" aria-controls="${id}" data-badge-trigger>
+          <span class="text-sm">${style.emoji}</span>
           <span>${esc(label)}</span>
-          <span class="font-bold">${esc(String(displayValue))}</span>
+          <span class="font-extrabold">${esc(String(displayValue))}</span>
         </button>
-        <div id="${id}" class="badge-popover hidden absolute z-50 top-full mt-2 w-72 rounded-lg border border-border bg-popover p-4 text-popover-foreground shadow-md" data-badge-popover>
+        <div id="${id}" class="badge-popover hidden absolute z-50 top-full mt-2 w-72 rounded-xl border border-border bg-popover p-5 text-popover-foreground shadow-md" data-badge-popover>
           <div class="popover-arrow absolute -top-1.5 h-3 w-3 rotate-45 border-l border-t border-border bg-popover"></div>
-          <p class="text-sm font-semibold mb-1">${esc(label)}</p>
+          <p class="text-sm font-bold mb-1">${esc(label)}</p>
           <p class="text-xs text-muted-foreground leading-relaxed">${esc(description)}</p>
         </div>
       </span>
@@ -192,7 +192,7 @@ import SearchInput from "../../components/SearchInput.astro";
     return DATASET_CATALOG.map((section, sIdx) => {
       const subsectionsHtml = section.subsections.map((sub) => {
         const subTitleHtml = sub.title
-          ? `<h3 class="text-xs font-medium uppercase tracking-widest text-muted-foreground mb-2">${esc(sub.title)}</h3>`
+          ? `<h3 class="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">${esc(sub.title)}</h3>`
           : "";
 
         const rowsHtml = sub.datasets.map((ds, i) => {
@@ -205,16 +205,16 @@ import SearchInput from "../../components/SearchInput.astro";
 
           return `
             <tr class="border-b border-border last:border-0 transition-colors hover:bg-muted/50 ${dimmed} ${stripe}">
-              <td class="h-9 px-3 align-middle">
-                <span class="inline-flex items-center rounded-md border px-2 py-0.5 text-[10px] font-semibold ${TIER_BADGE[tier] || TIER_BADGE.UNRANKED}">${tier}</span>
+              <td class="h-10 px-4 align-middle">
+                <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-bold ${TIER_BADGE[tier] || TIER_BADGE.UNRANKED}">${tier}</span>
               </td>
-              <td class="h-9 px-3 align-middle">
-                <code class="text-xs bg-muted px-1.5 py-0.5 rounded">${esc(ds.columnId)}</code>
+              <td class="h-10 px-4 align-middle">
+                <code class="text-xs bg-muted px-2 py-0.5 rounded-lg">${esc(ds.columnId)}</code>
               </td>
-              <td class="h-9 px-3 align-middle text-right tabular-nums ${isAbsent ? "text-muted-foreground/40" : "font-semibold text-foreground"}">
+              <td class="h-10 px-4 align-middle text-right tabular-nums ${isAbsent ? "text-muted-foreground/40" : "font-bold text-foreground"}">
                 ${isAbsent ? "—" : rank.toLocaleString()}
               </td>
-              <td class="h-9 px-3 align-middle text-muted-foreground text-xs">
+              <td class="h-10 px-4 align-middle text-muted-foreground text-xs">
                 ${esc(ds.description)}${notRecText}
               </td>
             </tr>
@@ -224,15 +224,15 @@ import SearchInput from "../../components/SearchInput.astro";
         return `
           <div>
             ${subTitleHtml}
-            <div class="rounded-md border border-border overflow-hidden">
+            <div class="rounded-xl border border-border overflow-hidden">
               <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                   <thead>
                     <tr class="border-b border-border bg-muted/50">
-                      <th class="h-9 px-3 text-left text-xs font-medium text-muted-foreground w-24">Tier</th>
-                      <th class="h-9 px-3 text-left text-xs font-medium text-muted-foreground w-48">Dataset</th>
-                      <th class="h-9 px-3 text-right text-xs font-medium text-muted-foreground w-20">Rank</th>
-                      <th class="h-9 px-3 text-left text-xs font-medium text-muted-foreground">Description</th>
+                      <th class="h-10 px-4 text-left text-xs font-semibold text-muted-foreground w-24">Tier</th>
+                      <th class="h-10 px-4 text-left text-xs font-semibold text-muted-foreground w-48">Dataset</th>
+                      <th class="h-10 px-4 text-right text-xs font-semibold text-muted-foreground w-20">Rank</th>
+                      <th class="h-10 px-4 text-left text-xs font-semibold text-muted-foreground">Description</th>
                     </tr>
                   </thead>
                   <tbody>${rowsHtml}</tbody>
@@ -244,12 +244,12 @@ import SearchInput from "../../components/SearchInput.astro";
       }).join("");
 
       return `
-        <details class="group rounded-lg border border-border" ${sIdx === 0 ? "open" : ""}>
-          <summary class="flex cursor-pointer items-center justify-between px-4 py-3 text-sm font-semibold text-foreground hover:bg-muted/50 transition-colors select-none list-none [&::-webkit-details-marker]:hidden">
+        <details class="group rounded-2xl border border-border" ${sIdx === 0 ? "open" : ""}>
+          <summary class="flex cursor-pointer items-center justify-between px-5 py-4 text-sm font-bold text-foreground hover:bg-muted/50 transition-colors select-none list-none [&::-webkit-details-marker]:hidden">
             <span>${esc(section.title)}</span>
             <svg class="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
           </summary>
-          <div class="border-t border-border px-4 pb-4 pt-3 space-y-5">${subsectionsHtml}</div>
+          <div class="border-t border-border px-5 pb-5 pt-4 space-y-6">${subsectionsHtml}</div>
         </details>
       `;
     }).join("");

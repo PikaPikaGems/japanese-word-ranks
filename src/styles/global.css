@@ -4,26 +4,26 @@
   --font-english: "Nunito", "Avenir Next", sans-serif;
   --font-japanese: "Zen Maru Gothic", "Noto Sans JP", "Klee One", sans-serif;
 
-  /* shadcn-inspired color tokens */
-  --color-background: oklch(1 0 0);
-  --color-foreground: oklch(0.145 0 0);
+  /* Cute kid-friendly light theme */
+  --color-background: oklch(0.985 0.002 90);
+  --color-foreground: oklch(0.25 0.02 280);
   --color-card: oklch(1 0 0);
-  --color-card-foreground: oklch(0.145 0 0);
+  --color-card-foreground: oklch(0.25 0.02 280);
   --color-popover: oklch(1 0 0);
-  --color-popover-foreground: oklch(0.145 0 0);
-  --color-primary: oklch(0.205 0 0);
-  --color-primary-foreground: oklch(0.985 0 0);
-  --color-secondary: oklch(0.965 0 0);
-  --color-secondary-foreground: oklch(0.205 0 0);
-  --color-muted: oklch(0.965 0 0);
-  --color-muted-foreground: oklch(0.556 0 0);
-  --color-accent: oklch(0.965 0 0);
-  --color-accent-foreground: oklch(0.205 0 0);
+  --color-popover-foreground: oklch(0.25 0.02 280);
+  --color-primary: oklch(0.55 0.18 155);
+  --color-primary-foreground: oklch(0.99 0 0);
+  --color-secondary: oklch(0.95 0.03 200);
+  --color-secondary-foreground: oklch(0.3 0.05 250);
+  --color-muted: oklch(0.96 0.015 220);
+  --color-muted-foreground: oklch(0.5 0.03 260);
+  --color-accent: oklch(0.94 0.04 290);
+  --color-accent-foreground: oklch(0.3 0.06 290);
   --color-destructive: oklch(0.577 0.245 27.325);
-  --color-border: oklch(0.922 0 0);
-  --color-input: oklch(0.922 0 0);
-  --color-ring: oklch(0.708 0 0);
-  --radius: 0.625rem;
+  --color-border: oklch(0.91 0.02 240);
+  --color-input: oklch(0.91 0.02 240);
+  --color-ring: oklch(0.6 0.15 155);
+  --radius: 1rem;
 }
 
 /* Base styles */
@@ -34,6 +34,50 @@
 body {
   color: var(--color-foreground);
   background: var(--color-background);
-  /* Prevent layout shift from scrollbar appearing/disappearing */
   overflow-y: scroll;
 }
+
+/* ─── Dark theme ─────────────────────────────────────────────────────────── */
+.dark {
+  --color-background: oklch(0.18 0.02 270);
+  --color-foreground: oklch(0.92 0.01 90);
+  --color-card: oklch(0.22 0.02 270);
+  --color-card-foreground: oklch(0.92 0.01 90);
+  --color-popover: oklch(0.24 0.02 270);
+  --color-popover-foreground: oklch(0.92 0.01 90);
+  --color-primary: oklch(0.7 0.18 155);
+  --color-primary-foreground: oklch(0.15 0.02 155);
+  --color-secondary: oklch(0.26 0.03 260);
+  --color-secondary-foreground: oklch(0.88 0.02 220);
+  --color-muted: oklch(0.25 0.02 260);
+  --color-muted-foreground: oklch(0.65 0.03 250);
+  --color-accent: oklch(0.28 0.04 290);
+  --color-accent-foreground: oklch(0.88 0.03 290);
+  --color-destructive: oklch(0.6 0.2 27);
+  --color-border: oklch(0.32 0.02 260);
+  --color-input: oklch(0.32 0.02 260);
+  --color-ring: oklch(0.7 0.15 155);
+}
+
+/* Dark-mode tier badge overrides */
+.dark .badge-basic    { background: oklch(0.25 0.06 155); color: oklch(0.8 0.12 155); border-color: oklch(0.35 0.08 155); }
+.dark .badge-basic:hover { background: oklch(0.3 0.07 155); }
+.dark .badge-common   { background: oklch(0.25 0.06 240); color: oklch(0.8 0.1 240);  border-color: oklch(0.35 0.08 240); }
+.dark .badge-common:hover { background: oklch(0.3 0.07 240); }
+.dark .badge-fluent   { background: oklch(0.25 0.06 300); color: oklch(0.8 0.1 300);  border-color: oklch(0.35 0.08 300); }
+.dark .badge-fluent:hover { background: oklch(0.3 0.07 300); }
+.dark .badge-advanced { background: oklch(0.25 0.06 70);  color: oklch(0.8 0.1 70);   border-color: oklch(0.35 0.07 70); }
+.dark .badge-advanced:hover { background: oklch(0.3 0.07 70); }
+.dark .badge-unranked { background: oklch(0.25 0.01 0);   color: oklch(0.65 0.02 0);  border-color: oklch(0.35 0.01 0); }
+.dark .badge-unranked:hover { background: oklch(0.3 0.01 0); }
+
+/* Dark-mode tier table badges */
+.dark .tier-badge-basic    { background: oklch(0.25 0.06 155); color: oklch(0.8 0.12 155); border-color: oklch(0.35 0.08 155); }
+.dark .tier-badge-common   { background: oklch(0.25 0.06 240); color: oklch(0.8 0.1 240);  border-color: oklch(0.35 0.08 240); }
+.dark .tier-badge-fluent   { background: oklch(0.25 0.06 300); color: oklch(0.8 0.1 300);  border-color: oklch(0.35 0.08 300); }
+.dark .tier-badge-advanced { background: oklch(0.25 0.06 70);  color: oklch(0.8 0.1 70);   border-color: oklch(0.35 0.07 70); }
+.dark .tier-badge-unranked { background: oklch(0.25 0.01 0);   color: oklch(0.65 0.02 0);  border-color: oklch(0.35 0.01 0); }
+
+/* Dark mode code/muted bg */
+.dark .bg-muted\/30 { background: oklch(0.22 0.02 260 / 0.3); }
+.dark .bg-muted\/50 { background: oklch(0.22 0.02 260 / 0.5); }
