@@ -1,0 +1,71 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import TitleHeader from "../components/TitleHeader.astro";
+---
+
+<BaseLayout title="FAQ — Japanese Word Rank Lookup">
+  <TitleHeader />
+  <main class="page-content max-w-3xl mx-auto px-6 pt-18 pb-16">
+    <h1 class="text-2xl font-bold mb-6">FAQ</h1>
+
+    <h2 class="text-lg font-bold mb-4">Word Card Tier Emoji</h2>
+
+    <h3 class="text-sm font-bold mb-2">What is the emoji at the top-right of each word card?</h3>
+    <p class="text-sm text-muted-foreground mb-4">
+      Each word card shows a tier emoji indicating how common that word is across Japanese language sources. It gives you a quick sense of how frequently the word appears in real Japanese — basic everyday words vs. advanced vocabulary.
+    </p>
+
+    <h3 class="text-sm font-bold mb-2">What does each emoji mean?</h3>
+    <div class="overflow-x-auto mb-6">
+      <table class="w-full text-sm text-muted-foreground border-collapse">
+        <thead>
+          <tr class="border-b border-border">
+            <th class="text-left py-2 pr-4 font-bold text-foreground">Emoji</th>
+            <th class="text-left py-2 pr-4 font-bold text-foreground">Tier</th>
+            <th class="text-left py-2 font-bold text-foreground">Rank Range</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border">
+          <tr><td class="py-2 pr-4">🌱</td><td class="py-2 pr-4">BASIC</td><td class="py-2">1 – 1,800</td></tr>
+          <tr><td class="py-2 pr-4">☘️</td><td class="py-2 pr-4">COMMON</td><td class="py-2">1,801 – 5,000</td></tr>
+          <tr><td class="py-2 pr-4">🌷</td><td class="py-2 pr-4">FLUENT</td><td class="py-2">5,001 – 12,000</td></tr>
+          <tr><td class="py-2 pr-4">📚</td><td class="py-2 pr-4">ADVANCED</td><td class="py-2">12,001 – 25,000</td></tr>
+          <tr><td class="py-2 pr-4">🦉</td><td class="py-2 pr-4">UNRANKED</td><td class="py-2">Not ranked / rare</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="text-sm font-bold mb-2">How is the tier computed?</h3>
+    <p class="text-sm text-muted-foreground mb-3">
+      The tier uses a <strong class="text-foreground">bucket count algorithm</strong> across 16 Japanese frequency datasets (subtitles, web text, spoken corpora, Wikipedia, etc.). For each word:
+    </p>
+    <ol class="list-decimal list-inside text-sm text-muted-foreground mb-3 space-y-1">
+      <li>Collect the word's rank from each dataset (ignore datasets where the word is absent).</li>
+      <li>If the word appears in fewer than 3 datasets, it is marked <strong class="text-foreground">UNRANKED</strong>.</li>
+      <li>Count how many dataset ranks fall into each tier bucket (BASIC, COMMON, FLUENT, ADVANCED).</li>
+      <li>Assign the tier with the most counts. On a tie, the higher tier wins.</li>
+    </ol>
+    <p class="text-sm text-muted-foreground mb-6">
+      This means a word reaches 🌱 BASIC only if <em>most</em> sources agree it is very common — not just one. It is a majority-vote across sources, making it more conservative than a simple minimum-rank approach.
+    </p>
+
+    <h3 class="text-sm font-bold mb-2">What are the 16 datasets used?</h3>
+    <ul class="list-disc list-inside text-sm text-muted-foreground mb-8 space-y-1">
+      <li>WordFreq (multi-source aggregate)</li>
+      <li>CEJC Combined & CEJC Small Talk (everyday spoken Japanese)</li>
+      <li>BCCWJ Long Unit & Short Unit (Japan's official balanced written corpus)</li>
+      <li>CC100 (contemporary web Japanese)</li>
+      <li>NWJC Web Corpus</li>
+      <li>Jiten Global & Jiten Drama (anime, manga, VN, games, J-drama)</li>
+      <li>Anime + J-Drama subtitles</li>
+      <li>YouTube V3 (spoken, 16 domains)</li>
+      <li>Netflix & Netflix Clean (anime, drama, live-action)</li>
+      <li>Wikipedia V2 & ADNO (Wikipedia frequency lists)</li>
+      <li>Slice-of-Life Anime</li>
+    </ul>
+
+    <p class="text-sm text-muted-foreground">
+      For full details see <a href="https://github.com/PikaPikaGems/japanese-word-frequency" class="underline hover:text-foreground">PikaPikaGems/japanese-word-frequency</a>.
+    </p>
+  </main>
+</BaseLayout>
