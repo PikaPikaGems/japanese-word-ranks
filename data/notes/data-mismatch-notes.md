@@ -2,11 +2,11 @@ So 406 words exist in both CSVs, have a valid CEJC rank in RIRIKKU, but are -1 i
 
 This isn't a "top 25k cutoff" issue. consolidated.csv has 14,200 words with CEJC data and 24,605 rows total, so it has capacity. 406 words with valid CEJC ranks just got dropped when consolidated.csv was built — likely a join/merge issue in whatever script produced it (different tokenization, reading mismatch, etc.).
 
-The UI fix handles it correctly, but if you want the consolidated.csv to be complete, the upstream script that generates it needs investigation.
-
 Yes, only 406 words are actually wrong — those exist in both CSVs but have a valid CEJC rank in RIRIKKU that's missing (-1) in consolidated.csv.
 
 The 16,707 number I gave earlier was misleading. Most of that is just words that are in RIRIKKU (~92k) but not in consolidated (~25k) at all — which is expected. The actual data bug in consolidated.csv only affects 406 words.
+
+Only the two CEJC columns (cejc_combined_rank and cejc_small_talk_rank) are affected — 406 words, 812 mismatched cells total. All other columns are consistent between the two CSVs. So the upstream issue is specifically with how CEJC data was merged into consolidated.csv.
 
 # Rank Mismatch
 
