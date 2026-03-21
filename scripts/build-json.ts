@@ -50,6 +50,34 @@ function writeJson(filePath: string, data: unknown) {
   fs.writeFileSync(filePath, JSON.stringify(data));
 }
 
+/**
+ * Returns true if the word is an actual Japanese word (not punctuation/symbols).
+ * Must start with a hiragana letter, katakana letter, or kanji.
+ * Excludes: dakuten/handakuten marks (゙゚゛゜), repeat marks (ゝゞヽヾ),
+ * middle dot (・), prolonged sound mark alone (ー), etc.
+ */
+function isJapaneseWord(word: string): boolean {
+  if (!word) return false;
+  const ch = word.codePointAt(0)!;
+
+  // Hiragana letters: U+3041 (ぁ) – U+3096 (ゖ), skip marks U+3099–U+309F
+  if (ch >= 0x3041 && ch <= 0x3096) return true;
+  // Katakana letters: U+30A1 (ァ) – U+30FA (ヺ), skip marks U+30FB–U+30FE
+  if (ch >= 0x30a1 && ch <= 0x30fa) return true;
+  // Katakana half-width: U+FF66 (ヲ) – U+FF9D (ン)
+  if (ch >= 0xff66 && ch <= 0xff9d) return true;
+  // CJK Unified Ideographs: U+4E00–U+9FFF
+  if (ch >= 0x4e00 && ch <= 0x9fff) return true;
+  // CJK Extension A: U+3400–U+4DBF
+  if (ch >= 0x3400 && ch <= 0x4dbf) return true;
+  // CJK Compatibility Ideographs: U+F900–U+FAFF
+  if (ch >= 0xf900 && ch <= 0xfaff) return true;
+  // 々 (iteration mark) and 〇 (zero)
+  if (ch === 0x3005 || ch === 0x3007) return true;
+
+  return false;
+}
+
 // ─── Main ───────────────────────────────────────────────────────────────────
 
 function main() {
@@ -72,8 +100,8 @@ function main() {
     kaishiLookup.set(`${entry.word}|${entry.reading}`, entry.order);
   }
 
-  // Enrich words
-  const enriched: EnrichedWord[] = ririkkuWords.map((rw) => {
+  // Enrich words and filter to Japanese-only
+  const allEnriched: EnrichedWord[] = ririkkuWords.map((rw) => {
     const jlpt = jlptData.get(rw.word) ?? null;
     const kaishiKey = `${rw.word}|${rw.hiragana}`;
     const kaishiOrder = kaishiLookup.get(kaishiKey) ?? -1;
@@ -88,6 +116,9 @@ function main() {
       ranks: rw.ranks,
     };
   });
+
+  const enriched = allEnriched.filter((w) => isJapaneseWord(w.word));
+  console.log(`  Filtered: ${allEnriched.length} → ${enriched.length} (removed ${allEnriched.length - enriched.length} non-Japanese entries)`);
 
   // Clean output directory
   if (fs.existsSync(OUTPUT_DIR)) {
