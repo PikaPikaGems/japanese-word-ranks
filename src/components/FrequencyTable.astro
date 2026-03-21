@@ -75,11 +75,11 @@ const tierBadge: Record<Tier, string> = {
                             </span>
                           </td>
                           <td class="h-9 px-3 align-middle">
-                            <code class="text-xs bg-muted px-1.5 py-0.5 rounded font-mono">
+                            <code class="text-xs bg-muted px-1.5 py-0.5 rounded">
                               {dataset.columnId}
                             </code>
                           </td>
-                          <td class={`h-9 px-3 align-middle text-right font-mono tabular-nums ${isAbsent ? "text-muted-foreground/40" : "font-semibold text-foreground"}`}>
+                          <td class={`h-9 px-3 align-middle text-right tabular-nums ${isAbsent ? "text-muted-foreground/40" : "font-semibold text-foreground"}`}>
                             {isAbsent ? "—" : rank.toLocaleString()}
                           </td>
                           <td class="h-9 px-3 align-middle text-muted-foreground text-xs">

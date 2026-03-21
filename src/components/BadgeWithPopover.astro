@@ -15,12 +15,12 @@ interface Props {
 
 const { label, value, tier = "UNRANKED", description = "" } = Astro.props;
 
-const tierStyles: Record<string, { badge: string; dot: string }> = {
-  BASIC:    { badge: "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100", dot: "bg-emerald-500" },
-  COMMON:   { badge: "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100", dot: "bg-blue-500" },
-  FLUENT:   { badge: "bg-violet-50 text-violet-700 border-violet-200 hover:bg-violet-100", dot: "bg-violet-500" },
-  ADVANCED: { badge: "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100", dot: "bg-amber-500" },
-  UNRANKED: { badge: "bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100", dot: "bg-gray-400" },
+const tierStyles: Record<string, { badge: string; emoji: string }> = {
+  BASIC:    { badge: "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100", emoji: "🌱" },
+  COMMON:   { badge: "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100", emoji: "☘️" },
+  FLUENT:   { badge: "bg-violet-50 text-violet-700 border-violet-200 hover:bg-violet-100", emoji: "🌷" },
+  ADVANCED: { badge: "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100", emoji: "📚" },
+  UNRANKED: { badge: "bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100", emoji: "🦉" },
 };
 
 const style = tierStyles[tier] ?? tierStyles.UNRANKED;
@@ -35,7 +35,7 @@ const uniqueId = `popover-${label.replace(/\s+/g, "-")}-${Math.random().toString
     aria-controls={uniqueId}
     data-badge-trigger
   >
-    <span class={`h-1.5 w-1.5 rounded-full ${style.dot}`}></span>
+    <span class="text-xs">{style.emoji}</span>
     <span>{label}</span>
     <span class="font-bold">{displayValue}</span>
   </button>

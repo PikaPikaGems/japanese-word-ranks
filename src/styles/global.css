@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --font-english: "Avenir Next", "Nunito", sans-serif;
-  --font-japanese: "Noto Sans JP", "Zen Maru Gothic", "Klee One", sans-serif;
+  --font-english: "Nunito", "Avenir Next", sans-serif;
+  --font-japanese: "Zen Maru Gothic", "Noto Sans JP", "Klee One", sans-serif;
 
   /* shadcn-inspired color tokens */
   --color-background: oklch(1 0 0);

@@ -22,12 +22,12 @@ import SearchInput from "../../components/SearchInput.astro";
   import { getTier, type Tier } from "../../lib/tier";
   import { DATASET_CATALOG } from "../../lib/dataset-catalog";
 
-  const TIER_STYLES: Record<string, { badge: string; dot: string }> = {
-    BASIC:    { badge: "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100", dot: "bg-emerald-500" },
-    COMMON:   { badge: "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100", dot: "bg-blue-500" },
-    FLUENT:   { badge: "bg-violet-50 text-violet-700 border-violet-200 hover:bg-violet-100", dot: "bg-violet-500" },
-    ADVANCED: { badge: "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100", dot: "bg-amber-500" },
-    UNRANKED: { badge: "bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100", dot: "bg-gray-400" },
+  const TIER_STYLES: Record<string, { badge: string; emoji: string }> = {
+    BASIC:    { badge: "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100", emoji: "🌱" },
+    COMMON:   { badge: "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100", emoji: "☘️" },
+    FLUENT:   { badge: "bg-violet-50 text-violet-700 border-violet-200 hover:bg-violet-100", emoji: "🌷" },
+    ADVANCED: { badge: "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100", emoji: "📚" },
+    UNRANKED: { badge: "bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100", emoji: "🦉" },
   };
 
   const TIER_BADGE: Record<string, string> = {
@@ -121,6 +121,7 @@ import SearchInput from "../../components/SearchInput.astro";
       badges.push({ label: "Kaishi", value: "✓", tier: "BASIC", description: "Kaishi 1500 beginner vocabulary deck." });
     }
     for (const [key, rank] of Object.entries(ranks)) {
+      if (rank === -1) continue;
       const so = SORT_ORDER_MAP.get(key);
       if (so) {
         badges.push({ label: so.label, value: rank, tier: getTier(rank), description: so.description });
@@ -165,7 +166,7 @@ import SearchInput from "../../components/SearchInput.astro";
     return `
       <span class="relative inline-block">
         <button class="inline-flex items-center gap-1.5 rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${style.badge}" aria-expanded="false" aria-controls="${id}" data-badge-trigger>
-          <span class="h-1.5 w-1.5 rounded-full ${style.dot}"></span>
+          <span class="text-xs">${style.emoji}</span>
           <span>${esc(label)}</span>
           <span class="font-bold">${esc(String(displayValue))}</span>
         </button>
@@ -181,7 +182,7 @@ import SearchInput from "../../components/SearchInput.astro";
   // ─── Frequency Table ───────────────────────────────────────────────────────
 
   function getRank(columnId: string, ranks: Record<string, number>, ririkkuRanks: Record<string, number>): number {
-    if (columnId in ranks) return ranks[columnId];
+    if (columnId in ranks && ranks[columnId] !== -1) return ranks[columnId];
     const ririkkuKey = columnId === "CC100_rank" ? "CC100" : columnId;
     if (ririkkuKey in ririkkuRanks) return ririkkuRanks[ririkkuKey];
     return -1;
@@ -208,9 +209,9 @@ import SearchInput from "../../components/SearchInput.astro";
                 <span class="inline-flex items-center rounded-md border px-2 py-0.5 text-[10px] font-semibold ${TIER_BADGE[tier] || TIER_BADGE.UNRANKED}">${tier}</span>
               </td>
               <td class="h-9 px-3 align-middle">
-                <code class="text-xs bg-muted px-1.5 py-0.5 rounded font-mono">${esc(ds.columnId)}</code>
+                <code class="text-xs bg-muted px-1.5 py-0.5 rounded">${esc(ds.columnId)}</code>
               </td>
-              <td class="h-9 px-3 align-middle text-right font-mono tabular-nums ${isAbsent ? "text-muted-foreground/40" : "font-semibold text-foreground"}">
+              <td class="h-9 px-3 align-middle text-right tabular-nums ${isAbsent ? "text-muted-foreground/40" : "font-semibold text-foreground"}">
                 ${isAbsent ? "—" : rank.toLocaleString()}
               </td>
               <td class="h-9 px-3 align-middle text-muted-foreground text-xs">

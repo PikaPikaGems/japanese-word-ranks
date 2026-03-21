@@ -17,7 +17,8 @@ import { SORT_ORDERS } from "../lib/sort-orders";
         <label for="sort-select" class="text-sm font-medium text-muted-foreground whitespace-nowrap">Sort by</label>
         <select
           id="sort-select"
-          class="h-9 rounded-md border border-input bg-background px-3 pr-8 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
+          class="h-9 rounded-md border border-input bg-background pl-3 pr-9 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer appearance-none bg-no-repeat bg-size-[16px_16px] bg-position-[right_0.5rem_center]"
+          style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E&quot;);"
         >
           {SORT_ORDERS.map((s) => (
             <option value={s.key}>{s.label}</option>
@@ -45,12 +46,12 @@ import { SORT_ORDERS } from "../lib/sort-orders";
   import { getTier, type Tier } from "../lib/tier";
   import { initSearch } from "../lib/search";
 
-  const TIER_STYLES: Record<string, { badge: string; dot: string }> = {
-    BASIC:    { badge: "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100", dot: "bg-emerald-500" },
-    COMMON:   { badge: "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100", dot: "bg-blue-500" },
-    FLUENT:   { badge: "bg-violet-50 text-violet-700 border-violet-200 hover:bg-violet-100", dot: "bg-violet-500" },
-    ADVANCED: { badge: "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100", dot: "bg-amber-500" },
-    UNRANKED: { badge: "bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100", dot: "bg-gray-400" },
+  const TIER_STYLES: Record<string, { badge: string; emoji: string }> = {
+    BASIC:    { badge: "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100", emoji: "🌱" },
+    COMMON:   { badge: "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100", emoji: "☘️" },
+    FLUENT:   { badge: "bg-violet-50 text-violet-700 border-violet-200 hover:bg-violet-100", emoji: "🌷" },
+    ADVANCED: { badge: "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100", emoji: "📚" },
+    UNRANKED: { badge: "bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100", emoji: "🦉" },
   };
 
   interface PageItem {
@@ -153,7 +154,7 @@ import { SORT_ORDERS } from "../lib/sort-orders";
       const rank = startIndex + i + 1;
       return `
         <div class="flex items-start gap-3">
-          <span class="text-xs text-muted-foreground font-mono w-12 pt-6 text-right shrink-0 tabular-nums">${rank}</span>
+          <span class="text-xs text-muted-foreground w-12 pt-6 text-right shrink-0 tabular-nums">${rank}</span>
           <div class="flex-1">${renderWordCard(item)}</div>
         </div>
       `;
@@ -176,6 +177,7 @@ import { SORT_ORDERS } from "../lib/sort-orders";
       badges.push({ label: "Kaishi", value: "✓", tier: "BASIC", description: "Kaishi 1500 beginner vocabulary deck." });
     }
     for (const [key, rank] of Object.entries(ranks)) {
+      if (rank === -1) continue;
       const so = SORT_ORDER_MAP.get(key);
       if (so) {
         badges.push({ label: so.label, value: rank, tier: getTier(rank), description: so.description });
@@ -185,7 +187,7 @@ import { SORT_ORDERS } from "../lib/sort-orders";
     const badgesHtml = badges.map((b) => renderBadge(b.label, b.value, b.tier, b.description)).join("");
 
     return `
-      <div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm">
+      <a href="${wordUrl}" class="block rounded-lg border border-border bg-card text-card-foreground shadow-sm hover:border-primary/30 transition-colors no-underline" data-word-card>
         <div class="flex items-start gap-4 p-5 sm:p-6">
           <div class="flex flex-col gap-2 pt-1 shrink-0">
             <button class="tts-btn inline-flex h-9 w-9 items-center justify-center rounded-md border border-input bg-background text-muted-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer" data-word="${escHtml(word)}" title="Listen to pronunciation">
@@ -202,14 +204,14 @@ import { SORT_ORDERS } from "../lib/sort-orders";
             </span>
           </div>
           <div class="shrink-0">
-            <a href="${wordUrl}" class="block text-5xl sm:text-7xl font-bold text-foreground hover:text-primary/80 transition-colors leading-tight" style="font-family: var(--font-japanese);">${escHtml(word)}</a>
+            <span class="block text-5xl sm:text-7xl font-bold text-foreground leading-tight" style="font-family: var(--font-japanese);">${escHtml(word)}</span>
             ${showReading ? `<span class="block text-base text-muted-foreground mt-1" style="font-family: var(--font-japanese);">${escHtml(reading)}</span>` : ""}
           </div>
           <div class="flex flex-wrap gap-1.5 content-start flex-1 min-w-0 pt-1">
             ${badgesHtml}
           </div>
         </div>
-      </div>
+      </a>
     `;
   }
 
@@ -221,7 +223,7 @@ import { SORT_ORDERS } from "../lib/sort-orders";
     return `
       <span class="relative inline-block">
         <button class="inline-flex items-center gap-1.5 rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${style.badge}" aria-expanded="false" aria-controls="${id}" data-badge-trigger>
-          <span class="h-1.5 w-1.5 rounded-full ${style.dot}"></span>
+          <span class="text-xs">${style.emoji}</span>
           <span>${escHtml(label)}</span>
           <span class="font-bold">${escHtml(String(displayValue))}</span>
         </button>
@@ -282,6 +284,7 @@ import { SORT_ORDERS } from "../lib/sort-orders";
     // TTS
     const ttsBtn = target.closest(".tts-btn") as HTMLElement | null;
     if (ttsBtn) {
+      e.preventDefault();
       const word = ttsBtn.dataset.word;
       if (word && "speechSynthesis" in window) {
         const utterance = new SpeechSynthesisUtterance(word);
@@ -299,6 +302,7 @@ import { SORT_ORDERS } from "../lib/sort-orders";
       el.parentElement?.querySelector("[data-book-trigger]")?.setAttribute("aria-expanded", "false");
     });
     if (bookTrigger) {
+      e.preventDefault();
       const popover = bookTrigger.parentElement?.querySelector("[data-book-popover]") as HTMLElement | null;
       if (popover) {
         const isHidden = popover.classList.toggle("hidden");
@@ -316,6 +320,7 @@ import { SORT_ORDERS } from "../lib/sort-orders";
       btn?.setAttribute("aria-expanded", "false");
     });
     if (badgeTrigger) {
+      e.preventDefault();
       const id = badgeTrigger.getAttribute("aria-controls");
       const popover = id ? document.getElementById(id) : null;
       if (popover) {
