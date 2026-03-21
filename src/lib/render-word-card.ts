@@ -95,8 +95,8 @@ export function renderWordCard(data: WordCardData, options: WordCardOptions = {}
   return `
     <div class="rounded-2xl border border-border bg-card text-card-foreground shadow-sm relative ${hoverClasses}" ${linkedAttrs}>
       ${rankLabel ? `<span class="absolute top-3 right-4 text-xs font-bold text-muted-foreground tabular-nums">${rankLabel}</span>` : ""}
-      <div class="flex items-start gap-5 p-4">
-        <div class="flex flex-col gap-2.5 shrink-0">
+      <div class="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-5 p-4 sm:p-6">
+        <div class="flex flex-row sm:flex-col gap-2.5 shrink-0 order-3 sm:order-1">
           <button class="tts-btn inline-flex h-10 w-10 items-center justify-center rounded-xl border border-input bg-background text-muted-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer" data-word="${esc(word)}" title="Listen to pronunciation">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg>
           </button>
@@ -116,11 +116,11 @@ export function renderWordCard(data: WordCardData, options: WordCardOptions = {}
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
           </button>
         </div>
-        <div class="shrink-0 py-4">
-          <span class="block text-5xl sm:text-7xl font-bold text-foreground px-6 leading-tight" style="font-family: var(--font-japanese);">${esc(word)}</span>
-          ${showReading ? `<span class="block text-lg text-muted-foreground mt-1.5 px-6" style="font-family: var(--font-japanese);">${esc(reading)}</span>` : ""}
+        <div class="shrink-0 sm:py-4 order-1 sm:order-2">
+          <span class="block text-5xl sm:text-7xl font-bold text-foreground sm:px-6 leading-tight" style="font-family: var(--font-japanese);">${esc(word)}</span>
+          ${showReading ? `<span class="block text-lg text-muted-foreground mt-1.5 sm:px-6" style="font-family: var(--font-japanese);">${esc(reading)}</span>` : ""}
         </div>
-        <div class="flex flex-wrap gap-2 content-start flex-1 min-w-0 py-8">
+        <div class="flex flex-wrap gap-2 content-start sm:flex-1 min-w-0 sm:py-8 order-2 sm:order-3">
           ${badgesHtml}
         </div>
       </div>

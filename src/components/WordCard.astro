@@ -68,9 +68,9 @@ const wordUrl = `/word/?w=${encodeURIComponent(word)}`;
 ---
 
 <div class="rounded-2xl border border-border bg-card text-card-foreground shadow-sm">
-  <div class="flex items-start gap-5 p-6 sm:p-7">
+  <div class="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-5 p-4 sm:p-7">
     <!-- Icon buttons column (iconC, iconD) -->
-    <div class="flex flex-col gap-2.5 pt-1 shrink-0">
+    <div class="flex flex-row sm:flex-col gap-2.5 sm:pt-1 shrink-0 order-3 sm:order-1">
       <button
         class="tts-btn inline-flex h-10 w-10 items-center justify-center rounded-xl border border-input bg-background text-muted-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
         data-word={word}
@@ -113,7 +113,7 @@ const wordUrl = `/word/?w=${encodeURIComponent(word)}`;
     </div>
 
     <!-- Big word -->
-    <div class="shrink-0">
+    <div class="shrink-0 order-1 sm:order-2">
       {linked ? (
         <a href={wordUrl} class="block text-5xl sm:text-7xl font-bold text-foreground hover:text-primary/80 transition-colors leading-tight" style="font-family: var(--font-japanese);">
           {word}
@@ -131,7 +131,7 @@ const wordUrl = `/word/?w=${encodeURIComponent(word)}`;
     </div>
 
     <!-- Badges column -->
-    <div class="flex flex-wrap gap-2 content-start flex-1 min-w-0 pt-1">
+    <div class="flex flex-wrap gap-2 content-start sm:flex-1 min-w-0 sm:pt-1 order-2 sm:order-3">
       {badges.map((badge) => (
         <BadgeWithPopover
           label={badge.label}
