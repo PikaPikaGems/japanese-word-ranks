@@ -15,7 +15,7 @@
 - English Font: "Avenir Next", fallback "Nunito"
 - Japanese Font: Noto Sans JP, Zen Maru Gothic, Klee One
 
-# Home Page Design `/?sort-order=JLPT`
+# Home Page Design `/?sort-order=JLPT&page=1` or
 
 ```
 
@@ -157,11 +157,12 @@ See `data/frequency/dataset-catalog.md` for context
 
 (And when you click "View More", display everything , display everything in the current order you are currently displaying now. )
 
-# Design Decision
+# Style
 
-- Don't build 90 pages (word) SSG anymore for each word (not worth it since its only frequencies information, no other information)
-- But still considering to build SSG for static pagination frequency SORT ORDERS ?
-- Question: `/order/JLPT/1` or `/?sort-order=JLPT&page=1`
+- Can we have a more "cute" or "kid-friendly" theme / style ? rounder borders ("rounded-full" for badges), and cuter shades / tones of selected colors (cuter shade of green, blue etc ). Similar to the feel of Duolingo.
+- I also want a dark and light mode
+- Can you also put a css transition when you collapse and expand the accordion
+- There's a problem with the badge popovers near the right side of the page. Because it's align-left, the popover gets cut off.
 
 # Name of Website (Ideas)
 
