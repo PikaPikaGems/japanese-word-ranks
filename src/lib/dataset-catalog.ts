@@ -566,8 +566,21 @@ export const DATASET_CATALOG: DatasetSection[] = [
         ],
       },
       {
-        title: "Other / Miscellaneous",
+        title: "Video Games / Miscellaneous",
         datasets: [
+          {
+            columnId: "JITEN_VIDEO_GAME",
+            label: "Jiten Video Game",
+            description: "Video games (~159k source entries).",
+          },
+
+          {
+            columnId: "NIER",
+            label: "NieR",
+            description:
+              "Single game series script (~10,077 entries). No general vocabulary signal.",
+            notRecommended: true,
+          },
           {
             columnId: "H_FREQ",
             label: "H_FREQ",
@@ -667,24 +680,6 @@ export const DATASET_CATALOG: DatasetSection[] = [
             label: "Aozora Bunko",
             description:
               "Pre-1953 public-domain literature. Zero hiragana entries by design.",
-            notRecommended: true,
-          },
-        ],
-      },
-      {
-        title: "Video Games",
-        datasets: [
-          {
-            columnId: "JITEN_VIDEO_GAME",
-            label: "Jiten Video Game",
-            description: "Video games (~159k source entries).",
-          },
-
-          {
-            columnId: "NIER",
-            label: "NieR",
-            description:
-              "Single game series script (~10,077 entries). No general vocabulary signal.",
             notRecommended: true,
           },
         ],
