@@ -77,13 +77,24 @@ const wordUrl = `/word/${encodeURIComponent(word)}`;
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg>
       </button>
-      <button
-        class="book-btn inline-flex h-9 w-9 items-center justify-center rounded-md border border-input bg-background text-muted-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
-        data-word={word}
-        title="Dictionary links"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-      </button>
+      <span class="relative inline-block">
+        <button
+          class="book-btn inline-flex h-9 w-9 items-center justify-center rounded-md border border-input bg-background text-muted-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
+          data-word={word}
+          title="Dictionary links"
+          aria-expanded="false"
+          data-book-trigger
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        </button>
+        <div
+          class="book-popover hidden absolute z-50 top-full left-0 mt-2 w-56 rounded-lg border border-border bg-popover p-4 text-popover-foreground shadow-md"
+          data-book-popover
+        >
+          <div class="absolute -top-1.5 left-3 h-3 w-3 rotate-45 border-l border-t border-border bg-popover"></div>
+          <p class="text-sm text-muted-foreground">TODO: ADD content here</p>
+        </div>
+      </span>
     </div>
 
     <!-- Big word -->
@@ -130,10 +141,21 @@ const wordUrl = `/word/${encodeURIComponent(word)}`;
       }
     }
 
-    const bookBtn = (e.target as HTMLElement).closest(".book-btn");
-    if (bookBtn) {
-      const word = (bookBtn as HTMLElement).dataset.word;
-      alert(`INSERT_LINKS_TO_EXTERNAL_DICTIONARY_LATER\n\nWord: ${word}`);
+    const bookTrigger = (e.target as HTMLElement).closest("[data-book-trigger]");
+
+    // Close all book popovers (unless clicking the one being toggled)
+    document.querySelectorAll("[data-book-popover]").forEach((el) => {
+      if (bookTrigger && el === bookTrigger.parentElement?.querySelector("[data-book-popover]")) return;
+      el.classList.add("hidden");
+      el.parentElement?.querySelector("[data-book-trigger]")?.setAttribute("aria-expanded", "false");
+    });
+
+    if (bookTrigger) {
+      const popover = bookTrigger.parentElement?.querySelector("[data-book-popover]") as HTMLElement | null;
+      if (popover) {
+        const isHidden = popover.classList.toggle("hidden");
+        bookTrigger.setAttribute("aria-expanded", String(!isHidden));
+      }
     }
   });
 </script>

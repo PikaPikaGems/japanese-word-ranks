@@ -34,4 +34,6 @@
 body {
   color: var(--color-foreground);
   background: var(--color-background);
+  /* Prevent layout shift from scrollbar appearing/disappearing */
+  overflow-y: scroll;
 }
