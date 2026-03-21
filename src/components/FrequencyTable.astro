@@ -46,8 +46,8 @@ const unrankedBadge = TIER_STYLE.UNRANKED.badge;
                 <table class="w-full text-sm">
                   <thead>
                     <tr class="border-b border-border bg-muted/50">
-                      <th class="py-3 px-3 sm:px-5 text-left text-sm font-semibold text-muted-foreground w-20 sm:w-28">Tier</th>
-                      <th class="py-3 px-3 sm:px-5 text-right text-sm font-semibold text-muted-foreground w-16 sm:w-24">Rank</th>
+                      <th class="py-3 px-3 sm:px-5 text-left text-sm font-semibold text-muted-foreground">Tier</th>
+                      <th class="py-3 px-3 sm:px-5 text-right text-sm font-semibold text-muted-foreground">Rank</th>
                       <th class="py-3 px-3 sm:px-5 text-left text-sm font-semibold text-muted-foreground w-32 sm:w-44 md:w-52">Dataset</th>
                       <th class="py-3 px-3 sm:px-5 text-left text-sm font-semibold text-muted-foreground min-w-32 sm:min-w-48">Description</th>
                     </tr>
@@ -58,13 +58,12 @@ const unrankedBadge = TIER_STYLE.UNRANKED.badge;
                       const dimmed = dataset.notRecommended ? "opacity-50" : "";
                       return (
                         <tr data-column-id={dataset.columnId} class={`border-b border-border last:border-0 transition-colors hover:bg-muted/50 ${dimmed} ${stripe}`}>
-                          <td class=" px-3 sm:px-5 align-middle">
-                            <span data-tier-badge class={`inline-flex items-center rounded-full border px-2 sm:px-3 py-1 text-xs font-bold ${unrankedBadge}`}>
-                              UNRANKED
+                          <td class="px-2 align-middle">
+                            <span data-tier-badge class={`inline-flex items-center rounded-full border px-2 sm:px-3 py-1 text-base ${unrankedBadge}`}>
+                              🦉
                             </span>
                           </td>
-                          <td data-rank-cell class="py-2.5 px-3 sm:px-5 align-middle text-right tabular-nums text-sm text-muted-foreground/40">
-                          <!-- TODO: Instead of tier BASIC, COMMON, FLUENT, ADVANCED, can we put emojis instead? 🌱, ☘️, 🌷, 📚, 🦉  see also badges.ts file-->
+                          <td data-rank-cell class="  align-middle text-right tabular-nums text-sm text-muted-foreground/40">
                             —
                           </td>
                           <td class="py-2.5 sm:px-5 align-middle min-w-42 sm:min-w-60">

@@ -40,6 +40,7 @@ import FrequencyTable from "../../components/FrequencyTable.astro";
   interface WordEntry {
     reading: string;
     ririkkuRank: number;
+    tier?: string;
     jlpt?: number;
     kaishi?: boolean;
     ranks: Record<string, number>;
@@ -89,7 +90,7 @@ import FrequencyTable from "../../components/FrequencyTable.astro";
 
   function render(word: string, entries: WordEntry[]) {
     const primary = entries[0];
-    updateWordCard({ word, reading: primary.reading, jlpt: primary.jlpt, kaishi: primary.kaishi, ranks: primary.ranks });
+    updateWordCard({ word, reading: primary.reading, jlpt: primary.jlpt, kaishi: primary.kaishi, ranks: primary.ranks, tier: primary.tier });
 
     const allRanks: Record<string, number> = {};
     const ririkkuRanks: Record<string, number> = {};
@@ -105,7 +106,7 @@ import FrequencyTable from "../../components/FrequencyTable.astro";
 
   // ─── Word Card ─────────────────────────────────────────────────────────────
 
-  function updateWordCard(data: { word: string; reading: string; jlpt?: number; kaishi?: boolean; ranks?: Record<string, number> }) {
+  function updateWordCard(data: { word: string; reading: string; jlpt?: number; kaishi?: boolean; ranks?: Record<string, number>; tier?: string }) {
     fillWordCard(detailEl.querySelector<HTMLElement>(".word-card")!, data);
   }
 
@@ -128,8 +129,8 @@ import FrequencyTable from "../../components/FrequencyTable.astro";
       const style = TIER_STYLE[tier] || TIER_STYLE.UNRANKED;
 
       const badge = row.querySelector<HTMLElement>("[data-tier-badge]")!;
-      badge.className = `inline-flex items-center rounded-full border px-2 sm:px-3 py-1 text-xs font-bold ${style.badge}`;
-      badge.textContent = tier;
+      badge.className = `inline-flex items-center rounded-full px-2 sm:px-3 py-1 text-base`; // ${style.badge}
+      badge.textContent = style.emoji;
 
       const rankCell = row.querySelector<HTMLElement>("[data-rank-cell]")!;
       rankCell.textContent = isAbsent ? "—" : rank.toLocaleString();

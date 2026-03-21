@@ -9,6 +9,7 @@ export interface WordCardData {
   jlpt?: number;
   kaishi?: boolean;
   ranks?: Record<string, number>;
+  tier?: string;
 }
 
 export interface WordCardOptions {
@@ -65,6 +66,9 @@ export function fillWordCard(card: HTMLElement, data: WordCardData, options: Wor
 
   const rankLabel = card.querySelector<HTMLElement>("[data-rank-label]");
   if (rankLabel) rankLabel.textContent = listRank != null ? `#${listRank.toLocaleString()}` : "";
+
+  const tierEmoji = card.querySelector<HTMLElement>("[data-tier-emoji]");
+  if (tierEmoji) tierEmoji.textContent = data.tier ? (TIER_STYLE[data.tier as Tier]?.emoji ?? "") : "";
 
   if (linked) {
     card.dataset.wordCard = "";
