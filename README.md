@@ -1,6 +1,13 @@
 # Japanese Word Rank Lookup
 
+See how often a Japanese word appears in everyday conversations, Netflix, YouTube, Wikipedia, and more.
 A free, fully static website for looking up Japanese word frequency rankings across multiple datasets. Search by kana, kanji, or romaji to see how common a word is across different corpora.
+
+## Screenshots
+
+![Screenshot1](screenshots/Screenshot1.png)
+![Screenshot2](screenshots/Screenshot2.png)
+![Screenshot3](screenshots/Screenshot3.png)
 
 ## Features
 
@@ -11,7 +18,6 @@ A free, fully static website for looking up Japanese word frequency rankings acr
 - Filter by katakana-only or non-katakana words
 - JLPT level (N5–N1) and Kaishi 1500 badges
 - Light and dark theme
-- No analytics, no cookies, no tracking
 
 ## Tech Stack
 
