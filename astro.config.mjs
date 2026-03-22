@@ -2,7 +2,7 @@ import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import AstroPWA from "@vite-pwa/astro";
 
-const base = "/japanese-word-ranks";
+const base = process.env.GITHUB_PAGES ? "/japanese-word-ranks" : "";
 
 export default defineConfig({
   site: "https://pikapikagems.github.io",
@@ -38,7 +38,7 @@ export default defineConfig({
         runtimeCaching: [
           {
             // Cache-first for all /api/* JSON data files
-            urlPattern: /\/japanese-word-ranks\/api\/.*/i,
+            urlPattern: /\/api\/.*/i,
             handler: "CacheFirst",
             options: {
               cacheName: "api-json-cache",
