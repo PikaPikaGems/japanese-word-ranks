@@ -33,8 +33,9 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // Precache app shell assets only (not the 30K+ API JSON files)
-        globPatterns: ["**/*.{html,css,js,ico,png,svg,woff,woff2}"],
+        // Precache app shell assets (CSS/JS/icons only — NOT HTML pages)
+        globPatterns: ["**/*.{css,js,ico,png,svg,woff,woff2}"],
+        navigateFallback: null,
         runtimeCaching: [
           {
             // Cache-first for all /api/* JSON data files
