@@ -42,7 +42,7 @@ export function buildBadges(data: WordCardData): { label: string; value: string 
 
 export function renderBadge(label: string, value: string | number, tier: Tier, description: string): string {
   const style = TIER_STYLE[tier] || TIER_STYLE.UNRANKED;
-  const displayValue = value === -1 || value === "-1" ? "—" : value;
+  const displayValue = value === -1 || value === "-1" ? "—" : typeof value === "number" ? value.toLocaleString() : value;
   const id = `pop-${label.replace(/\s+/g, "-")}-${Math.random().toString(36).slice(2, 6)}`;
   return `
     <span class="relative inline-block">
