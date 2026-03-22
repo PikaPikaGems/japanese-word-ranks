@@ -64,6 +64,24 @@ import TitleHeader from "../components/TitleHeader.astro";
       <li>Slice-of-Life Anime</li>
     </ul>
 
+    <h2 class="text-lg font-bold mb-4">Duplicate Entries</h2>
+
+    <h3 class="text-sm font-bold mb-2">Why do some words have duplicate entries?</h3>
+    <p class="text-sm text-muted-foreground mb-3">
+      Some words appear more than once because the underlying dataset contains separate entries for the <strong class="text-foreground">kanji form</strong> and the <strong class="text-foreground">kana-only form</strong> of the same word. For example, <span lang="ja">食べる</span> and <span lang="ja">たべる</span> each have their own row with their own frequency ranks — even though they represent the same word.
+    </p>
+    <p class="text-sm text-muted-foreground mb-3">
+      Automatically merging these is surprisingly difficult:
+    </p>
+    <ul class="list-disc list-inside text-sm text-muted-foreground mb-3 space-y-1">
+      <li><strong class="text-foreground">Same reading ≠ same word.</strong> <span lang="ja">する</span> (to do), <span lang="ja">刷る</span> (to print), and <span lang="ja">擦る</span> (to rub) all read <span lang="ja">する</span> but are completely different words.</li>
+      <li><strong class="text-foreground">One-to-many matches.</strong> The kana <span lang="ja">いる</span> could correspond to <span lang="ja">居る</span>, <span lang="ja">炒る</span>, <span lang="ja">要る</span>, or <span lang="ja">射る</span>.</li>
+      <li><strong class="text-foreground">Function words overlap.</strong> <span lang="ja">ます</span> (polite suffix) and <span lang="ja">増す</span> (to increase) share a reading but are not the same word.</li>
+    </ul>
+    <p class="text-sm text-muted-foreground mb-8">
+      Rather than risk incorrect merges, we keep both entries so you can see the original frequency data for each form as it appears in the source dataset.
+    </p>
+
     <p class="text-sm text-muted-foreground">
       For full details see <a href="https://github.com/PikaPikaGems/japanese-word-frequency" class="underline hover:text-foreground">PikaPikaGems/japanese-word-frequency</a>.
     </p>
