@@ -66,16 +66,21 @@ const unrankedBadge = TIER_STYLE.UNRANKED.badge;
                           <td data-rank-cell class="  align-middle text-right tabular-nums text-sm text-muted-foreground/40">
                             —
                           </td>
-                          <td class="py-2.5 sm:px-5 align-middle min-w-42 sm:min-w-60">
+                          <td class="py-2.5 sm:px-5 align-middle min-w-42 sm:min-w-72">
                             <code class="text-xs sm:text-sm bg-muted px-1.5 sm:px-2.5 py-1  rounded-lg break-all">
                               {dataset.columnId}
                             </code>
                           </td>
-                          <td class="px-3 sm:px-5 align-middle py-4 text-muted-foreground text-xs sm:text-sm min-w-64 sm:min-w-48">
-                            {dataset.description}
-                            {dataset.notRecommended && (
-                              <span class="ml-1 text-amber-600 font-medium">⚠ Not recommended</span>
+                          <td class="px-3 sm:px-5 align-middle py-4 text-xs sm:text-sm min-w-64 sm:min-w-48">
+                            {dataset.source && (
+                              <div class="text-xs font-medium text-foreground/60 mb-0.5">{dataset.source}</div>
                             )}
+                            <div class="text-muted-foreground">
+                              {dataset.description}
+                              {dataset.notRecommended && (
+                                <span class="ml-1 text-amber-600 font-medium">⚠ Not recommended</span>
+                              )}
+                            </div>
                           </td>
                         </tr>
                       );
