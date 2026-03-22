@@ -28,18 +28,18 @@ A free, fully static website for looking up Japanese word frequency rankings acr
 ## Getting Started
 
 ```bash
-npm install
-npm run dev
+pnpm install
+pnpm run dev
 ```
 
 ## Scripts
 
-| Command              | Description                                                   |
-| -------------------- | ------------------------------------------------------------- |
-| `npm run dev`        | Start the Astro dev server                                    |
-| `npm run build:data` | Generate JSON API files from CSV/JSON source data             |
-| `npm run build`      | Run `build:data` then `astro build` for full production build |
-| `npm run preview`    | Preview the production build locally                          |
+| Command               | Description                                                   |
+| --------------------- | ------------------------------------------------------------- |
+| `pnpm run dev`        | Start the Astro dev server                                    |
+| `pnpm run build:data` | Generate JSON API files from CSV/JSON source data             |
+| `pnpm run build`      | Run `build:data` then `astro build` for full production build |
+| `pnpm run preview`    | Preview the production build locally                          |
 
 ## How It Works
 

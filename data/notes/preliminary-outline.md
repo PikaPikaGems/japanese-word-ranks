@@ -154,3 +154,5 @@ Total words: 24605
 # Credits
 
 - Mock UI: https://wiretext.app/
+- https://ogimagemaker.com/
+- https://favicon.io/emoji-favicons/owl
