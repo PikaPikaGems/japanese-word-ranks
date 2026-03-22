@@ -57,6 +57,7 @@ Frequency data is consolidated from [PikaPikaGems/japanese-word-frequency](https
 - [rspeer/wordfreq](https://github.com/rspeer/wordfreq)
 - [Maltesaa/CSJ_and_NWJC_yomitan_freq_dict](https://github.com/Maltesaa/CSJ_and_NWJC_yomitan_freq_dict)
 - [hingston/japanese](https://github.com/hingston/japanese)
+- [hlorenzi/jisho-open/](https://github.com/hlorenzi/jisho-open/)
 
 JLPT data from [tanos.co.uk/jlpt](https://www.tanos.co.uk/jlpt/). Kaishi deck data from [donkuri/kaishi](https://github.com/donkuri/kaishi).
 
