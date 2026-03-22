@@ -7,6 +7,7 @@ interface Props {
 
 const { title = "Japanese Word Rank Lookup" } = Astro.props;
 const description = "See how often a Japanese word appears in everyday conversations, Netflix, YouTube, Wikipedia, and more."
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 ---
 
 <!doctype html>
@@ -19,7 +20,7 @@ const description = "See how often a Japanese word appears in everyday conversat
     <!-- Social preview / Open Graph -->
     <meta property="og:title" content={title} />
     <meta property="og:description" content="Look up Japanese word frequency rankings across multiple datasets. Search by kana, kanji, or romaji." />
-    <meta property="og:image" content="/social-preview/social-preview.png" />
+    <meta property="og:image" content={`${base}/social-preview/social-preview.png`} />
     <meta property="og:type" content="website" />
 
     <!-- Twitter Card -->
@@ -27,13 +28,13 @@ const description = "See how often a Japanese word appears in everyday conversat
     <meta name="twitter:site" content="@pikapikagemsjp" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description}  />
-    <meta name="twitter:image" content="/social-preview/social-preview.png" />
+    <meta name="twitter:image" content={`${base}/social-preview/social-preview.png`} />
 
-    <link rel="icon" type="image/x-icon" href="/favicon/favicon.ico" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
-    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/x-icon" href={`${base}/favicon/favicon.ico`} />
+    <link rel="icon" type="image/png" sizes="16x16" href={`${base}/favicon/favicon-16x16.png`} />
+    <link rel="icon" type="image/png" sizes="32x32" href={`${base}/favicon/favicon-32x32.png`} />
+    <link rel="apple-touch-icon" sizes="180x180" href={`${base}/favicon/apple-touch-icon.png`} />
+    <link rel="manifest" href={`${base}/manifest.webmanifest`} />
     <title>{title}</title>
 
     <!-- Google Fonts: Nunito (English fallback), Noto Sans JP, Zen Maru Gothic, Klee One -->
@@ -43,6 +44,11 @@ const description = "See how often a Japanese word appears in everyday conversat
       href="https://fonts.googleapis.com/css2?family=Klee+One&family=Noto+Sans+JP:wght@300;400;500;700&family=Nunito:wght@400;600;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
+
+    <!-- Base path for client-side scripts -->
+    <script is:inline define:vars={{ base }}>
+      window.__BASE__ = base;
+    </script>
 
     <!-- Prevent flash of wrong theme -->
     <script is:inline>
@@ -65,10 +71,10 @@ const description = "See how often a Japanese word appears in everyday conversat
           <div>
             <h3 class="font-bold text-foreground mb-2">Pages</h3>
             <ul class="space-y-1 text-muted-foreground">
-              <li><a href="/about" class="hover:text-foreground transition-colors">About + Credits</a></li>
-              <li><a href="/faq" class="hover:text-foreground transition-colors">FAQ</a></li>
-              <li><a href="/privacy" class="hover:text-foreground transition-colors">Privacy Policy</a></li>
-              <li><a href="/terms" class="hover:text-foreground transition-colors">Terms of Use</a></li>
+              <li><a href={`${base}/about`} class="hover:text-foreground transition-colors">About + Credits</a></li>
+              <li><a href={`${base}/faq`} class="hover:text-foreground transition-colors">FAQ</a></li>
+              <li><a href={`${base}/privacy`} class="hover:text-foreground transition-colors">Privacy Policy</a></li>
+              <li><a href={`${base}/terms`} class="hover:text-foreground transition-colors">Terms of Use</a></li>
             </ul>
           </div>
 
@@ -137,7 +143,7 @@ const description = "See how often a Japanese word appears in everyday conversat
     <script is:inline>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js', { scope: '/' });
+          navigator.serviceWorker.register(window.__BASE__ + '/sw.js', { scope: window.__BASE__ + '/' });
         });
       }
     </script>

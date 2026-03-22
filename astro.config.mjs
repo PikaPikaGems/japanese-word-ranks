@@ -2,7 +2,11 @@ import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import AstroPWA from "@vite-pwa/astro";
 
+const base = "/japanese-word-ranks";
+
 export default defineConfig({
+  site: "https://pikapikagems.github.io",
+  base,
   integrations: [
     AstroPWA({
       registerType: "autoUpdate",
@@ -14,15 +18,15 @@ export default defineConfig({
         theme_color: "#000000",
         background_color: "#ffffff",
         display: "standalone",
-        start_url: "/",
+        start_url: `${base}/`,
         icons: [
           {
-            src: "/favicon/android-chrome-192x192.png",
+            src: `${base}/favicon/android-chrome-192x192.png`,
             sizes: "192x192",
             type: "image/png",
           },
           {
-            src: "/favicon/android-chrome-512x512.png",
+            src: `${base}/favicon/android-chrome-512x512.png`,
             sizes: "512x512",
             type: "image/png",
           },
@@ -34,7 +38,7 @@ export default defineConfig({
         runtimeCaching: [
           {
             // Cache-first for all /api/* JSON data files
-            urlPattern: /\/api\/.*/i,
+            urlPattern: /\/japanese-word-ranks\/api\/.*/i,
             handler: "CacheFirst",
             options: {
               cacheName: "api-json-cache",

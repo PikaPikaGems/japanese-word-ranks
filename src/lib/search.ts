@@ -11,6 +11,14 @@ import {
   katakanaToHiragana,
 } from "./romaji";
 
+declare global {
+  interface Window { __BASE__: string; }
+}
+
+function base(): string {
+  return (window as Window).__BASE__ || "";
+}
+
 function escHtml(str: string): string {
   return str
     .replace(/&/g, "&amp;")
@@ -42,7 +50,7 @@ export function initSearch() {
     if (cached) return cached;
     try {
       const res = await fetch(
-        `/api/search/${type}/${encodeURIComponent(key)}.json`,
+        `${base()}/api/search/${type}/${encodeURIComponent(key)}.json`,
       );
       if (!res.ok) return [];
       const data: [string, string][] = await res.json();
@@ -130,7 +138,7 @@ export function initSearch() {
   }
 
   function navigateToWord(word: string) {
-    window.location.href = `/word/?w=${encodeURIComponent(word)}`;
+    window.location.href = `${base()}/word/?w=${encodeURIComponent(word)}`;
   }
 
   // ─── Events ───────────────────────────────────────────────────────────
@@ -189,9 +197,9 @@ export function initSearch() {
   if (randomBtn) {
     randomBtn.addEventListener("click", async () => {
       try {
-        const meta = await (await fetch("/api/sorted/JLPT/meta.json")).json();
+        const meta = await (await fetch(`${base()}/api/sorted/JLPT/meta.json`)).json();
         const page = Math.floor(Math.random() * meta.totalPages) + 1;
-        const data = await (await fetch(`/api/sorted/JLPT/${page}.json`)).json();
+        const data = await (await fetch(`${base()}/api/sorted/JLPT/${page}.json`)).json();
         const items: { word: string }[] = data.items;
         if (items.length > 0) {
           navigateToWord(items[Math.floor(Math.random() * items.length)].word);

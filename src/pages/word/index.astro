@@ -67,7 +67,7 @@ import FrequencyTable from "../../components/FrequencyTable.astro";
 
     try {
       const firstChar = word.charAt(0);
-      const res = await fetch(`/api/words/${encodeURIComponent(firstChar)}/${encodeURIComponent(word)}.json`);
+      const res = await fetch(`${window.__BASE__}/api/words/${encodeURIComponent(firstChar)}/${encodeURIComponent(word)}.json`);
       if (!res.ok) {
         showError(`Word "${word}" not found.`);
         return;

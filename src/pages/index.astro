@@ -124,8 +124,9 @@ import { SORT_ORDERS } from "../lib/sort-orders";
   // ─── Data fetching ─────────────────────────────────────────────────────────
 
   function apiBase(): string {
-    if (currentFilter !== "all") return `/api/filtered/${currentFilter}/sorted`;
-    return `/api/sorted`;
+    const b = window.__BASE__ || "";
+    if (currentFilter !== "all") return `${b}/api/filtered/${currentFilter}/sorted`;
+    return `${b}/api/sorted`;
   }
 
   async function fetchMeta(sortKey: string): Promise<Meta> {

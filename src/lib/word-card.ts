@@ -3,6 +3,10 @@ import { TIER_STYLE } from "./badges";
 import { SORT_ORDER_MAP } from "./sort-orders";
 import { DICTIONARY_LINKS } from "./external-links";
 
+function base(): string {
+  return (window as Window & { __BASE__?: string }).__BASE__ || "";
+}
+
 export interface WordCardData {
   word: string;
   reading: string;
@@ -62,7 +66,7 @@ export function renderBadge(label: string, value: string | number, tier: Tier, d
 
 export function fillWordCard(card: HTMLElement, data: WordCardData, options: WordCardOptions = {}) {
   const { linked = false, listRank } = options;
-  const wordUrl = `/word/?w=${encodeURIComponent(data.word)}`;
+  const wordUrl = `${base()}/word/?w=${encodeURIComponent(data.word)}`;
 
   const rankLabel = card.querySelector<HTMLElement>("[data-rank-label]");
   if (rankLabel) rankLabel.textContent = listRank != null ? `#${listRank.toLocaleString()}` : "";
