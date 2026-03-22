@@ -6,6 +6,7 @@ interface Props {
 }
 
 const { title = "Japanese Word Rank Lookup" } = Astro.props;
+const description = "See how often a Japanese word appears in everyday conversations, Netflix, YouTube, Wikipedia, and more."
 ---
 
 <!doctype html>
@@ -13,7 +14,21 @@ const { title = "Japanese Word Rank Lookup" } = Astro.props;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Look up Japanese word frequency rankings across multiple datasets. Search by kana, kanji, or romaji." />
+    <meta name="description" content={description} />
+
+    <!-- Social preview / Open Graph -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content="Look up Japanese word frequency rankings across multiple datasets. Search by kana, kanji, or romaji." />
+    <meta property="og:image" content="/social-preview/social-preview.png" />
+    <meta property="og:type" content="website" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@pikapikagemsjp" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description}  />
+    <meta name="twitter:image" content="/social-preview/social-preview.png" />
+
     <link rel="icon" type="image/x-icon" href="/favicon/favicon.ico" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png" />
