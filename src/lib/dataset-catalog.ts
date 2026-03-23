@@ -311,8 +311,7 @@ const wikipediaV2 = {
   columnId: "WIKIPEDIA_V2",
   label: "Wikipedia V2",
   source: "MarvNC / Shoui",
-  description:
-    "Community-built Wikipedia frequency dictionary (~850k source entries).",
+  description: "Wikipedia frequency dictionary (~850k source entries).",
 } as const;
 
 const adno = {
@@ -324,9 +323,10 @@ const adno = {
 
 const hlorenziWikipedia = {
   columnId: "HLORENZI_WIKIPEDIA",
-  label: "Hlorenzi Wikipedia",
-  source: "hlorenzi / jisho-open",
-  description: "Wikipedia word rankings from jisho-open (~20k entries).",
+  label: "Hlorenzi Wikipedia (Hlorenzi)",
+  source: "hlorenzi",
+  description:
+    "Wikipedia word rankings from hlorenzi/jisho-open (~20k entries).",
 } as const;
 
 const ilyaSemenov = {
@@ -379,7 +379,7 @@ const daveDoebrick = {
 const netflixMigaku = {
   columnId: "DD2_MIGAKU_NETFLIX",
   label: "Netflix (Migaku)",
-  source: "Dave Doebrick",
+  source: "Dave Doebrick (Migaku)",
   description: "Netflix subtitles, Migaku format (~102k entries).",
 } as const;
 
@@ -447,7 +447,7 @@ const jlab = {
 const chrisKempson = {
   columnId: "CHRISKEMPSON",
   label: "ChrisKempson",
-  source: "Community",
+  source: "ChrisKempson",
   description: "Subtitle corpus (12,277 files). Less curated, not maintained.",
   notRecommended: true,
 } as const;
@@ -476,7 +476,7 @@ const shonenStars = {
 const nier = {
   columnId: "NIER",
   label: "NieR",
-  source: "Community",
+  source: "MarvNC / Shoui",
   description:
     "Single game series script (~10,077 entries). No general vocabulary signal.",
   notRecommended: true,
@@ -485,7 +485,7 @@ const nier = {
 const hFreq = {
   columnId: "H_FREQ",
   label: "H_FREQ",
-  source: "Community",
+  source: "MarvNC / Shoui",
   description:
     "Adult (18+) content corpus (~44.7k entries). Highly domain-specific.",
   notRecommended: true,
@@ -523,7 +523,7 @@ const innocentCorpus = {
 const vnFreq = {
   columnId: "VN_FREQ",
   label: "VN Freq",
-  source: "Community",
+  source: "MarvNC / Shoui",
   description: "100+ visual novel scripts (~30M words). UniDic lemma forms.",
 } as const;
 
@@ -537,7 +537,7 @@ const vnYomichan = {
 const narou = {
   columnId: "NAROU",
   label: "Narou",
-  source: "Community",
+  source: "MarvNC / Shoui",
   description: "Top 300 stories on 小説家になろう. Isekai/fantasy-heavy.",
 } as const;
 
@@ -569,14 +569,17 @@ export const shortlisted = [
   adno,
   solMorphman,
 ];
+
+export const highlighted = [...shortlisted, jitenAnimeV2, csj];
+
 export const DATASET_CATALOG: DatasetSection[] = [
   // ── Highlighted (Shortlisted) ──────────────────────────────────────────────
   {
-    title: "Shortlisted",
+    title: "Highlighted",
     subsections: [
       {
         title: "",
-        datasets: shortlisted,
+        datasets: highlighted,
       },
     ],
   },
