@@ -558,7 +558,6 @@ export const shortlisted = [
   bccwjSuw,
   cc100,
   nwjc,
-  csj,
   jitenGlobal,
   jitenDrama,
   animeJdrama,
