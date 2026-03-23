@@ -31,10 +31,12 @@ export function buildBadges(data: WordCardData): { label: string; value: string 
 
   if (jlpt) {
     const tier: Tier = jlpt >= 4 ? "BASIC" : jlpt === 3 ? "COMMON" : jlpt === 2 ? "FLUENT" : "ADVANCED";
-    badges.push({ label: "JLPT", value: `N${jlpt}`, tier, description: `Japanese Language Proficiency Test Level N${jlpt}` });
+    const so = SORT_ORDER_MAP.get("JLPT")!;
+    badges.push({ label: so.label, value: `N${jlpt}`, tier, description: so.description });
   }
   if (kaishi) {
-    badges.push({ label: "Kaishi", value: "✓", tier: "BASIC", description: "Kaishi 1500 beginner vocabulary deck." });
+    const so = SORT_ORDER_MAP.get("KAISHI")!;
+    badges.push({ label: so.label, value: "✓", tier: "BASIC", description: so.description });
   }
   for (const [key, rank] of Object.entries(ranks)) {
     if (rank === -1) continue;
