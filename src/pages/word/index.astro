@@ -133,7 +133,7 @@ import FrequencyTable from "../../components/FrequencyTable.astro";
       badge.textContent = style.emoji;
 
       const rankCell = row.querySelector<HTMLElement>("[data-rank-cell]")!;
-      rankCell.textContent = isAbsent ? "—" : rank.toLocaleString();
+      rankCell.textContent = isAbsent ? "N/A" : rank.toLocaleString();
       rankCell.className = `py-2.5 px-3 sm:px-5 align-middle text-right tabular-nums text-sm ${isAbsent ? "text-muted-foreground/40" : "font-bold text-foreground"}`;
     }
   }

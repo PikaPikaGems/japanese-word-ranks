@@ -48,20 +48,9 @@ Source data (CSV, JSON, TXT) in `data/` is processed at build time into ~110k st
 
 ## Data Sources
 
-Frequency data is consolidated from [PikaPikaGems/japanese-word-frequency](https://github.com/PikaPikaGems/japanese-word-frequency). Primary sources include:
+- FUl
 
-- [learnjapanese.moe — Recommended Frequency Dictionaries](https://learnjapanese.moe/yomichan/#recommended-frequency-dictionaries)
-- [jiten.moe](https://jiten.moe/other)
-- [Kuuuube/yomitan-dictionaries](https://github.com/Kuuuube/yomitan-dictionaries)
-- [MarvNC/yomitan-dictionaries](https://github.com/MarvNC/yomitan-dictionaries)
-- [IlyaSemenov/wikipedia-word-frequency](https://github.com/IlyaSemenov/wikipedia-word-frequency)
-- [adno/wikipedia-word-frequency-clean](https://github.com/adno/wikipedia-word-frequency-clean)
-- [hermitdave/FrequencyWords](https://github.com/hermitdave/FrequencyWords)
-- [chriskempson/japanese-subtitles-word-kanji-frequency-lists](https://github.com/chriskempson/japanese-subtitles-word-kanji-frequency-lists)
-- [rspeer/wordfreq](https://github.com/rspeer/wordfreq)
-- [Maltesaa/CSJ_and_NWJC_yomitan_freq_dict](https://github.com/Maltesaa/CSJ_and_NWJC_yomitan_freq_dict)
-- [hingston/japanese](https://github.com/hingston/japanese)
-- [hlorenzi/jisho-open/](https://github.com/hlorenzi/jisho-open/)
+Frequency data is consolidated from [PikaPikaGems/japanese-word-frequency](https://github.com/PikaPikaGems/japanese-word-frequency). Primary sources are listed there and [here](./src/credits.ts).
 
 JLPT data from [tanos.co.uk/jlpt](https://www.tanos.co.uk/jlpt/). Kaishi deck data from [donkuri/kaishi](https://github.com/donkuri/kaishi).
 

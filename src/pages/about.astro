@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import TitleHeader from "../components/TitleHeader.astro";
+import { CREDITS } from "../lib/credits";
 ---
 
 <BaseLayout title="About — Japanese Word Rank Lookup">
@@ -21,35 +22,27 @@ import TitleHeader from "../components/TitleHeader.astro";
     </p>
 
 
-    <h3 class="text-sm font-bold mb-2">Frequency Data</h3>
-    <p class="text-sm text-muted-foreground mb-2">
-      Consolidated from <a href="https://github.com/PikaPikaGems/japanese-word-frequency" class="underline hover:text-foreground">PikaPikaGems/japanese-word-frequency</a>.
-    </p>
-    <p class="text-sm text-muted-foreground mb-1">Primary sources:</p>
-    <ul class="list-disc list-inside text-sm text-muted-foreground mb-6 space-y-1">
-      <li><a href="https://learnjapanese.moe/yomichan/#recommended-frequency-dictionaries" class="underline hover:text-foreground">learnjapanese.moe — Recommended Frequency Dictionaries</a></li>
-      <li><a href="https://jiten.moe/other" class="underline hover:text-foreground">jiten.moe</a></li>
-      <li><a href="https://github.com/Kuuuube/yomitan-dictionaries" class="underline hover:text-foreground">Kuuuube/yomitan-dictionaries</a></li>
-      <li><a href="https://github.com/MarvNC/yomitan-dictionaries" class="underline hover:text-foreground">MarvNC/yomitan-dictionaries</a></li>
-      <li><a href="https://github.com/IlyaSemenov/wikipedia-word-frequency" class="underline hover:text-foreground">IlyaSemenov/wikipedia-word-frequency</a></li>
-      <li><a href="https://github.com/adno/wikipedia-word-frequency-clean" class="underline hover:text-foreground">adno/wikipedia-word-frequency-clean</a></li>
-      <li><a href="https://github.com/hermitdave/FrequencyWords" class="underline hover:text-foreground">hermitdave/FrequencyWords</a></li>
-      <li><a href="https://github.com/chriskempson/japanese-subtitles-word-kanji-frequency-lists" class="underline hover:text-foreground">chriskempson/japanese-subtitles-word-kanji-frequency-lists</a></li>
-      <li><a href="https://github.com/hlorenzi/jisho-open" class="underline hover:text-foreground">hlorenzi/jisho-open</a></li>
-      <li><a href="https://github.com/rspeer/wordfreq" class="underline hover:text-foreground">rspeer/wordfreq</a></li>
-      <li><a href="https://github.com/Maltesaa/CSJ_and_NWJC_yomitan_freq_dict" class="underline hover:text-foreground">Maltesaa/CSJ_and_NWJC_yomitan_freq_dict</a></li>
-      <li><a href="https://github.com/hingston/japanese" class="underline hover:text-foreground">hingston/japanese</a></li>
-    </ul>
-
-    <h3 class="text-sm font-bold mb-2">JLPT Level Data</h3>
-    <ul class="list-disc list-inside text-sm text-muted-foreground mb-6 space-y-1">
-      <li><a href="https://www.tanos.co.uk/jlpt/" class="underline hover:text-foreground">tanos.co.uk/jlpt</a></li>
-    </ul>
-
-    <h3 class="text-sm font-bold mb-2">Kaishi Deck Data</h3>
-    <ul class="list-disc list-inside text-sm text-muted-foreground mb-6 space-y-1">
-      <li><a href="https://github.com/donkuri/kaishi" class="underline hover:text-foreground">donkuri/kaishi</a></li>
-    </ul>
+    {CREDITS.map((section) => (
+      <>
+        <h3 class="text-sm font-bold mb-2">{section.title}</h3>
+        {section.description && (
+          <p class="text-sm text-muted-foreground mb-2">
+            {section.description.text}{" "}
+            {section.description.link && (
+              <a href={section.description.link.url} class="underline hover:text-foreground">{section.description.link.name}</a>
+            )}
+          </p>
+        )}
+        {section.sources.length > 1 && (
+          <p class="text-sm text-muted-foreground mb-1">Primary sources:</p>
+        )}
+        <ul class="list-disc list-inside text-sm text-muted-foreground mb-6 space-y-1">
+          {section.sources.map((source) => (
+            <li><a href={source.url} class="underline hover:text-foreground">{source.name}</a></li>
+          ))}
+        </ul>
+      </>
+    ))}
 
     <p class="text-sm text-muted-foreground">
       Built by <a href="https://github.com/PikaPikaGems" class="underline hover:text-foreground">PikaPikaGems</a>.
