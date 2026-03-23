@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import TitleHeader from "../components/TitleHeader.astro";
+import { shortlisted } from "../lib/dataset-catalog";
 ---
 
 <BaseLayout title="FAQ — Japanese Word Rank Lookup">
@@ -37,7 +38,7 @@ import TitleHeader from "../components/TitleHeader.astro";
 
     <h3 class="text-sm font-bold mb-2">How is the tier computed?</h3>
     <p class="text-sm text-muted-foreground mb-3">
-      The tier uses a <strong class="text-foreground">bucket count algorithm</strong> across 16 Japanese frequency datasets (subtitles, web text, spoken corpora, Wikipedia, etc.). For each word:
+      The tier uses a <strong class="text-foreground">bucket count algorithm</strong> across a selected list of Japanese frequency datasets (subtitles, web text, spoken corpora, Wikipedia, etc.). For each word:
     </p>
     <ol class="list-decimal list-inside text-sm text-muted-foreground mb-3 space-y-1">
       <li>Collect the word's rank from each dataset (ignore datasets where the word is absent).</li>
@@ -49,19 +50,16 @@ import TitleHeader from "../components/TitleHeader.astro";
       This means a word reaches 🌱 BASIC only if <em>most</em> sources agree it is very common — not just one. It is a majority-vote across sources, making it more conservative than a simple minimum-rank approach.
     </p>
 
-    <h3 class="text-sm font-bold mb-2">What are the 16 datasets used?</h3>
+    <h3 class="text-sm font-bold mb-2">What are the selected datasets used?</h3>
     <ul class="list-disc list-inside text-sm text-muted-foreground mb-8 space-y-1">
-      <li>WordFreq (multi-source aggregate)</li>
-      <li>CEJC Combined & CEJC Small Talk (everyday spoken Japanese)</li>
-      <li>BCCWJ Long Unit & Short Unit (Japan's official balanced written corpus)</li>
-      <li>CC100 (contemporary web Japanese)</li>
-      <li>NWJC Web Corpus</li>
-      <li>Jiten Global & Jiten Drama (anime, manga, VN, games, J-drama)</li>
-      <li>Anime + J-Drama subtitles</li>
-      <li>YouTube V3 (spoken, 16 domains)</li>
-      <li>Netflix & Netflix Clean (anime, drama, live-action)</li>
-      <li>Wikipedia V2 & ADNO (Wikipedia frequency lists)</li>
-      <li>Slice-of-Life Anime</li>
+      {shortlisted.map((dataset) => (
+        <li>
+          {dataset.source && (
+            <span class="font-medium text-foreground/70">{dataset.source}: </span>
+          )}
+          {dataset.description}
+        </li>
+      ))}
     </ul>
 
     <h2 class="text-lg font-bold mb-4">Duplicate Entries</h2>

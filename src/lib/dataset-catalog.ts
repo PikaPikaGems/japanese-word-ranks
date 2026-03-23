@@ -29,7 +29,8 @@ const rspeer = {
   columnId: "RSPEER",
   label: "RSPEER",
   source: "rspeer/wordfreq",
-  description: "Multi-source aggregate (Wikipedia, subtitles, news, books, web, Twitter/Reddit). Frozen ~2021.",
+  description:
+    "Multi-source aggregate (Wikipedia, subtitles, news, books, web, Twitter/Reddit). Frozen ~2021.",
 } as const;
 
 const cejcCombined = {
@@ -122,7 +123,8 @@ const csj = {
   columnId: "MALTESAA_CSJ",
   label: "CSJ",
   source: "NINJAL CSJ",
-  description: "Corpus of Spontaneous Japanese — all sub-corpora combined (~7M words).",
+  description:
+    "Corpus of Spontaneous Japanese — all sub-corpora combined (~7M words).",
 } as const;
 
 const csjAcademic = {
@@ -177,7 +179,8 @@ const bccwjLuw = {
   columnId: "BCCWJ_LUW",
   label: "BCCWJ (Long Unit)",
   source: "NINJAL BCCWJ",
-  description: "Japan's official balanced written corpus (104M words, 1976–2006). Compound words as units.",
+  description:
+    "Japan's official balanced written corpus (104M words, 1976–2006). Compound words as units.",
 } as const;
 
 const bccwjSuw = {
@@ -191,7 +194,8 @@ const cc100 = {
   columnId: "CC100_rank",
   label: "CC100",
   source: "CommonCrawl",
-  description: "Filtered Japanese web text (~2020, ~70 GB). Broad contemporary vocabulary.",
+  description:
+    "Filtered Japanese web text (~2020, ~70 GB). Broad contemporary vocabulary.",
 } as const;
 
 const nwjc = {
@@ -213,7 +217,8 @@ const jmdictFreq = {
   columnId: "KUUUUBE_JMDICT_FREQ",
   label: "JMdict Freq",
   source: "JMdict / Kuuube",
-  description: "Derived from JMdict newspaper frequency annotations, not a raw corpus count.",
+  description:
+    "Derived from JMdict newspaper frequency annotations, not a raw corpus count.",
   notRecommended: true,
 } as const;
 
@@ -306,14 +311,15 @@ const wikipediaV2 = {
   columnId: "WIKIPEDIA_V2",
   label: "Wikipedia V2",
   source: "MarvNC / Shoui",
-  description: "Community-built Wikipedia frequency dictionary (~850k source entries).",
+  description:
+    "Community-built Wikipedia frequency dictionary (~850k source entries).",
 } as const;
 
 const adno = {
   columnId: "ADNO",
   label: "ADNO",
   source: "ADNO/wikipedia-word-frequency-clean",
-  description: "Wikipedia (Oct 2022 dump), carefully filtered.",
+  description: "Wikipedia (Oct 2022 dump), (~550k entries)",
 } as const;
 
 const hlorenziWikipedia = {
@@ -327,7 +333,8 @@ const ilyaSemenov = {
   columnId: "ILYASEMENOV",
   label: "IlyaSemenov",
   source: "IlyaSemenov",
-  description: "Wikipedia (Aug 2022) — document frequency, not term frequency. Contains HTML noise.",
+  description:
+    "Wikipedia (Aug 2022) — document frequency, not term frequency. Contains HTML noise.",
   notRecommended: true,
 } as const;
 
@@ -335,21 +342,24 @@ const youtubeV3 = {
   columnId: "YOUTUBE_FREQ_V3",
   label: "YouTube V3",
   source: "MarvNC",
-  description: "Manually transcribed YouTube across 16 spoken domains (~187k entries).",
+  description:
+    "Manually transcribed YouTube across 16 spoken domains (~187k entries).",
 } as const;
 
 const youtubeOld = {
   columnId: "YOUTUBE_FREQ",
   label: "YouTube (Old)",
   source: "MarvNC",
-  description: "Older YouTube transcription dataset (~56k entries). Superseded by V3.",
+  description:
+    "Older YouTube transcription dataset (~56k entries). Superseded by V3.",
 } as const;
 
 const netflix = {
   columnId: "NETFLIX",
   label: "Netflix",
   source: "Shoui",
-  description: "Netflix Japan subtitles — anime + drama + live-action (~129k entries).",
+  description:
+    "Netflix Japan subtitles — anime + drama + live-action (~129k entries).",
 } as const;
 
 const netflixClean = {
@@ -363,7 +373,7 @@ const daveDoebrick = {
   columnId: "DAVE_DOEBRICK",
   label: "Dave Doebrick",
   source: "Dave Doebrick",
-  description: "Netflix collection (2019, ~53M kanji occurrences). Older.",
+  description: "Netflix collection (2019, ~53M kanji occurrences).",
 } as const;
 
 const netflixMigaku = {
@@ -429,7 +439,8 @@ const jlab = {
   columnId: "JLAB",
   label: "JLAB",
   source: "JLAB",
-  description: "Anime-only from ~1.85M Anki flashcards. Rankings below ~2k unreliable.",
+  description:
+    "Anime-only from ~1.85M Anki flashcards. Rankings below ~2k unreliable.",
   notRecommended: true,
 } as const;
 
@@ -466,7 +477,8 @@ const nier = {
   columnId: "NIER",
   label: "NieR",
   source: "Community",
-  description: "Single game series script (~10,077 entries). No general vocabulary signal.",
+  description:
+    "Single game series script (~10,077 entries). No general vocabulary signal.",
   notRecommended: true,
 } as const;
 
@@ -474,7 +486,8 @@ const hFreq = {
   columnId: "H_FREQ",
   label: "H_FREQ",
   source: "Community",
-  description: "Adult (18+) content corpus (~44.7k entries). Highly domain-specific.",
+  description:
+    "Adult (18+) content corpus (~44.7k entries). Highly domain-specific.",
   notRecommended: true,
 } as const;
 
@@ -482,7 +495,8 @@ const novels = {
   columnId: "NOVELS",
   label: "Novels",
   source: "Kuuube",
-  description: "10,000+ contemporary Japanese novels. Punctuation not filtered (rank 1 = 、).",
+  description:
+    "10,000+ contemporary Japanese novels. Punctuation not filtered (rank 1 = 、).",
 } as const;
 
 const novelsMorphman = {
@@ -531,10 +545,30 @@ const aozoraBunko = {
   columnId: "AOZORA_BUNKO",
   label: "Aozora Bunko",
   source: "Aozora Bunko",
-  description: "Pre-1953 public-domain literature (Soseki, Akutagawa). Zero hiragana entries by design.",
+  description:
+    "Pre-1953 public-domain literature (Soseki, Akutagawa). Zero hiragana entries by design.",
   notRecommended: true,
 } as const;
 
+export const shortlisted = [
+  rspeer,
+  cejcCombined,
+  cejcSmallTalk,
+  bccwjLuw,
+  bccwjSuw,
+  cc100,
+  nwjc,
+  csj,
+  jitenGlobal,
+  jitenDrama,
+  animeJdrama,
+  youtubeV3,
+  netflix,
+  netflixClean,
+  wikipediaV2,
+  adno,
+  solMorphman,
+];
 export const DATASET_CATALOG: DatasetSection[] = [
   // ── Highlighted (Shortlisted) ──────────────────────────────────────────────
   {
@@ -542,25 +576,7 @@ export const DATASET_CATALOG: DatasetSection[] = [
     subsections: [
       {
         title: "",
-        datasets: [
-          rspeer,
-          cejcCombined,
-          cejcSmallTalk,
-          bccwjLuw,
-          bccwjSuw,
-          cc100,
-          nwjc,
-          csj,
-          jitenGlobal,
-          jitenDrama,
-          animeJdrama,
-          youtubeV3,
-          netflix,
-          netflixClean,
-          wikipediaV2,
-          adno,
-          solMorphman,
-        ],
+        datasets: shortlisted,
       },
     ],
   },
@@ -647,12 +663,7 @@ export const DATASET_CATALOG: DatasetSection[] = [
     subsections: [
       {
         title: "",
-        datasets: [
-          wikipediaV2,
-          adno,
-          hlorenziWikipedia,
-          ilyaSemenov,
-        ],
+        datasets: [wikipediaV2, adno, hlorenziWikipedia, ilyaSemenov],
       },
     ],
   },
@@ -709,7 +720,13 @@ export const DATASET_CATALOG: DatasetSection[] = [
     subsections: [
       {
         title: "Novels",
-        datasets: [novels, jitenNovel, novelsMorphman, novelsYomichan, innocentCorpus],
+        datasets: [
+          novels,
+          jitenNovel,
+          novelsMorphman,
+          novelsYomichan,
+          innocentCorpus,
+        ],
       },
       {
         title: "Visual Novels and Web Novels",
