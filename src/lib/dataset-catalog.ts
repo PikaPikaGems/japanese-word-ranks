@@ -558,18 +558,18 @@ export const shortlisted = [
   bccwjSuw,
   cc100,
   nwjc,
+  wikipediaV2,
+  adno,
+  solMorphman,
   jitenGlobal,
   jitenDrama,
   animeJdrama,
   youtubeV3,
   netflix,
   netflixClean,
-  wikipediaV2,
-  adno,
-  solMorphman,
 ];
 
-export const highlighted = [...shortlisted, jitenAnimeV2, csj];
+export const highlighted = [...shortlisted, netflixMigaku, jitenAnimeV2, csj];
 
 export const DATASET_CATALOG: DatasetSection[] = [
   // ── Highlighted (Shortlisted) ──────────────────────────────────────────────
