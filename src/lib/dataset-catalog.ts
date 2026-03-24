@@ -316,7 +316,7 @@ const wikipediaV2 = {
 
 const adno = {
   columnId: "ADNO",
-  label: "ADNO",
+  label: "Wikipedia (ADNO)",
   source: "ADNO/wikipedia-word-frequency-clean",
   description: "Wikipedia (Oct 2022 dump), (~550k entries)",
 } as const;
@@ -356,7 +356,7 @@ const youtubeOld = {
 
 const netflix = {
   columnId: "NETFLIX",
-  label: "Netflix",
+  label: "Netflix (Shoui)",
   source: "Shoui",
   description:
     "Netflix Japan subtitles — anime + drama + live-action (~129k entries).",
@@ -364,7 +364,7 @@ const netflix = {
 
 const netflixClean = {
   columnId: "DD2_MORPHMAN_NETFLIX",
-  label: "Netflix (Clean)",
+  label: "Netflix (Morphman/DD)",
   source: "Dave Doebrick",
   description: "Netflix subtitles, proper names excluded (~105k entries).",
 } as const;
