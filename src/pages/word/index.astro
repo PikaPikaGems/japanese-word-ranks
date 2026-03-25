@@ -114,8 +114,7 @@ import FrequencyTable from "../../components/FrequencyTable.astro";
 
   function getRank(columnId: string, ranks: Record<string, number>, ririkkuRanks: Record<string, number>): number {
     if (columnId in ranks && ranks[columnId] !== -1) return ranks[columnId];
-    const ririkkuKey = columnId === "CC100_rank" ? "CC100" : columnId;
-    if (ririkkuKey in ririkkuRanks) return ririkkuRanks[ririkkuKey];
+    if (columnId in ririkkuRanks) return ririkkuRanks[columnId];
     return -1;
   }
 

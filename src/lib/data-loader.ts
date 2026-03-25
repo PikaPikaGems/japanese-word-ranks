@@ -34,7 +34,7 @@ let _ririkkuCache: RirikkuWord[] | null = null;
 export function loadRirikkuData(): RirikkuWord[] {
   if (_ririkkuCache) return _ririkkuCache;
 
-  const csvPath = path.join(DATA_DIR, "frequency/selected-freq/RIRIKKU_CONSOLIDATED.csv");
+  const csvPath = path.join(DATA_DIR, "frequency/selected-freq/RIRIKKU_CONSOLIDATED_MODIFIED_V1.csv");
   const csvText = fs.readFileSync(csvPath, "utf-8");
   const parsed = Papa.parse<Record<string, string>>(csvText, {
     header: true,
