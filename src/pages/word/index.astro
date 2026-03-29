@@ -12,7 +12,7 @@ import FrequencyTable from "../../components/FrequencyTable.astro";
   <main class="max-w-5xl mx-auto pt-6 pb-16">
     <SearchInput />
     <!-- Loading skeleton -->
-    <div id="loading" class="mt-8 space-y-5">
+    <div id="loading" class="mt-8 space-y-5 hidden">
       <WordCardSkeleton />
       <div class="rounded-2xl border border-border bg-card shadow-sm animate-pulse p-5">
         <div class="h-5 w-48 rounded bg-muted mb-4"></div>
@@ -65,9 +65,12 @@ import FrequencyTable from "../../components/FrequencyTable.astro";
 
     document.title = `${word} — Japanese Word Frequency`;
 
+    const skeletonTimer = setTimeout(() => loadingEl.classList.remove("hidden"), 200);
+
     try {
       const firstChar = word.charAt(0);
       const res = await fetch(`${window.__BASE__}/api/words/${encodeURIComponent(firstChar)}/${encodeURIComponent(word)}.json`);
+      clearTimeout(skeletonTimer);
       if (!res.ok) {
         showError(`Word "${word}" not found.`);
         return;
@@ -75,6 +78,7 @@ import FrequencyTable from "../../components/FrequencyTable.astro";
       const entries: WordEntry[] = await res.json();
       render(word, entries);
     } catch (err) {
+      clearTimeout(skeletonTimer);
       showError("Failed to load word data.");
       console.error(err);
     }

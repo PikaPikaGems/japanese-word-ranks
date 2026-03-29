@@ -46,7 +46,7 @@ import { SORT_ORDERS } from "../lib/sort-orders";
     <div id="pagination" class="flex items-center justify-center gap-1.5 my-8 w-full"></div>
 
     <!-- Loading state: skeleton cards -->
-    <div id="loading" class="space-y-4">
+    <div id="loading" class="space-y-4 hidden">
       {Array.from({ length: 5 }).map(() => (
         <WordCardSkeleton />
       ))}
@@ -152,8 +152,9 @@ import { SORT_ORDERS } from "../lib/sort-orders";
   // ─── Rendering ─────────────────────────────────────────────────────────────
 
   async function loadAndRender() {
-    loading.classList.remove("hidden");
     wordList.classList.add("hidden");
+
+    const skeletonTimer = setTimeout(() => loading.classList.remove("hidden"), 200);
 
     try {
       meta = await fetchMeta(currentSort);
@@ -162,6 +163,7 @@ import { SORT_ORDERS } from "../lib/sort-orders";
 
       const items = await fetchPage(currentSort, currentPage);
 
+      clearTimeout(skeletonTimer);
       renderWordList(items);
       renderPagination(paginationTop);
       renderPagination(paginationBottom);
@@ -169,6 +171,8 @@ import { SORT_ORDERS } from "../lib/sort-orders";
       loading.classList.add("hidden");
       wordList.classList.remove("hidden");
     } catch (err) {
+      clearTimeout(skeletonTimer);
+      loading.classList.remove("hidden");
       loading.textContent = "Failed to load data.";
       console.error(err);
     }
