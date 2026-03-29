@@ -2,6 +2,7 @@ import { getTier, type Tier } from "./tier";
 import { TIER_STYLE } from "./badges";
 import { SORT_ORDER_MAP } from "./sort-orders";
 import { DICTIONARY_LINKS } from "./external-links";
+import { CATALOG_ENTRY_MAP } from "./dataset-catalog";
 
 function base(): string {
   return (window as Window & { __BASE__?: string }).__BASE__ || "";
@@ -25,8 +26,8 @@ export function esc(str: string): string {
   return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
-export function buildBadges(data: WordCardData): { label: string; value: string | number; tier: Tier; description: string }[] {
-  const badges: { label: string; value: string | number; tier: Tier; description: string }[] = [];
+export function buildBadges(data: WordCardData): { label: string; value: string | number; tier: Tier; description: string; source?: string; notRecommended?: boolean }[] {
+  const badges: { label: string; value: string | number; tier: Tier; description: string; source?: string; notRecommended?: boolean }[] = [];
   const { jlpt, kaishi, ranks = {} } = data;
 
   if (jlpt) {
@@ -41,12 +42,15 @@ export function buildBadges(data: WordCardData): { label: string; value: string 
   for (const [key, rank] of Object.entries(ranks)) {
     if (rank === -1) continue;
     const so = SORT_ORDER_MAP.get(key);
-    if (so) badges.push({ label: so.label, value: rank, tier: getTier(rank), description: so.description });
+    if (so) {
+      const entry = CATALOG_ENTRY_MAP.get(key);
+      badges.push({ label: so.label, value: rank, tier: getTier(rank), description: so.description, source: entry?.source, notRecommended: entry?.notRecommended });
+    }
   }
   return badges;
 }
 
-export function renderBadge(label: string, value: string | number, tier: Tier, description: string): string {
+export function renderBadge(label: string, value: string | number, tier: Tier, description: string, source?: string, notRecommended?: boolean): string {
   const style = TIER_STYLE[tier] || TIER_STYLE.UNRANKED;
   const displayValue = value === -1 || value === "-1" ? "—" : typeof value === "number" ? value.toLocaleString() : value;
   const id = `pop-${label.replace(/\s+/g, "-")}-${Math.random().toString(36).slice(2, 6)}`;
@@ -57,10 +61,13 @@ export function renderBadge(label: string, value: string | number, tier: Tier, d
         <span>${esc(label)}</span>
         <span class="font-extrabold">${esc(String(displayValue))}</span>
       </button>
-      <div id="${id}" class="badge-popover hidden absolute z-50 top-full mt-2 w-72 rounded-xl border border-border bg-popover p-5 text-popover-foreground shadow-md" data-badge-popover>
+      <div id="${id}" class="badge-popover hidden absolute z-50 top-full mt-2 w-72 rounded-xl border border-border bg-popover p-4 text-popover-foreground shadow-md" data-badge-popover>
         <div class="popover-arrow absolute -top-1.5 h-3 w-3 rotate-45 border-l border-t border-border bg-popover"></div>
         <p class="text-sm font-bold mb-1">${esc(label)}</p>
-        <p class="text-xs text-muted-foreground leading-relaxed">${esc(description)}</p>
+        ${source ? `<div class="text-xs font-medium text-foreground/60 mb-0.5">${esc(source)}</div>` : ""}
+        <div class="text-xs text-muted-foreground leading-relaxed">
+          ${esc(description)}${notRecommended ? ` <span class="text-amber-600 font-medium">⚠ Not recommended</span>` : ""}
+        </div>
       </div>
     </span>
   `;
@@ -96,7 +103,7 @@ export function fillWordCard(card: HTMLElement, data: WordCardData, options: Wor
   }
 
   card.querySelector<HTMLElement>("[data-badges]")!.innerHTML =
-    buildBadges(data).map(b => renderBadge(b.label, b.value, b.tier, b.description)).join("");
+    buildBadges(data).map(b => renderBadge(b.label, b.value, b.tier, b.description, b.source, b.notRecommended)).join("");
 }
 
 /**
