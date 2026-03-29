@@ -750,3 +750,10 @@ export const ALL_CATALOG_COLUMN_IDS: string[] = Array.from(
     ),
   ),
 );
+
+/** Map from columnId to DatasetEntry for quick lookup */
+export const CATALOG_ENTRY_MAP: Map<string, DatasetEntry> = new Map(
+  DATASET_CATALOG.flatMap((s) =>
+    s.subsections.flatMap((sub) => sub.datasets.map((d) => [d.columnId, d] as [string, DatasetEntry])),
+  ),
+);
