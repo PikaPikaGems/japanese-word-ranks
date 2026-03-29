@@ -10,9 +10,13 @@ import {
   isKatakana,
   katakanaToHiragana,
 } from "./romaji";
+import { TIER_STYLE } from "./badges";
+import type { Tier } from "./tier";
 
 declare global {
-  interface Window { __BASE__: string; }
+  interface Window {
+    __BASE__: string;
+  }
 }
 
 function base(): string {
@@ -27,16 +31,27 @@ function escHtml(str: string): string {
     .replace(/"/g, "&quot;");
 }
 
+interface SearchEntry {
+  w: string; // word
+  r: string; // reading
+  j?: number; // JLPT level
+  k?: 1; // kaishi
+  t: string; // tier emoji
+  e?: string; // english
+}
+
 export function initSearch() {
-  const searchInput = document.getElementById("search-input") as HTMLInputElement | null;
+  const searchInput = document.getElementById(
+    "search-input",
+  ) as HTMLInputElement | null;
   const searchDropdown = document.getElementById("search-dropdown");
   const randomBtn = document.getElementById("random-btn");
 
   if (!searchInput || !searchDropdown) return;
 
-  const cache = new Map<string, [string, string][]>();
+  const cache = new Map<string, SearchEntry[]>();
   let highlight = -1;
-  let results: [string, string][] = [];
+  let results: SearchEntry[] = [];
   let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
   // ─── Fetch helpers ────────────────────────────────────────────────────
@@ -44,7 +59,7 @@ export function initSearch() {
   async function fetchIndex(
     type: "reading" | "word",
     key: string,
-  ): Promise<[string, string][]> {
+  ): Promise<SearchEntry[]> {
     const ck = `${type}:${key}`;
     const cached = cache.get(ck);
     if (cached) return cached;
@@ -53,7 +68,7 @@ export function initSearch() {
         `${base()}/api/search/${type}/${encodeURIComponent(key)}.json`,
       );
       if (!res.ok) return [];
-      const data: [string, string][] = await res.json();
+      const data: SearchEntry[] = await res.json();
       cache.set(ck, data);
       return data;
     } catch {
@@ -69,13 +84,16 @@ export function initSearch() {
       return;
     }
 
-    let entries: [string, string][] = [];
+    let entries: SearchEntry[] = [];
 
     if (hasLatin(query)) {
       const hira = romajiToHiragana(query);
-      if (!hira) { close(); return; }
+      if (!hira) {
+        close();
+        return;
+      }
       entries = await fetchIndex("reading", hira.charAt(0));
-      results = entries.filter(([, r]) => r.startsWith(hira));
+      results = entries.filter((e) => e.r.startsWith(hira));
     } else {
       const first = query.charAt(0);
       if (isKatakana(first)) {
@@ -84,20 +102,23 @@ export function initSearch() {
           fetchIndex("word", first),
           fetchIndex("reading", hira.charAt(0)),
         ]);
-        const wMatches = wEntries.filter(([w]) => w.startsWith(query));
-        const rMatches = rEntries.filter(([, r]) => r.startsWith(hira));
+        const wMatches = wEntries.filter((e) => e.w.startsWith(query));
+        const rMatches = rEntries.filter((e) => e.r.startsWith(hira));
         const seen = new Set<string>();
         results = [];
         for (const e of [...wMatches, ...rMatches]) {
-          const k = e[0] + "|" + e[1];
-          if (!seen.has(k)) { seen.add(k); results.push(e); }
+          const k = e.w + "|" + e.r;
+          if (!seen.has(k)) {
+            seen.add(k);
+            results.push(e);
+          }
         }
       } else if (isHiragana(first)) {
         entries = await fetchIndex("reading", first);
-        results = entries.filter(([, r]) => r.startsWith(query));
+        results = entries.filter((e) => e.r.startsWith(query));
       } else {
         entries = await fetchIndex("word", first);
-        results = entries.filter(([w]) => w.startsWith(query));
+        results = entries.filter((e) => e.w.startsWith(query));
       }
     }
 
@@ -116,13 +137,41 @@ export function initSearch() {
     }
 
     searchDropdown.innerHTML = results
-      .map(([word, reading], i) => {
+      .map((entry, i) => {
+        const {
+          w: word,
+          r: reading,
+          j: jlpt,
+          k: kaishi,
+          t: tierEmoji,
+          e: english,
+        } = entry;
         const showReading = reading && reading !== word;
-        const active = i === highlight ? "bg-accent text-accent-foreground" : "";
+        const active =
+          i === highlight ? "bg-accent text-accent-foreground" : "";
+
+        const badges: string[] = [];
+        if (jlpt) {
+          const tier: Tier = jlpt >= 4 ? "BASIC" : jlpt === 3 ? "COMMON" : jlpt === 2 ? "FLUENT" : "ADVANCED";
+          const { badge, emoji } = TIER_STYLE[tier];
+          badges.push(
+            `<span class="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-bold ${badge}">${emoji} <span>JLPT</span> <span class="font-extrabold">N${jlpt}</span></span>`,
+          );
+        }
+        if (kaishi) {
+          const { badge, emoji } = TIER_STYLE.BASIC;
+          badges.push(
+            `<span class="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-bold ${badge}">${emoji} <span>Kaishi</span> <span class="font-extrabold">✓</span></span>`,
+          );
+        }
+
         return `
-          <div class="search-item flex items-center gap-3 px-4 py-2.5 cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors ${active}" data-search-index="${i}">
-            <span class="text-base font-semibold" style="font-family: var(--font-japanese);">${escHtml(word)}</span>
-            ${showReading ? `<span class="text-sm text-muted-foreground" style="font-family: var(--font-japanese);">${escHtml(reading)}</span>` : ""}
+          <div class="search-item flex items-center gap-2.5 px-4 py-2.5 cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors ${active}" data-search-index="${i}">
+            ${`<span class="text-xs leading-none">${escHtml(tierEmoji ?? "🦉")}</span>`}  
+            <span class="text-base font-semibold shrink-0" style="font-family: var(--font-japanese);">${escHtml(word)}</span>
+            ${showReading ? `<span class="text-sm text-muted-foreground shrink-0" style="font-family: var(--font-japanese);">${escHtml(reading)}</span>` : ""}
+            ${badges.length > 0 ? `<span class="flex items-center gap-1 shrink-0">${badges.join("")}</span>` : ""}
+            ${english ? `<span class="text-xs text-muted-foreground truncate ml-auto">${escHtml(english)}</span>` : ""}
           </div>
         `;
       })
@@ -149,7 +198,8 @@ export function initSearch() {
   });
 
   searchInput.addEventListener("keydown", (e) => {
-    if (results.length === 0 || searchDropdown.classList.contains("hidden")) return;
+    if (results.length === 0 || searchDropdown.classList.contains("hidden"))
+      return;
 
     if (e.key === "ArrowDown") {
       e.preventDefault();
@@ -162,7 +212,7 @@ export function initSearch() {
     } else if (e.key === "Enter") {
       e.preventDefault();
       const idx = highlight >= 0 ? highlight : 0;
-      if (results[idx]) navigateToWord(results[idx][0]);
+      if (results[idx]) navigateToWord(results[idx].w);
     } else if (e.key === "Escape") {
       close();
       searchInput.blur();
@@ -170,10 +220,12 @@ export function initSearch() {
   });
 
   searchDropdown.addEventListener("click", (e) => {
-    const item = (e.target as HTMLElement).closest(".search-item") as HTMLElement | null;
+    const item = (e.target as HTMLElement).closest(
+      ".search-item",
+    ) as HTMLElement | null;
     if (item) {
       const idx = parseInt(item.dataset.searchIndex || "0", 10);
-      if (results[idx]) navigateToWord(results[idx][0]);
+      if (results[idx]) navigateToWord(results[idx].w);
     }
   });
 
@@ -197,9 +249,13 @@ export function initSearch() {
   if (randomBtn) {
     randomBtn.addEventListener("click", async () => {
       try {
-        const meta = await (await fetch(`${base()}/api/sorted/JLPT/meta.json`)).json();
+        const meta = await (
+          await fetch(`${base()}/api/sorted/JLPT/meta.json`)
+        ).json();
         const page = Math.floor(Math.random() * meta.totalPages) + 1;
-        const data = await (await fetch(`${base()}/api/sorted/JLPT/${page}.json`)).json();
+        const data = await (
+          await fetch(`${base()}/api/sorted/JLPT/${page}.json`)
+        ).json();
         const items: { word: string }[] = data.items;
         if (items.length > 0) {
           navigateToWord(items[Math.floor(Math.random() * items.length)].word);

@@ -18,7 +18,7 @@ export const SORT_ORDERS: SortOrder[] = [
   // Supplementary
   {
     key: "JLPT",
-    label: "JLPT Level",
+    label: "JLPT",
     description:
       "Japanese Language Proficiency Test level (N5 easiest → N1 hardest)",
   },

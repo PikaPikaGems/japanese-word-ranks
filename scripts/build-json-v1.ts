@@ -1,5 +1,5 @@
 /**
- * Generates all pre-computed JSON data files into public/api/ (V2).
+ * Generates all pre-computed JSON data files into public/api/.
  * Run with: npx tsx scripts/build-json.ts
  */
 
@@ -7,13 +7,11 @@ import fs from "node:fs";
 import path from "node:path";
 import {
   loadRirikkuData,
-  loadAdditionalData,
   loadConsolidatedData,
+  loadJlptData,
+  loadKaishiData,
   type ConsolidatedWord,
-} from "../src/lib/data-loader";
-
-import { loadKaishiData } from "../src/lib/data-loader-v1";
-
+} from "../src/lib/data-loader-v1";
 import { SORT_ORDERS } from "../src/lib/sort-orders";
 import { getBucketTier } from "../src/lib/tier";
 
@@ -30,26 +28,15 @@ const DEFAULT_BADGE_KEYS = [
   "DD2_MORPHMAN_SOL",
 ];
 
-// Map single-letter tier codes from V2 data to full tier names
-const TIER_CODE_MAP: Record<string, string> = {
-  B: "BASIC",
-  C: "COMMON",
-  F: "FLUENT",
-  A: "ADVANCED",
-  U: "UNRANKED",
-};
-
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 interface EnrichedWord {
   word: string;
   hiragana: string;
-  jlpt: number; // -1 if not in JLPT
+  jlpt: number | null;
   kaishi: boolean;
   kaishiOrder: number; // -1 if not in Kaishi
   ririkkuRank: number;
-  ririkkuTier: string; // BASIC, COMMON, FLUENT, ADVANCED, UNRANKED
-  english: string; // "-" if none
   ranks: Record<string, number>;
 }
 
@@ -64,21 +51,42 @@ function writeJson(filePath: string, data: unknown) {
   fs.writeFileSync(filePath, JSON.stringify(data));
 }
 
+/**
+ * Returns true if the word is written entirely in katakana
+ * (including prolonged sound mark ー and middle dot ・).
+ */
 function isKatakanaWord(word: string): boolean {
   return /^[\u30A0-\u30FF\uFF65-\uFF9F]+$/.test(word);
 }
 
+/**
+ * Returns true if the word is an actual Japanese word (not punctuation/symbols).
+ * Must start with a hiragana letter, katakana letter, or kanji.
+ * Excludes: dakuten/handakuten marks (゙゚゛゜), repeat marks (ゝゞヽヾ),
+ * middle dot (・), prolonged sound mark alone (ー), etc.
+ * Also excludes words containing any romaji (ASCII letters), e.g. "オーロラ-aurora".
+ */
 function isJapaneseWord(word: string): boolean {
   if (!word) return false;
+  // Reject words containing any ASCII letters (romaji), e.g. "オーロラ-aurora"
   if (/[a-zA-Z]/.test(word)) return false;
   const ch = word.codePointAt(0)!;
+
+  // Hiragana letters: U+3041 (ぁ) – U+3096 (ゖ), skip marks U+3099–U+309F
   if (ch >= 0x3041 && ch <= 0x3096) return true;
+  // Katakana letters: U+30A1 (ァ) – U+30FA (ヺ), skip marks U+30FB–U+30FE
   if (ch >= 0x30a1 && ch <= 0x30fa) return true;
+  // Katakana half-width: U+FF66 (ヲ) – U+FF9D (ン)
   if (ch >= 0xff66 && ch <= 0xff9d) return true;
+  // CJK Unified Ideographs: U+4E00–U+9FFF
   if (ch >= 0x4e00 && ch <= 0x9fff) return true;
+  // CJK Extension A: U+3400–U+4DBF
   if (ch >= 0x3400 && ch <= 0x4dbf) return true;
+  // CJK Compatibility Ideographs: U+F900–U+FAFF
   if (ch >= 0xf900 && ch <= 0xfaff) return true;
+  // 々 (iteration mark) and 〇 (zero)
   if (ch === 0x3005 || ch === 0x3007) return true;
+
   return false;
 }
 
@@ -86,17 +94,16 @@ function isJapaneseWord(word: string): boolean {
 
 function main() {
   const t0 = Date.now();
-  console.log("Loading V2 data...");
+  console.log("Loading data...");
 
   const ririkkuWords = loadRirikkuData();
-  const additionalData = loadAdditionalData();
   const consolidatedData = loadConsolidatedData();
+  const jlptData = loadJlptData();
+  const kaishiData = loadKaishiData();
 
   console.log(`  RIRIKKU: ${ririkkuWords.length} words`);
-  console.log(`  Additional: ${additionalData.size} words`);
-  console.log(`  Other ranks: ${consolidatedData.size} words`);
-
-  const kaishiData = loadKaishiData();
+  console.log(`  Consolidated: ${consolidatedData.size} words`);
+  console.log(`  JLPT: ${jlptData.size} words`);
   console.log(`  Kaishi: ${kaishiData.entries.length} entries`);
 
   // Build a fast lookup for Kaishi by word+reading
@@ -106,32 +113,24 @@ function main() {
   }
 
   // Enrich words and filter to Japanese-only
-
-  // Enrich words
   const allEnriched: EnrichedWord[] = ririkkuWords.map((rw) => {
-    const key = `${rw.word}|${rw.hiragana}`;
-    const extra = additionalData.get(key);
-
+    const jlpt = jlptData.get(rw.word) ?? null;
     const kaishiKey = `${rw.word}|${rw.hiragana}`;
     const kaishiOrder = kaishiLookup.get(kaishiKey) ?? -1;
 
     return {
       word: rw.word,
       hiragana: rw.hiragana,
-      jlpt: extra?.jlpt ?? -1,
+      jlpt,
       kaishi: kaishiOrder >= 0,
       kaishiOrder,
       ririkkuRank: rw.RIRIKKU_RANK,
-      ririkkuTier: TIER_CODE_MAP[rw.RIRIKKU_TIER] ?? "UNRANKED",
-      english: extra?.english ?? "-",
       ranks: rw.ranks,
     };
   });
 
   const enriched = allEnriched.filter((w) => isJapaneseWord(w.word));
-  console.log(
-    `  Filtered: ${allEnriched.length} → ${enriched.length} (removed ${allEnriched.length - enriched.length} non-Japanese entries)`,
-  );
+  console.log(`  Filtered: ${allEnriched.length} → ${enriched.length} (removed ${allEnriched.length - enriched.length} non-Japanese entries)`);
 
   // Clean output directory
   if (fs.existsSync(OUTPUT_DIR)) {
@@ -157,6 +156,7 @@ function generateSortedPages(words: EnrichedWord[]) {
     const totalPages = Math.ceil(sorted.length / PAGE_SIZE);
     const dir = path.join(OUTPUT_DIR, "sorted", sortOrder.key);
 
+    // Write metadata file (once per sort order)
     writeJson(path.join(dir, "meta.json"), {
       totalPages,
       totalItems: sorted.length,
@@ -173,10 +173,10 @@ function generateSortedPages(words: EnrichedWord[]) {
           reading: w.hiragana,
           tier: getBucketTier(w.ranks),
         };
-        if (w.jlpt !== -1) item.jlpt = w.jlpt;
+        if (w.jlpt !== null) item.jlpt = w.jlpt;
         if (w.kaishi) item.kaishi = true;
-        if (w.english !== "-") item.english = w.english;
 
+        // Only include ranks that have actual values (not -1)
         const rk: Record<string, number> = {};
         for (const key of DEFAULT_BADGE_KEYS) {
           const val = w.ranks[key];
@@ -187,7 +187,10 @@ function generateSortedPages(words: EnrichedWord[]) {
         return item;
       });
 
-      writeJson(path.join(dir, `${page}.json`), { page, items });
+      writeJson(path.join(dir, `${page}.json`), {
+        page,
+        items,
+      });
     }
 
     console.log(`  ${sortOrder.key}: ${totalPages} pages`);
@@ -204,20 +207,12 @@ function generateFilteredSortedPages(words: EnrichedWord[]) {
 
   for (const filter of filters) {
     const filtered = words.filter(filter.fn);
-    console.log(
-      `\nGenerating filtered sorted pages (${filter.key}: ${filtered.length} words)...`,
-    );
+    console.log(`\nGenerating filtered sorted pages (${filter.key}: ${filtered.length} words)...`);
 
     for (const sortOrder of SORT_ORDERS) {
       const sorted = sortWords(filtered, sortOrder.key);
       const totalPages = Math.ceil(sorted.length / PAGE_SIZE);
-      const dir = path.join(
-        OUTPUT_DIR,
-        "filtered",
-        filter.key,
-        "sorted",
-        sortOrder.key,
-      );
+      const dir = path.join(OUTPUT_DIR, "filtered", filter.key, "sorted", sortOrder.key);
 
       writeJson(path.join(dir, "meta.json"), {
         totalPages,
@@ -235,9 +230,8 @@ function generateFilteredSortedPages(words: EnrichedWord[]) {
             reading: w.hiragana,
             tier: getBucketTier(w.ranks),
           };
-          if (w.jlpt !== -1) item.jlpt = w.jlpt;
+          if (w.jlpt !== null) item.jlpt = w.jlpt;
           if (w.kaishi) item.kaishi = true;
-          if (w.english !== "-") item.english = w.english;
 
           const rk: Record<string, number> = {};
           for (const key of DEFAULT_BADGE_KEYS) {
@@ -261,15 +255,15 @@ function sortWords(words: EnrichedWord[], sortKey: string): EnrichedWord[] {
   const copy = [...words];
 
   if (sortKey === "JLPT") {
+    // N5→N4→N3→N2→N1→untagged, sub-sort by RIRIKKU_RANK
     copy.sort((a, b) => {
-      const aJlpt = a.jlpt > 0 ? a.jlpt : null;
-      const bJlpt = b.jlpt > 0 ? b.jlpt : null;
-      const aGroup = aJlpt ? 6 - aJlpt : 6;
-      const bGroup = bJlpt ? 6 - bJlpt : 6;
+      const aGroup = a.jlpt ? 6 - a.jlpt : 6; // N5=1,N4=2,...,N1=5,none=6
+      const bGroup = b.jlpt ? 6 - b.jlpt : 6;
       if (aGroup !== bGroup) return aGroup - bGroup;
       return a.ririkkuRank - b.ririkkuRank;
     });
   } else if (sortKey === "KAISHI") {
+    // Kaishi words first (by file order), then rest by RIRIKKU_RANK
     copy.sort((a, b) => {
       if (a.kaishi && !b.kaishi) return -1;
       if (!a.kaishi && b.kaishi) return 1;
@@ -277,6 +271,7 @@ function sortWords(words: EnrichedWord[], sortKey: string): EnrichedWord[] {
       return a.ririkkuRank - b.ririkkuRank;
     });
   } else {
+    // Frequency column: ascending rank, -1 to end, tie-break by RIRIKKU_RANK
     copy.sort((a, b) => {
       const aRank = a.ranks[sortKey] ?? -1;
       const bRank = b.ranks[sortKey] ?? -1;
@@ -299,6 +294,7 @@ function generateWordDetail(
 ) {
   console.log("\nGenerating word detail files...");
 
+  // Group by word (multiple readings possible)
   const byWord = new Map<string, EnrichedWord[]>();
   for (const w of words) {
     const existing = byWord.get(w.word) ?? [];
@@ -321,9 +317,8 @@ function generateWordDetail(
         tier: getBucketTier(e.ranks),
         ranks: e.ranks,
       };
-      if (e.jlpt !== -1) item.jlpt = e.jlpt;
+      if (e.jlpt !== null) item.jlpt = e.jlpt;
       if (e.kaishi) item.kaishi = true;
-      if (e.english !== "-") item.english = e.english;
       if (consolidatedEntry) item.detailRanks = consolidatedEntry.ranks;
 
       return item;
@@ -338,40 +333,11 @@ function generateWordDetail(
 
 // ─── Search Indices ─────────────────────────────────────────────────────────
 
-interface SearchEntry {
-  w: string; // word
-  r: string; // reading
-  j?: number; // JLPT level (omitted if -1)
-  k?: 1; // kaishi (omitted if not included)
-  t: string; // tier emoji
-  e?: string; // english (omitted if "-")
-}
-
-const TIER_EMOJI: Record<string, string> = {
-  BASIC: "🌱",
-  COMMON: "☘️",
-  FLUENT: "🌷",
-  ADVANCED: "📚",
-  UNRANKED: "🦉",
-};
-
-function toSearchEntry(w: EnrichedWord): SearchEntry {
-  const tier = getBucketTier(w.ranks);
-  const entry: SearchEntry = {
-    w: w.word,
-    r: w.hiragana,
-    t: TIER_EMOJI[tier] ?? "🦉",
-  };
-  if (w.jlpt > 0) entry.j = w.jlpt;
-  if (w.kaishi) entry.k = 1;
-  if (w.english !== "-") entry.e = w.english;
-  return entry;
-}
-
 function generateSearchIndices(words: EnrichedWord[]) {
   console.log("\nGenerating search indices...");
 
   // Sort by RIRIKKU_RANK so most frequent words appear first in typeahead
+  // -1 means unranked → push to end
   const sorted = [...words].sort((a, b) => {
     if (a.ririkkuRank === -1 && b.ririkkuRank === -1) return 0;
     if (a.ririkkuRank === -1) return 1;
@@ -380,12 +346,12 @@ function generateSearchIndices(words: EnrichedWord[]) {
   });
 
   // By reading (first hiragana character)
-  const byReading = new Map<string, SearchEntry[]>();
+  const byReading = new Map<string, [string, string][]>();
   for (const w of sorted) {
     const firstChar = w.hiragana.charAt(0);
     if (!firstChar) continue;
     const list = byReading.get(firstChar) ?? [];
-    list.push(toSearchEntry(w));
+    list.push([w.word, w.hiragana]);
     byReading.set(firstChar, list);
   }
 
@@ -398,12 +364,12 @@ function generateSearchIndices(words: EnrichedWord[]) {
   console.log(`  ${byReading.size} reading index files`);
 
   // By word (first character of word)
-  const byWord = new Map<string, SearchEntry[]>();
+  const byWord = new Map<string, [string, string][]>();
   for (const w of sorted) {
     const firstChar = w.word.charAt(0);
     if (!firstChar) continue;
     const list = byWord.get(firstChar) ?? [];
-    list.push(toSearchEntry(w));
+    list.push([w.word, w.hiragana]);
     byWord.set(firstChar, list);
   }
 

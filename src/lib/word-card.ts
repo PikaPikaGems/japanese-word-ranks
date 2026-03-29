@@ -19,6 +19,7 @@ export interface WordCardData {
   kaishi?: boolean;
   ranks?: Record<string, number>;
   tier?: string;
+  english?: string;
 }
 
 export interface WordCardOptions {
@@ -98,6 +99,9 @@ export function fillWordCard(card: HTMLElement, data: WordCardData, options: Wor
   card.querySelector<HTMLElement>("[data-word-display]")!.textContent = data.word;
   card.querySelector<HTMLElement>("[data-word-reading]")!.textContent =
     data.reading !== data.word ? data.reading : "";
+
+  const englishEl = card.querySelector<HTMLElement>("[data-word-english]");
+  if (englishEl) englishEl.textContent = data.english ?? "";
 
   card.querySelector<HTMLElement>(".tts-btn")!.dataset.word = data.word;
   card.querySelector<HTMLElement>(".copy-url-btn")!.dataset.copyUrl = wordUrl;

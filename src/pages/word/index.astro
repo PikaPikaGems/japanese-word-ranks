@@ -50,6 +50,7 @@ import FrequencyTable from "../../components/FrequencyTable.astro";
     tier?: string;
     jlpt?: number;
     kaishi?: boolean;
+    english?: string;
     ranks: Record<string, number>;
     detailRanks?: Record<string, number>;
   }
@@ -107,7 +108,7 @@ import FrequencyTable from "../../components/FrequencyTable.astro";
 
   function render(word: string, entries: WordEntry[]) {
     const primary = entries[0];
-    updateWordCard({ word, reading: primary.reading, jlpt: primary.jlpt, kaishi: primary.kaishi, ranks: primary.ranks, tier: primary.tier });
+    updateWordCard({ word, reading: primary.reading, jlpt: primary.jlpt, kaishi: primary.kaishi, ranks: primary.ranks, tier: primary.tier, english: primary.english });
 
     const allRanks: Record<string, number> = {};
     const ririkkuRanks: Record<string, number> = {};
@@ -123,7 +124,7 @@ import FrequencyTable from "../../components/FrequencyTable.astro";
 
   // ─── Word Card ─────────────────────────────────────────────────────────────
 
-  function updateWordCard(data: { word: string; reading: string; jlpt?: number; kaishi?: boolean; ranks?: Record<string, number>; tier?: string }) {
+  function updateWordCard(data: { word: string; reading: string; jlpt?: number; kaishi?: boolean; ranks?: Record<string, number>; tier?: string; english?: string }) {
     fillWordCard(detailEl.querySelector<HTMLElement>(".word-card")!, data);
   }
 

@@ -1,6 +1,6 @@
 /**
- * Build-time data loading utilities.
- * Parses all CSV/JSON/TXT data files into structured data for page generation.
+ * Build-time data loading utilities (V2).
+ * Parses V2 CSV/TSV data files from data/V2/ into structured data for page generation.
  */
 
 import fs from "node:fs";
@@ -8,7 +8,12 @@ import path from "node:path";
 import Papa from "papaparse";
 import { FREQUENCY_COLUMN_KEYS } from "./sort-orders";
 
-const DATA_DIR = path.resolve("data");
+const DATA_DIR = path.resolve("data/V2");
+
+// V2 CSV renamed some columns; map code-expected names → CSV column names
+const COLUMN_ALIAS: Record<string, string> = {
+  CC100_rank: "CC100",
+};
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -17,70 +22,100 @@ export interface RirikkuWord {
   hiragana: string;
   katakana: string;
   RIRIKKU_RANK: number;
+  RIRIKKU_TIER: string; // B, C, F, A, U
   ranks: Record<string, number>; // column key → rank (-1 = absent)
+}
+
+export interface AdditionalData {
+  furigana: string; // "-" if none
+  jlpt: number; // -1 if not in JLPT
+  kaishi: number; // 1 = yes, 0 = no
+  english: string; // "-" if none
 }
 
 export interface ConsolidatedWord {
   word: string;
   hiragana: string;
-  katakana: string;
-  ranks: Record<string, number>; // all 75+ columns
+  ranks: Record<string, number>; // all columns from other_ranks
 }
 
-// ─── RIRIKKU_CONSOLIDATED.csv ────────────────────────────────────────────────
+// ─── RIRIKKU_CONSOLIDATED_V2.csv ────────────────────────────────────────────
 
 let _ririkkuCache: RirikkuWord[] | null = null;
 
 export function loadRirikkuData(): RirikkuWord[] {
   if (_ririkkuCache) return _ririkkuCache;
 
-  const csvPath = path.join(
-    DATA_DIR,
-    "frequency/selected-freq/RIRIKKU_CONSOLIDATED_MODIFIED_V1.csv",
-  );
+  const csvPath = path.join(DATA_DIR, "RIRIKKU_CONSOLIDATED_V2.csv");
   const csvText = fs.readFileSync(csvPath, "utf-8");
   const parsed = Papa.parse<Record<string, string>>(csvText, {
     header: true,
     skipEmptyLines: true,
   });
 
-  _ririkkuCache = parsed.data.map(
-    (row: {
-      [x: string]: any;
-      RIRIKKU_RANK: any;
-      word: any;
-      hiragana: any;
-      katakana: any;
-    }) => {
-      const ranks: Record<string, number> = {};
-      for (const key of FREQUENCY_COLUMN_KEYS) {
-        const v = parseInt(row[key] ?? "-1", 10);
-        ranks[key] = isNaN(v) ? -1 : v;
-      }
-      const ririkkuRank = parseInt(row.RIRIKKU_RANK ?? "-1", 10);
-      return {
-        word: row.word,
-        hiragana: row.hiragana,
-        katakana: row.katakana,
-        RIRIKKU_RANK: isNaN(ririkkuRank) ? -1 : ririkkuRank,
-        ranks,
-      };
-    },
-  );
+  _ririkkuCache = parsed.data.map((row) => {
+    const ranks: Record<string, number> = {};
+    for (const key of FREQUENCY_COLUMN_KEYS) {
+      const csvCol = COLUMN_ALIAS[key] ?? key;
+      const v = parseInt(row[csvCol] ?? "-1", 10);
+      ranks[key] = isNaN(v) ? -1 : v;
+    }
+    const ririkkuRank = parseInt(row.RIRIKKU_RANK ?? "-1", 10);
+    return {
+      word: row.word,
+      hiragana: row.hiragana,
+      katakana: row.katakana,
+      RIRIKKU_RANK: isNaN(ririkkuRank) ? -1 : ririkkuRank,
+      RIRIKKU_TIER: row.RIRIKKU_TIER ?? "U",
+      ranks,
+    };
+  });
 
   return _ririkkuCache ?? [];
 }
 
-// ─── consolidated.csv (full 75+ columns) ─────────────────────────────────────
+// ─── RIRIKKU_CONSOLIDATED_V2_additional_data.tsv ────────────────────────────
 
-let _consolidatedCache: Map<string, ConsolidatedWord> | null = null;
+let _additionalCache: Map<string, AdditionalData> | null = null;
+
+export function loadAdditionalData(): Map<string, AdditionalData> {
+  if (_additionalCache) return _additionalCache;
+
+  const tsvPath = path.join(
+    DATA_DIR,
+    "RIRIKKU_CONSOLIDATED_V2_additional_data.tsv",
+  );
+  const tsvText = fs.readFileSync(tsvPath, "utf-8");
+  const parsed = Papa.parse<Record<string, string>>(tsvText, {
+    header: true,
+    skipEmptyLines: true,
+    delimiter: "\t",
+  });
+
+  _additionalCache = new Map();
+  for (const row of parsed.data) {
+    const key = `${row.word}|${row.hiragana}`;
+    _additionalCache.set(key, {
+      furigana: row.furigana ?? "-",
+      jlpt: parseInt(row.JLPT ?? "-1", 10),
+      kaishi: parseInt(row.kaishi ?? "0", 10),
+      english: row.english ?? "-",
+    });
+  }
+
+  return _additionalCache;
+}
+
+// ─── RIRIKKU_CONSOLIDATED_V2_other_ranks.csv (full detail ranks) ────────────
+
+let _otherRanksCache: Map<string, ConsolidatedWord> | null = null;
 
 export function loadConsolidatedData(): Map<string, ConsolidatedWord> {
-  if (_consolidatedCache) return _consolidatedCache;
+  if (_otherRanksCache) return _otherRanksCache;
 
   const csvPath = path.join(
     DATA_DIR,
-    "frequency/top25k-all-freq/consolidated.csv",
+    "RIRIKKU_CONSOLIDATED_V2_other_ranks.csv",
   );
   const csvText = fs.readFileSync(csvPath, "utf-8");
   const parsed = Papa.parse<Record<string, string>>(csvText, {
@@ -88,115 +123,21 @@ export function loadConsolidatedData(): Map<string, ConsolidatedWord> {
     skipEmptyLines: true,
   });
 
-  _consolidatedCache = new Map();
+  _otherRanksCache = new Map();
   for (const row of parsed.data) {
     const word = row.word;
     const hiragana = row.hiragana;
     const ranks: Record<string, number> = {};
 
     for (const key of Object.keys(row)) {
-      if (key === "word" || key === "hiragana" || key === "katakana") continue;
+      if (key === "word" || key === "hiragana") continue;
       const v = parseInt(row[key] ?? "-1", 10);
       ranks[key] = isNaN(v) ? -1 : v;
     }
 
-    // Key by "word|hiragana" to handle words with multiple readings (e.g. 人/ひと vs 人/じん)
     const mapKey = `${word}|${hiragana}`;
-    _consolidatedCache.set(mapKey, {
-      word,
-      hiragana,
-      katakana: row.katakana,
-      ranks,
-    });
+    _otherRanksCache.set(mapKey, { word, hiragana, ranks });
   }
 
-  return _consolidatedCache;
-}
-
-// ─── JLPT data ───────────────────────────────────────────────────────────────
-
-let _jlptCache: Map<string, number> | null = null;
-
-export function loadJlptData(): Map<string, number> {
-  if (_jlptCache) return _jlptCache;
-
-  const jsonPath = path.join(DATA_DIR, "jlpt/word_jlpt.json");
-  const jsonText = fs.readFileSync(jsonPath, "utf-8");
-  const data: Record<string, string> = JSON.parse(jsonText);
-
-  _jlptCache = new Map();
-  for (const [word, level] of Object.entries(data)) {
-    _jlptCache.set(word, parseInt(level, 10));
-  }
-
-  return _jlptCache;
-}
-
-// ─── Kaishi data ─────────────────────────────────────────────────────────────
-
-export interface KaishiEntry {
-  word: string;
-  reading: string;
-  order: number; // 0-based position in the file
-}
-
-let _kaishiCache: { entries: KaishiEntry[]; wordSet: Set<string> } | null =
-  null;
-
-/**
- * Parse kaishi_1500.txt.
- *
- * Format:
- * - If a line contains kanji, the NEXT line is its single hiragana reading.
- * - If a line is pure kana, it is a standalone word (word = reading).
- * - One reading per kanji word, always.
- */
-export function loadKaishiData(): {
-  entries: KaishiEntry[];
-  wordSet: Set<string>;
-} {
-  if (_kaishiCache) return _kaishiCache;
-
-  const txtPath = path.join(DATA_DIR, "kaishi/kaishi_1500.txt");
-  const lines = fs
-    .readFileSync(txtPath, "utf-8")
-    .split("\n")
-    .filter((l) => l.trim() !== "");
-
-  const entries: KaishiEntry[] = [];
-  const wordSet = new Set<string>();
-  let order = 0;
-  let i = 0;
-
-  while (i < lines.length) {
-    const line = lines[i].trim();
-
-    if (hasKanji(line)) {
-      // Kanji word — next line is its single reading
-      const reading = i + 1 < lines.length ? lines[i + 1].trim() : line;
-      entries.push({ word: line, reading, order: order++ });
-      wordSet.add(line);
-      i += 2; // skip word + reading
-    } else {
-      // Pure kana — standalone word
-      entries.push({ word: line, reading: line, order: order++ });
-      wordSet.add(line);
-      i++;
-    }
-  }
-
-  _kaishiCache = { entries, wordSet };
-  return _kaishiCache;
-}
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function hasKanji(str: string): boolean {
-  // CJK Unified Ideographs range
-  return /[\u4e00-\u9faf\u3400-\u4dbf]/.test(str);
-}
-
-function isPureHiragana(str: string): boolean {
-  // Hiragana range + common marks (ー, punctuation)
-  return /^[\u3040-\u309f\u30fc]+$/.test(str);
+  return _otherRanksCache;
 }
