@@ -34,28 +34,41 @@ let _ririkkuCache: RirikkuWord[] | null = null;
 export function loadRirikkuData(): RirikkuWord[] {
   if (_ririkkuCache) return _ririkkuCache;
 
-  const csvPath = path.join(DATA_DIR, "frequency/selected-freq/RIRIKKU_CONSOLIDATED_MODIFIED_V1.csv");
+  const csvPath = path.join(
+    DATA_DIR,
+    "frequency/selected-freq/RIRIKKU_CONSOLIDATED_MODIFIED_V1.csv",
+  );
   const csvText = fs.readFileSync(csvPath, "utf-8");
   const parsed = Papa.parse<Record<string, string>>(csvText, {
     header: true,
     skipEmptyLines: true,
   });
 
-  _ririkkuCache = parsed.data.map((row) => {
-    const ranks: Record<string, number> = {};
-    for (const key of FREQUENCY_COLUMN_KEYS) {
-      ranks[key] = parseInt(row[key] ?? "-1", 10);
-    }
-    return {
-      word: row.word,
-      hiragana: row.hiragana,
-      katakana: row.katakana,
-      RIRIKKU_RANK: parseInt(row.RIRIKKU_RANK ?? "-1", 10),
-      ranks,
-    };
-  });
+  _ririkkuCache = parsed.data.map(
+    (row: {
+      [x: string]: any;
+      RIRIKKU_RANK: any;
+      word: any;
+      hiragana: any;
+      katakana: any;
+    }) => {
+      const ranks: Record<string, number> = {};
+      for (const key of FREQUENCY_COLUMN_KEYS) {
+        const v = parseInt(row[key] ?? "-1", 10);
+        ranks[key] = isNaN(v) ? -1 : v;
+      }
+      const ririkkuRank = parseInt(row.RIRIKKU_RANK ?? "-1", 10);
+      return {
+        word: row.word,
+        hiragana: row.hiragana,
+        katakana: row.katakana,
+        RIRIKKU_RANK: isNaN(ririkkuRank) ? -1 : ririkkuRank,
+        ranks,
+      };
+    },
+  );
 
-  return _ririkkuCache;
+  return _ririkkuCache ?? [];
 }
 
 // ─── consolidated.csv (full 75+ columns) ─────────────────────────────────────
@@ -65,7 +78,10 @@ let _consolidatedCache: Map<string, ConsolidatedWord> | null = null;
 export function loadConsolidatedData(): Map<string, ConsolidatedWord> {
   if (_consolidatedCache) return _consolidatedCache;
 
-  const csvPath = path.join(DATA_DIR, "frequency/top25k-all-freq/consolidated.csv");
+  const csvPath = path.join(
+    DATA_DIR,
+    "frequency/top25k-all-freq/consolidated.csv",
+  );
   const csvText = fs.readFileSync(csvPath, "utf-8");
   const parsed = Papa.parse<Record<string, string>>(csvText, {
     header: true,
@@ -80,7 +96,8 @@ export function loadConsolidatedData(): Map<string, ConsolidatedWord> {
 
     for (const key of Object.keys(row)) {
       if (key === "word" || key === "hiragana" || key === "katakana") continue;
-      ranks[key] = parseInt(row[key] ?? "-1", 10);
+      const v = parseInt(row[key] ?? "-1", 10);
+      ranks[key] = isNaN(v) ? -1 : v;
     }
 
     // Key by "word|hiragana" to handle words with multiple readings (e.g. 人/ひと vs 人/じん)
@@ -123,7 +140,8 @@ export interface KaishiEntry {
   order: number; // 0-based position in the file
 }
 
-let _kaishiCache: { entries: KaishiEntry[]; wordSet: Set<string> } | null = null;
+let _kaishiCache: { entries: KaishiEntry[]; wordSet: Set<string> } | null =
+  null;
 
 /**
  * Parse kaishi_1500.txt.
@@ -133,11 +151,17 @@ let _kaishiCache: { entries: KaishiEntry[]; wordSet: Set<string> } | null = null
  * - If a line is pure kana, it is a standalone word (word = reading).
  * - One reading per kanji word, always.
  */
-export function loadKaishiData(): { entries: KaishiEntry[]; wordSet: Set<string> } {
+export function loadKaishiData(): {
+  entries: KaishiEntry[];
+  wordSet: Set<string>;
+} {
   if (_kaishiCache) return _kaishiCache;
 
   const txtPath = path.join(DATA_DIR, "kaishi/kaishi_1500.txt");
-  const lines = fs.readFileSync(txtPath, "utf-8").split("\n").filter((l) => l.trim() !== "");
+  const lines = fs
+    .readFileSync(txtPath, "utf-8")
+    .split("\n")
+    .filter((l) => l.trim() !== "");
 
   const entries: KaishiEntry[] = [];
   const wordSet = new Set<string>();
@@ -149,7 +173,7 @@ export function loadKaishiData(): { entries: KaishiEntry[]; wordSet: Set<string>
 
     if (hasKanji(line)) {
       // Kanji word — next line is its single reading
-      const reading = (i + 1 < lines.length) ? lines[i + 1].trim() : line;
+      const reading = i + 1 < lines.length ? lines[i + 1].trim() : line;
       entries.push({ word: line, reading, order: order++ });
       wordSet.add(line);
       i += 2; // skip word + reading
