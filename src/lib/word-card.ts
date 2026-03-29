@@ -165,9 +165,12 @@ export function initWordCardHandlers() {
       return;
     }
 
-    // Card navigation (linked cards only)
+    // Card navigation (linked cards only) — skip if a button inside the card was clicked
+    if (target.closest("[data-status-btn], .tts-btn, .copy-url-btn, [data-book-trigger], [data-book-popover]")) return;
     const card = target.closest("[data-word-card]") as HTMLElement | null;
     if (card) {
+      e.preventDefault();
+      e.stopPropagation();
       const url = card.dataset.wordUrl;
       if (url) window.location.href = url;
     }
