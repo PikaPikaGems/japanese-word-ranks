@@ -111,6 +111,14 @@ export function fillWordCard(card: HTMLElement, data: WordCardData, options: Wor
  * Call once per page. Uses event delegation on document.
  */
 export function initWordCardHandlers() {
+  // Pre-load voices so they're available on first tap (needed on Android Chrome)
+  if ("speechSynthesis" in window) {
+    window.speechSynthesis.getVoices();
+    window.speechSynthesis.addEventListener("voiceschanged", () => {
+      window.speechSynthesis.getVoices();
+    });
+  }
+
   document.addEventListener("click", (e) => {
     const target = e.target as HTMLElement;
 
@@ -138,9 +146,13 @@ export function initWordCardHandlers() {
       e.stopPropagation();
       const word = ttsBtn.dataset.word;
       if (word && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(word);
         utterance.lang = "ja-JP";
-        speechSynthesis.speak(utterance);
+        const voices = window.speechSynthesis.getVoices();
+        const jaVoice = voices.find((v) => v.lang === "ja-JP");
+        if (jaVoice) utterance.voice = jaVoice;
+        window.speechSynthesis.speak(utterance);
       }
       return;
     }
