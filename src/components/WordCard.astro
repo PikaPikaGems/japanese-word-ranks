@@ -1,5 +1,6 @@
 ---
 import { DICTIONARY_LINKS } from "../lib/external-links";
+import WordStatus from "./WordStatus.astro";
 ---
 
 <style>
@@ -26,7 +27,8 @@ import { DICTIONARY_LINKS } from "../lib/external-links";
 </style>
 
 <div class="word-card rounded-2xl border border-border  text-card-foreground shadow-sm relative hover:bg-green-500/5">
-  <div class="absolute top-3 right-4 flex items-center gap-1">
+  <div class="absolute top-3 right-4 flex items-center gap-2">
+    <WordStatus />
     <span data-rank-label class="text-xs font-bold text-muted-foreground tabular-nums"></span>
     <span data-tier-emoji class="text-sm leading-none"></span>
   </div>

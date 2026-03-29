@@ -45,7 +45,14 @@ import { SORT_ORDERS } from "../lib/sort-orders";
     <!-- Pagination -->
     <div id="pagination" class="flex items-center justify-center gap-1.5 my-8 w-full"></div>
 
-    <!-- Loading state: skeleton cards -->
+    <!-- Loading state -->
+    <div id="loading-spinner" class="flex items-center justify-center h-[1000px]">
+      <div class="h-6 w-6 rounded-full opacity-50" style="animation: spin 1s linear infinite">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-loader-circle-icon lucide-loader-circle">
+                <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+              </svg>
+      </div>
+    </div>
     <div id="loading" class="space-y-4 hidden">
       {Array.from({ length: 5 }).map(() => (
         <WordCardSkeleton />
@@ -94,6 +101,7 @@ import { SORT_ORDERS } from "../lib/sort-orders";
   const sortSelect = document.getElementById("sort-select") as HTMLSelectElement;
   const filterSelect = document.getElementById("filter-select") as HTMLSelectElement;
   const wordList = document.getElementById("word-list")!;
+  const loadingSpinner = document.getElementById("loading-spinner")!;
   const loading = document.getElementById("loading")!;
   const paginationTop = document.getElementById("pagination")!;
   const paginationBottom = document.getElementById("pagination-bottom")!;
@@ -153,8 +161,13 @@ import { SORT_ORDERS } from "../lib/sort-orders";
 
   async function loadAndRender() {
     wordList.classList.add("hidden");
+    loading.classList.add("hidden");
+    loadingSpinner.classList.remove("hidden");
 
-    const skeletonTimer = setTimeout(() => loading.classList.remove("hidden"), 200);
+    const skeletonTimer = setTimeout(() => {
+      loadingSpinner.classList.add("hidden");
+      loading.classList.remove("hidden");
+    }, 100);
 
     try {
       meta = await fetchMeta(currentSort);
@@ -168,10 +181,12 @@ import { SORT_ORDERS } from "../lib/sort-orders";
       renderPagination(paginationTop);
       renderPagination(paginationBottom);
 
+      loadingSpinner.classList.add("hidden");
       loading.classList.add("hidden");
       wordList.classList.remove("hidden");
     } catch (err) {
       clearTimeout(skeletonTimer);
+      loadingSpinner.classList.add("hidden");
       loading.classList.remove("hidden");
       loading.textContent = "Failed to load data.";
       console.error(err);

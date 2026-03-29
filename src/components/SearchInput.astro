@@ -1,7 +1,8 @@
 ---
+import StatusStats from "./StatusStats.astro";
 ---
 
-<div class="sticky top-[24px] z-40 bg-background py-6 ">
+<div class="sticky top-[24px] z-40 bg-background py-6">
   <div class="relative flex items-center gap-3">
     <!-- Magnifying glass icon -->
     <div class="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
@@ -27,4 +28,5 @@
     <div id="search-dropdown" class="hidden absolute top-full left-0 right-14 mt-2 max-h-80 overflow-y-auto rounded-xl border border-border bg-popover shadow-lg z-50">
     </div>
   </div>
+  <StatusStats />
 </div>

@@ -3,6 +3,7 @@ import { TIER_STYLE } from "./badges";
 import { SORT_ORDER_MAP } from "./sort-orders";
 import { DICTIONARY_LINKS } from "./external-links";
 import { CATALOG_ENTRY_MAP } from "./dataset-catalog";
+import { STATUS_CYCLE, getWordStatus, setWordStatus, applyStatusStyle } from "./word-status";
 
 function base(): string {
   return (window as Window & { __BASE__?: string }).__BASE__ || "";
@@ -73,6 +74,7 @@ export function renderBadge(label: string, value: string | number, tier: Tier, d
   `;
 }
 
+
 export function fillWordCard(card: HTMLElement, data: WordCardData, options: WordCardOptions = {}) {
   const { linked = false, listRank } = options;
   const wordUrl = `${base()}/word/?w=${encodeURIComponent(data.word)}`;
@@ -96,6 +98,12 @@ export function fillWordCard(card: HTMLElement, data: WordCardData, options: Wor
 
   card.querySelector<HTMLElement>(".tts-btn")!.dataset.word = data.word;
   card.querySelector<HTMLElement>(".copy-url-btn")!.dataset.copyUrl = wordUrl;
+
+  const statusBtn = card.querySelector<HTMLElement>("[data-status-btn]");
+  if (statusBtn) {
+    statusBtn.dataset.word = data.word;
+    applyStatusStyle(statusBtn, getWordStatus(data.word));
+  }
 
   for (const link of card.querySelectorAll<HTMLAnchorElement>("[data-dict-name]")) {
     const entry = DICTIONARY_LINKS.find(d => d.name === link.dataset.dictName);
@@ -121,6 +129,22 @@ export function initWordCardHandlers() {
 
   document.addEventListener("click", (e) => {
     const target = e.target as HTMLElement;
+
+    // Status pill
+    const statusBtn = target.closest("[data-status-btn]") as HTMLElement | null;
+    if (statusBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      const word = statusBtn.dataset.word;
+      if (word) {
+        const current = getWordStatus(word);
+        const next = STATUS_CYCLE[(STATUS_CYCLE.indexOf(current) + 1) % STATUS_CYCLE.length];
+        setWordStatus(word, next);
+        applyStatusStyle(statusBtn, next);
+        document.dispatchEvent(new CustomEvent("word-status-change"));
+      }
+      return;
+    }
 
     // Copy URL
     const copyBtn = target.closest(".copy-url-btn") as HTMLElement | null;

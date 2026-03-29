@@ -1,0 +1,15 @@
+---
+interface Props {
+  word?: string;
+}
+const { word = "" } = Astro.props;
+---
+
+<button
+  data-status-btn
+  data-word={word}
+  class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors cursor-pointer border bg-transparent text-muted-foreground border-border"
+  title="Set word status"
+>
+  <span data-status-label>No Status</span>
+</button>

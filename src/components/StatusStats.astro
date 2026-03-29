@@ -1,0 +1,38 @@
+---
+---
+
+<div id="status-stats" class="absolute -bottom-1  flex items-center gap-2 pt-2 pl-1" style="display:none">
+  <span id="stat-known" class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-green-500 text-white"></span>
+  <span id="stat-familiar" class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-foreground text-background"></span>
+</div>
+
+<script>
+  function getStatusCounts(): { known: number; familiar: number } {
+    let known = 0, familiar = 0;
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (!key?.startsWith("word-status:")) continue;
+      const val = localStorage.getItem(key);
+      if (val === "known") known++;
+      else if (val === "familiar") familiar++;
+    }
+    return { known, familiar };
+  }
+
+  function updateStats() {
+    const { known, familiar } = getStatusCounts();
+    const container = document.getElementById("status-stats")!;
+    const knownEl = document.getElementById("stat-known")!;
+    const familiarEl = document.getElementById("stat-familiar")!;
+
+    knownEl.textContent = `${known} Known`;
+    familiarEl.textContent = `${familiar} Familiar`;
+
+    knownEl.style.display = known === 0 ? "none" : "";
+    familiarEl.style.display = familiar === 0 ? "none" : "";
+    container.style.display = known === 0 && familiar === 0 ? "none" : "flex";
+  }
+
+  updateStats();
+  document.addEventListener("word-status-change", updateStats);
+</script>
