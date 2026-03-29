@@ -3,7 +3,10 @@ import { TIER_STYLE } from "./badges";
 import { SORT_ORDER_MAP } from "./sort-orders";
 import { DICTIONARY_LINKS } from "./external-links";
 import { CATALOG_ENTRY_MAP } from "./dataset-catalog";
-import { STATUS_CYCLE, getWordStatus, setWordStatus, applyStatusStyle } from "./word-status";
+import { getWordStatus, applyStatusStyle, initWordStatusHandler } from "./word-status";
+import { initTtsBtnHandler } from "./tts-btn";
+import { initCopyBtnHandler } from "./copy-btn";
+import { initBookTriggerHandler } from "./book-trigger";
 
 function base(): string {
   return (window as Window & { __BASE__?: string }).__BASE__ || "";
@@ -119,96 +122,13 @@ export function fillWordCard(card: HTMLElement, data: WordCardData, options: Wor
  * Call once per page. Uses event delegation on document.
  */
 export function initWordCardHandlers() {
-  // Pre-load voices so they're available on first tap (needed on Android Chrome)
-  if ("speechSynthesis" in window) {
-    window.speechSynthesis.getVoices();
-    window.speechSynthesis.addEventListener("voiceschanged", () => {
-      window.speechSynthesis.getVoices();
-    });
-  }
+  initWordStatusHandler();
+  initTtsBtnHandler();
+  initCopyBtnHandler();
+  initBookTriggerHandler();
 
   document.addEventListener("click", (e) => {
     const target = e.target as HTMLElement;
-
-    // Status pill
-    const statusBtn = target.closest("[data-status-btn]") as HTMLElement | null;
-    if (statusBtn) {
-      e.preventDefault();
-      e.stopPropagation();
-      const word = statusBtn.dataset.word;
-      if (word) {
-        const current = getWordStatus(word);
-        const next = STATUS_CYCLE[(STATUS_CYCLE.indexOf(current) + 1) % STATUS_CYCLE.length];
-        setWordStatus(word, next);
-        applyStatusStyle(statusBtn, next);
-        document.dispatchEvent(new CustomEvent("word-status-change"));
-      }
-      return;
-    }
-
-    // Copy URL
-    const copyBtn = target.closest(".copy-url-btn") as HTMLElement | null;
-    if (copyBtn) {
-      e.preventDefault();
-      e.stopPropagation();
-      const path = copyBtn.dataset.copyUrl;
-      if (path) {
-        const fullUrl = window.location.origin + path;
-        navigator.clipboard.writeText(fullUrl).then(() => {
-          const original = copyBtn.innerHTML;
-          copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`;
-          setTimeout(() => { copyBtn.innerHTML = original; }, 1500);
-        });
-      }
-      return;
-    }
-
-    // TTS
-    const ttsBtn = target.closest(".tts-btn") as HTMLElement | null;
-    if (ttsBtn) {
-      e.preventDefault();
-      e.stopPropagation();
-      const word = ttsBtn.dataset.word;
-      if (word && "speechSynthesis" in window) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(word);
-        utterance.lang = "ja-JP";
-        const voices = window.speechSynthesis.getVoices();
-        const jaVoice = voices.find((v) => v.lang === "ja-JP");
-        if (jaVoice) utterance.voice = jaVoice;
-        window.speechSynthesis.speak(utterance);
-      }
-      return;
-    }
-
-    // Book popover
-    const bookTrigger = target.closest("[data-book-trigger]") as HTMLElement | null;
-    document.querySelectorAll("[data-book-popover]").forEach((el) => {
-      if (bookTrigger && el === bookTrigger.parentElement?.querySelector("[data-book-popover]")) return;
-      el.classList.add("hidden");
-      el.parentElement?.querySelector("[data-book-trigger]")?.setAttribute("aria-expanded", "false");
-    });
-    if (bookTrigger) {
-      e.preventDefault();
-      e.stopPropagation();
-      const popover = bookTrigger.parentElement?.querySelector("[data-book-popover]") as HTMLElement | null;
-      if (popover) {
-        const isHidden = popover.classList.toggle("hidden");
-        bookTrigger.setAttribute("aria-expanded", String(!isHidden));
-        document.querySelectorAll<HTMLElement>(".word-card").forEach(c => c.style.zIndex = "");
-        if (!isHidden) {
-          const parentCard = popover.closest<HTMLElement>(".word-card");
-          if (parentCard) parentCard.style.zIndex = "10";
-        }
-      }
-      return;
-    }
-
-    // Dictionary links inside book popover — let them navigate, but stop card click
-    if (target.closest("[data-book-popover]")) {
-      e.stopPropagation();
-      return;
-    }
 
     // Badge popover
     const badgeTrigger = target.closest("[data-badge-trigger]") as HTMLElement | null;

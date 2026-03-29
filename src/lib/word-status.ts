@@ -33,3 +33,22 @@ export function applyStatusStyle(btn: HTMLElement, status: WordStatus): void {
   for (const classes of Object.values(STATUS_CLASSES)) btn.classList.remove(...classes);
   btn.classList.add(...STATUS_CLASSES[status]);
 }
+
+export function initWordStatusHandler() {
+  document.addEventListener("click", (e) => {
+    const target = e.target as HTMLElement;
+    const statusBtn = target.closest("[data-status-btn]") as HTMLElement | null;
+    if (!statusBtn) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    const word = statusBtn.dataset.word;
+    if (word) {
+      const current = getWordStatus(word);
+      const next = STATUS_CYCLE[(STATUS_CYCLE.indexOf(current) + 1) % STATUS_CYCLE.length];
+      setWordStatus(word, next);
+      applyStatusStyle(statusBtn, next);
+      document.dispatchEvent(new CustomEvent("word-status-change"));
+    }
+  });
+}
