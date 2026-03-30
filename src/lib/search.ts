@@ -190,6 +190,13 @@ export function initSearch() {
       .join("");
 
     searchDropdown.classList.remove("hidden");
+
+    if (highlight >= 0) {
+      const activeEl = searchDropdown?.querySelector(
+        `[data-search-index="${highlight}"]`,
+      );
+      activeEl?.scrollIntoView({ block: "nearest" });
+    }
   }
 
   function close() {
