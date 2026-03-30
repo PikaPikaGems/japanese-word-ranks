@@ -259,6 +259,26 @@ import { SORT_ORDERS } from "../lib/sort-orders";
     }
   });
 
+  // Keyboard arrow navigation
+  document.addEventListener("keydown", (e) => {
+    const tag = (document.activeElement?.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "select" || tag === "textarea") return;
+    if (!meta) return;
+    if (e.key === "ArrowLeft") {
+      if (currentPage <= 1) return;
+      currentPage = Math.max(1, currentPage - 1);
+      updateUrl();
+      loadAndRender();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else if (e.key === "ArrowRight") {
+      if (currentPage >= meta.totalPages) return;
+      currentPage = Math.min(meta.totalPages, currentPage + 1);
+      updateUrl();
+      loadAndRender();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  });
+
   // Browser back/forward
   window.addEventListener("popstate", () => {
     readUrlParams();
