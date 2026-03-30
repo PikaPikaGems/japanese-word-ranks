@@ -90,7 +90,7 @@ import { SORT_ORDERS } from "../lib/sort-orders";
 
   // ─── State ──────────────────────────────────────────────────────────────────
 
-  let currentSort = "JLPT";
+  let currentSort = "KAISHI";
   let currentPage = 1;
   let currentFilter = "all";
   let meta: Meta | null = null;
@@ -111,7 +111,7 @@ import { SORT_ORDERS } from "../lib/sort-orders";
 
   function readUrlParams() {
     const params = new URLSearchParams(window.location.search);
-    currentSort = params.get("sort") || "JLPT";
+    currentSort = params.get("sort") || "KAISHI";
     currentPage = Math.max(1, parseInt(params.get("page") || "1", 10));
     currentFilter = params.get("filter") || "all";
     sortSelect.value = currentSort;

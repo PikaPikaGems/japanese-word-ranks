@@ -16,16 +16,17 @@ export interface SortOrder {
 
 export const SORT_ORDERS: SortOrder[] = [
   // Supplementary
+
+  {
+    key: "KAISHI",
+    label: "Kaishi 1500",
+    description: "Beginner vocabulary order from the Kaishi 1500 deck",
+  },
   {
     key: "JLPT",
     label: "JLPT",
     description:
       "Japanese Language Proficiency Test level (N5 easiest → N1 hardest)",
-  },
-  {
-    key: "KAISHI",
-    label: "Kaishi 1500",
-    description: "Beginner vocabulary order from the Kaishi 1500 deck",
   },
 
   // Shortlisted frequency sources (from dataset-catalog)
