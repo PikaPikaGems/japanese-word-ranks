@@ -368,10 +368,21 @@ function toSearchEntry(w: EnrichedWord): SearchEntry {
   return entry;
 }
 
+function searchEntryScore(entry: SearchEntry): number {
+  let s = 0;
+  if (entry.k != null && entry.k >= 1) s += 500;
+  if (entry.e && entry.e !== "-") s += 300;
+  const jlptScore: Record<number, number> = { 5: 200, 4: 160, 3: 80, 2: 40, 1: 20 };
+  s += jlptScore[entry.j ?? -1] ?? 0;
+  const freqScore: Record<string, number> = { "🌱": 60, "☘️": 50, "🌷": 30, "📚": 10, "🦉": 0 };
+  s += freqScore[entry.t] ?? 0;
+  return s;
+}
+
 function generateSearchIndices(words: EnrichedWord[]) {
   console.log("\nGenerating search indices...");
 
-  // Sort by RIRIKKU_RANK so most frequent words appear first in typeahead
+  // Pre-sort by RIRIKKU_RANK so ties in score preserve frequency order
   const sorted = [...words].sort((a, b) => {
     if (a.ririkkuRank === -1 && b.ririkkuRank === -1) return 0;
     if (a.ririkkuRank === -1) return 1;
@@ -390,6 +401,7 @@ function generateSearchIndices(words: EnrichedWord[]) {
   }
 
   for (const [char, entries] of byReading) {
+    entries.sort((a, b) => searchEntryScore(b) - searchEntryScore(a));
     writeJson(
       path.join(OUTPUT_DIR, "search", "reading", `${char}.json`),
       entries,
@@ -408,6 +420,7 @@ function generateSearchIndices(words: EnrichedWord[]) {
   }
 
   for (const [char, entries] of byWord) {
+    entries.sort((a, b) => searchEntryScore(b) - searchEntryScore(a));
     writeJson(path.join(OUTPUT_DIR, "search", "word", `${char}.json`), entries);
   }
   console.log(`  ${byWord.size} word index files`);
