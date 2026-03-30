@@ -99,6 +99,7 @@ import FrequencyTable from "../../components/FrequencyTable.astro";
   }
 
   function showError(msg: string) {
+    loadingSpinner.classList.add("hidden");
     loadingEl.classList.add("hidden");
     errorEl.textContent = msg;
     errorEl.classList.remove("hidden");
