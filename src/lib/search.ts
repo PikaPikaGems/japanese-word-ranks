@@ -78,6 +78,15 @@ export function initSearch() {
 
   // ─── Search ───────────────────────────────────────────────────────────
 
+  function matchScore(entry: SearchEntry, raw: string): number {
+    const q = hasLatin(raw) ? romajiToHiragana(raw) || raw : raw;
+    // exact match on word or reading
+    if (entry.w === q || entry.r === q) return 1000;
+    // shorter results = closer match
+    // const len = Math.min(entry.w.length, entry.r.length);
+    return 0;
+  }
+
   async function doSearch(query: string) {
     if (!query.trim()) {
       close();
@@ -122,7 +131,8 @@ export function initSearch() {
       }
     }
 
-    results = results.slice(0, 12);
+    results.sort((a, b) => matchScore(b, query) - matchScore(a, query));
+    results = results.slice(0, 50);
     highlight = -1;
     render();
   }
