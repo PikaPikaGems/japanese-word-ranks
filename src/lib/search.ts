@@ -151,13 +151,7 @@ export function initSearch() {
           i === highlight ? "bg-accent text-accent-foreground" : "";
 
         const badges: string[] = [];
-        if (jlpt) {
-          const tier: Tier = jlpt >= 4 ? "BASIC" : jlpt === 3 ? "COMMON" : jlpt === 2 ? "FLUENT" : "ADVANCED";
-          const { badge, emoji } = TIER_STYLE[tier];
-          badges.push(
-            `<span class="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-bold ${badge}">${emoji} <span>JLPT</span> <span class="font-extrabold">N${jlpt}</span></span>`,
-          );
-        }
+
         if (kaishi) {
           const { badge, emoji } = TIER_STYLE.BASIC;
           badges.push(
@@ -165,14 +159,32 @@ export function initSearch() {
           );
         }
 
+        if (jlpt) {
+          const tier: Tier =
+            jlpt >= 4
+              ? "BASIC"
+              : jlpt === 3
+                ? "COMMON"
+                : jlpt === 2
+                  ? "FLUENT"
+                  : "ADVANCED";
+          const { badge, emoji } = TIER_STYLE[tier];
+          badges.push(
+            `<span class="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-bold ${badge}">${emoji} <span>JLPT</span> <span class="font-extrabold">N${jlpt}</span></span>`,
+          );
+        }
+
         return `
-          <div class="search-item flex items-center gap-2.5 px-4 py-2.5 cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors ${active}" data-search-index="${i}">
+          <div class="search-item  cursor-pointer hover:bg-accent py-3 hover:text-accent-foreground transition-colors ${active}" data-search-index="${i}">
+            <div class="flex items-center gap-2.5 px-4 ">
             ${`<span class="text-xs leading-none">${escHtml(tierEmoji ?? "🦉")}</span>`}  
-            <span class="text-base font-semibold shrink-0" style="font-family: var(--font-japanese);">${escHtml(word)}</span>
-            ${showReading ? `<span class="text-sm text-muted-foreground shrink-0" style="font-family: var(--font-japanese);">${escHtml(reading)}</span>` : ""}
+            <span class="text-4xl font-semibold shrink-0" style="font-family: var(--font-japanese);">${escHtml(word)}</span>
+            ${showReading ? `<span class="text-lg text-muted-foreground shrink-0" style="font-family: var(--font-japanese);">${escHtml(reading)}</span>` : ""}
             ${badges.length > 0 ? `<span class="flex items-center gap-1 shrink-0">${badges.join("")}</span>` : ""}
-            ${english ? `<span class="text-xs text-muted-foreground truncate ml-auto">${escHtml(english)}</span>` : ""}
+            </div>
+            ${english ? `<span class="text-xs pl-10 text-muted-foreground truncate ml-auto">${escHtml(english)}</span>` : ""}
           </div>
+
         `;
       })
       .join("");
