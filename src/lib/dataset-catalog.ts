@@ -569,6 +569,7 @@ export const shortlisted = [
   netflixClean,
 ];
 
+export const forSortList = [...shortlisted, jitenAnimeV2, csj];
 export const highlighted = [...shortlisted, netflixMigaku, jitenAnimeV2, csj];
 
 export const DATASET_CATALOG: DatasetSection[] = [
@@ -754,6 +755,8 @@ export const ALL_CATALOG_COLUMN_IDS: string[] = Array.from(
 /** Map from columnId to DatasetEntry for quick lookup */
 export const CATALOG_ENTRY_MAP: Map<string, DatasetEntry> = new Map(
   DATASET_CATALOG.flatMap((s) =>
-    s.subsections.flatMap((sub) => sub.datasets.map((d) => [d.columnId, d] as [string, DatasetEntry])),
+    s.subsections.flatMap((sub) =>
+      sub.datasets.map((d) => [d.columnId, d] as [string, DatasetEntry]),
+    ),
   ),
 );

@@ -6,7 +6,7 @@
  * JLPT and Kaishi are supplementary sort orders not present in the catalog.
  */
 
-import { highlighted } from "./dataset-catalog";
+import { forSortList } from "./dataset-catalog";
 
 export interface SortOrder {
   key: string;
@@ -29,7 +29,7 @@ export const SORT_ORDERS: SortOrder[] = [
   },
 
   // Shortlisted frequency sources (from dataset-catalog)
-  ...highlighted.map((d) => ({
+  ...forSortList.map((d) => ({
     key: d.columnId,
     label: d.label,
     description: d.description,
