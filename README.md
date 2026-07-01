@@ -46,10 +46,7 @@ Source data (CSV, JSON, TXT) in `data/` is processed at build time into ~110k st
 
 ## Data Sources
 
-- FUl
-
-Frequency data is consolidated from [PikaPikaGems/japanese-word-frequency](https://github.com/PikaPikaGems/japanese-word-frequency). Primary sources are listed there and [here](./src/credits.ts).
-
+-  Listed here: https://github.com/PikaPikaGems/japanese-word-ranks/issues/1
 JLPT data from [tanos.co.uk/jlpt](https://www.tanos.co.uk/jlpt/). Kaishi deck data from [donkuri/kaishi](https://github.com/donkuri/kaishi).
 
 
