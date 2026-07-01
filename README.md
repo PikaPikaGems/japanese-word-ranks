@@ -3,6 +3,10 @@
 See how often a Japanese word appears in everyday conversations, Netflix, YouTube, Wikipedia, and more.
 A free, fully static website for looking up Japanese word frequency rankings across multiple datasets. Search by kana, kanji, or romaji to see how common a word is across different corpora.
 
+## Disclaimer
+
+Data quality, coverage, and methodology vary across sources. No guarantees are made about accuracy, completeness, or fitness for any particular purpose. See the Terms of Use page for details.
+
 ## Features
 
 - Browse ~80,000 Japanese words sorted by various frequency rankings
@@ -16,12 +20,6 @@ A free, fully static website for looking up Japanese word frequency rankings acr
 
 ![Screenshot1](screenshots/Screenshot1.png)
 ![Screenshot2](screenshots/Screenshot2.png)
-
-## Tech Stack
-
-- [Astro](https://astro.build/) v6 (static site generation)
-- [Tailwind CSS](https://tailwindcss.com/) v4
-- Vanilla JS (no frontend framework)
 
 ## Getting Started
 
@@ -54,9 +52,6 @@ Frequency data is consolidated from [PikaPikaGems/japanese-word-frequency](https
 
 JLPT data from [tanos.co.uk/jlpt](https://www.tanos.co.uk/jlpt/). Kaishi deck data from [donkuri/kaishi](https://github.com/donkuri/kaishi).
 
-## Disclaimer
-
-Data quality, coverage, and methodology vary across sources. No guarantees are made about accuracy, completeness, or fitness for any particular purpose. See the Terms of Use page for details.
 
 ## License
 
