@@ -27,9 +27,6 @@ Data quality, coverage, and methodology vary across sources. No guarantees are m
 pnpm install
 pnpm run dev
 ```
-
-## Scripts
-
 | Command               | Description                                                   |
 | --------------------- | ------------------------------------------------------------- |
 | `pnpm run build:data` | Generate JSON API files from CSV/JSON source data             |
@@ -46,6 +43,7 @@ Source data (CSV, JSON, TXT) in `data/` is processed at build time into ~110k st
 ## Data Sources
 
 -  Listed here: https://github.com/PikaPikaGems/japanese-word-ranks/issues/1
+-  
 JLPT data from [tanos.co.uk/jlpt](https://www.tanos.co.uk/jlpt/). Kaishi deck data from [donkuri/kaishi](https://github.com/donkuri/kaishi).
 
 
