@@ -32,7 +32,6 @@ pnpm run dev
 
 | Command               | Description                                                   |
 | --------------------- | ------------------------------------------------------------- |
-| `pnpm run dev`        | Start the Astro dev server                                    |
 | `pnpm run build:data` | Generate JSON API files from CSV/JSON source data             |
 | `pnpm run build`      | Run `build:data` then `astro build` for full production build |
 | `pnpm run preview`    | Preview the production build locally                          |
